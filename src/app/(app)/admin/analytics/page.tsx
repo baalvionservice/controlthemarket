@@ -1,0 +1,110 @@
+import { getCompanies, getSubmissions, getTasks, getUsers, getEvaluations } from "@/lib/api";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Users, Building, Briefcase, FileText } from "lucide-react";
+import { 
+    GlobalStatusDistributionChart, 
+    GlobalTasksByCompanyChart, 
+    GlobalCriteriaRadarChart, 
+    GlobalLeaderboard,
+    GlobalSubmissionTrendChart
+} from "./charts";
+
+
+export default async function AdminAnalyticsPage() {
+    const [users, companies, tasks, submissions, evaluations] = await Promise.all([
+        getUsers(),
+        getCompanies(),
+        getTasks(),
+        getSubmissions(),
+        getEvaluations()
+    ]);
+
+    const leaderboardData = evaluations
+        .map(ev => {
+            const submission = submissions.find(s => s.id === ev.submissionId);
+            const candidate = users.find(u => u.id === submission?.userId);
+            return {
+                candidateName: candidate?.name || 'Unknown',
+                score: ev.score,
+                avatarUrl: candidate?.profile?.avatarUrl,
+            };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+
+    return (
+        <div className="flex-1 space-y-6 p-8 pt-6">
+            <div className="flex items-center justify-between space-y-2">
+                <div>
+                    <h2 className="font-headline text-3xl font-bold tracking-tight">
+                    Global Platform Analytics
+                    </h2>
+                    <p className="text-muted-foreground">
+                        An overview of all activity across the SkillMatch Pro platform.
+                    </p>
+                </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent className="pt-0">
+                    <div className="text-2xl font-bold">{users.length}</div>
+                </CardContent>
+                </Card>
+                <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                    Total Companies
+                    </CardTitle>
+                    <Building className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent className="pt-0">
+                    <div className="text-2xl font-bold">{companies.length}</div>
+                </CardContent>
+                </Card>
+                <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
+                    <Briefcase className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent className="pt-0">
+                    <div className="text-2xl font-bold">{tasks.length}</div>
+                </CardContent>
+                </Card>
+                <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                    Total Submissions
+                    </CardTitle>
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent className="pt-0">
+                    <div className="text-2xl font-bold">{submissions.length}</div>
+                </CardContent>
+                </Card>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+                <div className="lg:col-span-3 space-y-6">
+                    <GlobalSubmissionTrendChart submissions={submissions} />
+                    <GlobalTasksByCompanyChart tasks={tasks} companies={companies} />
+                </div>
+                <div className="lg:col-span-2 space-y-6">
+                    <GlobalCriteriaRadarChart evaluations={evaluations} />
+                    <GlobalStatusDistributionChart submissions={submissions} />
+                    <GlobalLeaderboard data={leaderboardData} />
+                </div>
+            </div>
+        </div>
+    );
+}

@@ -62,6 +62,7 @@ const adminNav = [
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },
+  { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'System Settings', href: '/admin/settings', icon: Settings },
 ];
 

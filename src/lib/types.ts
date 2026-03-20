@@ -36,21 +36,26 @@ export interface Company {
   logoUrl?: string;
   industry?: string;
   location?: string;
+  createdAt: string; // ISO 8601 date string
   isActive?: boolean;
   isVerified?: boolean;
 }
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 export type TaskStatus = 'draft' | 'open' | 'closed' | 'archived';
+export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
+
 
 export interface Task {
   id: string;
   title: string;
   description: string;
+  roleCategory: RoleCategory;
   difficulty: TaskDifficulty;
   deadline: string; // ISO 8601 date string
   companyId: string;
   status: TaskStatus;
+  createdAt: string; // ISO 8601 date string
 }
 
 export type SubmissionStatus =

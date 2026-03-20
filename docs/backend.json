@@ -144,6 +144,11 @@
             "type": "string",
             "description": "The company's primary location (e.g., 'San Francisco, CA')."
         },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the company profile was created."
+        },
         "isActive": {
             "type": "boolean",
             "description": "Whether the company account is active. Defaults to true."
@@ -153,7 +158,7 @@
             "description": "Whether the company has been verified by an admin. Defaults to false."
         }
       },
-      "required": ["id", "name", "ownerId", "isActive"]
+      "required": ["id", "name", "ownerId", "createdAt", "isActive"]
     },
     "Task": {
       "title": "Task",
@@ -171,6 +176,11 @@
         "description": {
           "type": "string",
           "description": "A detailed description of the task requirements."
+        },
+        "roleCategory": {
+          "type": "string",
+          "enum": ["Engineering", "Design", "Marketing", "Business", "Data"],
+          "description": "The professional vertical the task belongs to."
         },
         "difficulty": {
           "type": "string",
@@ -190,9 +200,14 @@
             "type": "string",
             "enum": ["draft", "open", "closed", "archived"],
             "description": "The current lifecycle state of the task."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the task was created."
         }
       },
-      "required": ["id", "title", "description", "difficulty", "deadline", "companyId", "status"]
+      "required": ["id", "title", "description", "roleCategory", "difficulty", "deadline", "companyId", "status", "createdAt"]
     },
     "Submission": {
       "title": "Submission",

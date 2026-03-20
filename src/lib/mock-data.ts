@@ -98,6 +98,7 @@ export const mockCompanies: Company[] = [
     logoUrl: 'https://picsum.photos/seed/company1/100/100',
     industry: 'Technology',
     location: 'Silicon Valley, CA',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 60)).toISOString(),
     isActive: true,
     isVerified: true,
   },
@@ -110,6 +111,7 @@ export const mockCompanies: Company[] = [
     logoUrl: 'https://picsum.photos/seed/company2/100/100',
     industry: 'FinTech',
     location: 'New York, NY',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
     isActive: true,
     isVerified: false,
   },
@@ -121,30 +123,36 @@ export const mockTasks: Task[] = [
     title: 'Build a Responsive Navbar Component',
     description:
       'Create a fully responsive navigation bar using React and Tailwind CSS. The component should be reusable and include a mobile-friendly hamburger menu.',
+    roleCategory: 'Engineering',
     difficulty: 'Intermediate',
     deadline: '2024-08-15T23:59:59Z',
     companyId: 'company-1',
     status: 'open',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
   },
   {
     id: 'task-2',
     title: 'Design a Database Schema for a Blog',
     description:
       'Design a normalized PostgreSQL schema for a blogging platform. The schema should support users, posts, comments, and tags. Provide the SQL script to create the tables.',
+    roleCategory: 'Data',
     difficulty: 'Beginner',
     deadline: '2024-08-20T23:59:59Z',
     companyId: 'company-1',
     status: 'open',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
   },
   {
     id: 'task-3',
     title: 'Create a Serverless API Endpoint',
     description:
       'Develop a serverless function (e.g., AWS Lambda, Vercel Functions) that fetches data from a third-party API and returns a transformed JSON response. The function should include error handling and caching.',
+    roleCategory: 'Engineering',
     difficulty: 'Advanced',
     deadline: '2024-08-25T23:59:59Z',
     companyId: 'company-2',
     status: 'closed',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 15)).toISOString(),
   },
 ];
 

@@ -342,6 +342,12 @@ export const mockEvaluations: Evaluation[] = [
     id: 'eval-1',
     submissionId: 'sub-1',
     score: 92,
+    criteriaScores: {
+        'Technical Skills': 9,
+        'Problem Solving': 10,
+        'Communication': 8,
+        'Code Quality': 9,
+    },
     feedback:
       'Excellent work! The component is well-structured and fully responsive. Great use of Tailwind CSS variants. Consider adding ARIA attributes for better accessibility.',
     evaluatedBy: 'user-2',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -21,8 +21,22 @@ import type { SubmissionWithRelations } from './page';
 import { aiSubmissionFeedback, type SubmissionFeedbackInput } from '@/ai/flows/ai-submission-feedback-flow';
 import { useRouter } from 'next/navigation';
 
+const evaluationCriteria = {
+    'Technical Skills': 'Assesses mastery of required technologies and tools.',
+    'Problem Solving': 'Evaluates the ability to analyze problems and devise effective solutions.',
+    'Communication': 'Judges the clarity and effectiveness of communication.',
+    'Code Quality': 'Reviews code for readability, structure, and best practices.',
+};
+
+const criteriaKeys = Object.keys(evaluationCriteria) as (keyof typeof evaluationCriteria)[];
+
 const formSchema = z.object({
-  score: z.number().min(0).max(100),
+  criteriaScores: z.object(
+    criteriaKeys.reduce((acc, key) => {
+      acc[key] = z.number().min(0).max(10).default(8);
+      return acc;
+    }, {} as Record<keyof typeof evaluationCriteria, z.ZodNumber>)
+  ),
   feedback: z.string().min(10, { message: 'Feedback must be at least 10 characters long.' }),
 });
 
@@ -35,12 +49,20 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      score: submission.evaluation?.score || 80,
+      criteriaScores: submission.evaluation?.criteriaScores 
+        ? (submission.evaluation.criteriaScores as any)
+        : criteriaKeys.reduce((acc, key) => ({...acc, [key]: 8}), {}),
       feedback: submission.evaluation?.feedback || '',
     },
   });
 
-  const scoreValue = form.watch('score');
+  const watchedScores = form.watch('criteriaScores');
+  const totalScore = useMemo(() => {
+    const scores = Object.values(watchedScores);
+    const average = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    return Math.round(average * 10); // Scale to 0-100
+  }, [watchedScores]);
+
 
   const generateAiFeedback = async () => {
     setIsAiLoading(true);
@@ -49,7 +71,6 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
           throw new Error('Task description or submission content is missing.');
       }
         
-      // This is a simplified version. In a real app, you'd fetch content from a URL.
       const submissionContent = submission.content.value.startsWith('http')
         ? `Link submitted: ${submission.content.value}`
         : 'File content (mocked)';
@@ -62,8 +83,16 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
       
       const result = await aiSubmissionFeedback(input);
       form.setValue('feedback', result.overallFeedback, { shouldValidate: true });
-      form.setValue('score', result.overallScore, { shouldValidate: true });
-      toast({ title: 'AI Feedback Generated', description: 'The form has been populated with AI-suggested feedback and score.'});
+      
+      const aiScoreOutOf10 = Math.round(result.overallScore / 10);
+      const newScores = criteriaKeys.reduce((acc, key) => {
+        acc[key] = aiScoreOutOf10;
+        return acc;
+      }, {} as Record<keyof typeof evaluationCriteria, number>);
+
+      form.setValue('criteriaScores', newScores, { shouldValidate: true });
+
+      toast({ title: 'AI Feedback Generated', description: 'The form has been populated with AI-suggested feedback and scores.'});
     } catch (error) {
       console.error(error);
       toast({ title: 'AI Error', description: 'Could not generate AI feedback.', variant: 'destructive' });
@@ -74,7 +103,8 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    console.log('Evaluation Submitted:', values);
+    const finalScore = totalScore;
+    console.log('Evaluation Submitted:', { ...values, score: finalScore });
 
     // Mock API call
     setTimeout(() => {
@@ -83,8 +113,6 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
         description: 'The candidate has been notified.',
       });
       setIsSubmitting(false);
-      // In a real app, you would update the submission status and maybe redirect
-      // For mock, let's just refresh to show the new evaluation
       router.refresh();
     }, 1000);
   }
@@ -95,7 +123,7 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
         <div className="space-y-4">
           <Button type="button" variant="outline" onClick={generateAiFeedback} disabled={isAiLoading}>
             {isAiLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4 text-primary" />}
-            Generate AI Feedback
+            Generate with AI
           </Button>
 
           <FormField
@@ -111,28 +139,39 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="score"
-            render={({ field: { onChange, ...fieldProps} }) => (
-              <FormItem>
-                <FormLabel>
-                  Score: <span className="font-bold text-lg text-primary">{scoreValue}</span>/100
-                </FormLabel>
-                <FormControl>
-                  <Slider
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={[scoreValue]}
-                    onValueChange={(vals) => onChange(vals[0])}
-                    {...fieldProps}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="space-y-6 rounded-md border p-4">
+            <div className='flex justify-between items-center'>
+                <h3 className="font-medium">Scoring Criteria</h3>
+                <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Total Score</p>
+                    <p className="text-2xl font-bold text-primary">{totalScore}/100</p>
+                </div>
+            </div>
+
+            {criteriaKeys.map(key => (
+              <FormField
+                key={key}
+                control={form.control}
+                name={`criteriaScores.${key}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {key}: <span className="font-bold text-primary">{field.value}</span>/10
+                    </FormLabel>
+                    <FormControl>
+                      <Slider
+                        min={0}
+                        max={10}
+                        step={1}
+                        value={[field.value]}
+                        onValueChange={(vals) => field.onChange(vals[0])}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="flex justify-end">

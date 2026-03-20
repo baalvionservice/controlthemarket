@@ -14,12 +14,14 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { ExternalLink, Github, FileText, User, Briefcase, MessageSquare, Star, Sparkles, Loader2 } from 'lucide-react';
+import { ExternalLink, Github, FileText, User, Briefcase, MessageSquare, Star, Sparkles, Loader2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { EvaluationForm } from './evaluation-form';
 import type { Submission, Task, User as Candidate, Evaluation, SubmissionContentType } from '@/lib/types';
 import { ActivityLog } from '@/components/activity-log';
+import { Progress } from '@/components/ui/progress';
+
 
 type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -74,6 +76,47 @@ export default function SubmissionReviewPage({ params }: { params: { id: string 
     }
   }
 
+  const ScoreCircle = ({ score }: { score: number }) => {
+    const circumference = 2 * Math.PI * 20; // 2 * pi * radius
+    const offset = circumference - (score / 100) * circumference;
+  
+    let colorClass = 'text-primary';
+    if (score < 50) colorClass = 'text-destructive';
+    else if (score < 80) colorClass = 'text-yellow-500';
+  
+    return (
+      <div className="relative h-24 w-24">
+        <svg className="h-full w-full" viewBox="0 0 50 50">
+          <circle
+            className="text-muted"
+            strokeWidth="5"
+            stroke="currentColor"
+            fill="transparent"
+            r="20"
+            cx="25"
+            cy="25"
+          />
+          <circle
+            className={colorClass}
+            strokeWidth="5"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            stroke="currentColor"
+            fill="transparent"
+            r="20"
+            cx="25"
+            cy="25"
+            transform="rotate(-90 25 25)"
+          />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center text-lg font-bold">
+          {score}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -94,8 +137,8 @@ export default function SubmissionReviewPage({ params }: { params: { id: string 
         <div className="md:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Evaluation</CardTitle>
-                <CardDescription>Provide feedback and a score for this submission.</CardDescription>
+                <CardTitle>Evaluation Panel</CardTitle>
+                <CardDescription>Provide feedback and a score for this submission using the criteria below.</CardDescription>
               </CardHeader>
               <CardContent>
                 <EvaluationForm submission={submission} />
@@ -105,15 +148,33 @@ export default function SubmissionReviewPage({ params }: { params: { id: string 
             {evaluation && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Existing Evaluation</CardTitle>
+                        <CardTitle className="flex items-center gap-3">
+                           <CheckCircle className="h-6 w-6 text-green-500" />
+                           <span>Existing Evaluation</span>
+                        </CardTitle>
+                        <CardDescription>
+                            This submission was evaluated on {format(new Date(evaluation.evaluatedAt), 'PPp')}.
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-1">
-                            <h4 className="font-semibold flex items-center gap-2"><Star className="h-4 w-4 text-yellow-500" /> Score</h4>
-                            <p className="text-2xl font-bold">{evaluation.score}/100</p>
+                    <CardContent className="space-y-6">
+                        <div className="flex flex-col sm:flex-row items-center gap-6">
+                            <div className="flex-shrink-0">
+                                <ScoreCircle score={evaluation.score} />
+                            </div>
+                            <div className="w-full space-y-4">
+                               {evaluation.criteriaScores && Object.entries(evaluation.criteriaScores).map(([key, value]) => (
+                                    <div key={key} className="space-y-1">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="font-medium">{key}</span>
+                                            <span className="text-muted-foreground">{value * 10}/100</span>
+                                        </div>
+                                        <Progress value={value * 10} />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div className="space-y-1">
-                            <h4 className="font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4" /> Feedback</h4>
+                        <div className="space-y-2">
+                            <h4 className="font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4" /> Feedback Provided</h4>
                             <p className="text-muted-foreground italic">"{evaluation.feedback}"</p>
                         </div>
                     </CardContent>

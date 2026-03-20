@@ -125,7 +125,8 @@ export interface Submission {
 export interface Evaluation {
   id: string;
   submissionId: string;
-  score: number; // 0-100
+  score: number; // 0-100 overall score
+  criteriaScores?: Record<string, number>; // Scores for individual criteria
   feedback: string;
   evaluatedBy: string; // userId of company member
   evaluatedAt: string; // ISO 8601 date string

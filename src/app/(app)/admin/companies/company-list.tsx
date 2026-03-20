@@ -27,6 +27,7 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyFormDialog } from './company-form-dialog';
 import type { Company } from '@/lib/types';
+import { TenantDetailDialog } from './tenant-detail-dialog';
 
 type StatusFilter = 'All' | 'Active' | 'Inactive';
 
@@ -37,6 +38,8 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [viewingTenant, setViewingTenant] = useState<AdminCompanyData | null>(null);
 
   const { toast } = useToast();
 
@@ -79,7 +82,7 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
     
     toast({
         title: 'Bulk Action Successful',
-        description: `${selectedRows.size} company(s) have been ${action === 'delete' ? 'deleted' : action + 'd'}.`,
+        description: `${selectedRows.size} tenant(s) have been ${action === 'delete' ? 'deleted' : action + 'd'}.`,
     });
     setSelectedRows(new Set());
   };
@@ -92,6 +95,11 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
   const handleSaveCompany = (companyData: Company) => {
     setData(prevData => prevData.map(c => c.id === companyData.id ? { ...c, ...companyData } : c));
   };
+  
+  const handleViewTenant = (company: AdminCompanyData) => {
+    setViewingTenant(company);
+    setIsDetailOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -100,7 +108,7 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
              <div className="relative flex-1 md:grow-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Search by company name..."
+                    placeholder="Search by tenant name..."
                     className="pl-10 min-w-[200px] md:min-w-[300px]"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -143,10 +151,11 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
                     aria-label="Select all"
                   />
               </TableHead>
-              <TableHead>Company</TableHead>
+              <TableHead>Tenant</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Users</TableHead>
               <TableHead>Tasks</TableHead>
+              <TableHead>Submissions</TableHead>
               <TableHead>Owner</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -182,17 +191,19 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
                   </TableCell>
                   <TableCell>{company.userCount}</TableCell>
                   <TableCell>{company.taskCount}</TableCell>
+                  <TableCell>{company.submissionCount}</TableCell>
                   <TableCell>{company.ownerName}</TableCell>
                   <TableCell>{format(new Date(company.createdAt), 'PPP')}</TableCell>
                   <TableCell className="text-right">
+                     <Button variant="ghost" size="sm" onClick={() => handleViewTenant(company)}>View</Button>
                      <Button variant="ghost" size="sm" onClick={() => handleEditCompany(company)}>Edit</Button>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
-                  No companies found.
+                <TableCell colSpan={9} className="h-24 text-center">
+                  No tenants found.
                 </TableCell>
               </TableRow>
             )}
@@ -204,6 +215,11 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
         onOpenChange={setIsFormOpen}
         onSave={handleSaveCompany}
         company={editingCompany}
+      />
+      <TenantDetailDialog
+        isOpen={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        tenant={viewingTenant}
       />
     </div>
   );

@@ -62,7 +62,7 @@ const adminNav = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Role Dashboards', href: '/admin/roles', icon: LayoutGrid },
   { name: 'Manage Users', href: '/admin/users', icon: Users },
-  { name: 'Manage Companies', href: '/admin/companies', icon: Building },
+  { name: 'Manage Tenants', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },

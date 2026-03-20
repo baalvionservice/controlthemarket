@@ -66,7 +66,7 @@ export function CompanyFormDialog({ isOpen, onOpenChange, onSave, company }: Com
     const updatedCompany = { ...company, ...values };
 
     toast({
-      title: 'Company Updated',
+      title: 'Tenant Updated',
       description: `The details for ${values.name} have been saved.`,
     });
     onSave(updatedCompany);
@@ -79,9 +79,9 @@ export function CompanyFormDialog({ isOpen, onOpenChange, onSave, company }: Com
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <DialogHeader>
-              <DialogTitle>Edit Company: {company?.name}</DialogTitle>
+              <DialogTitle>Edit Tenant: {company?.name}</DialogTitle>
               <DialogDescription>
-                Modify the company's details below.
+                Modify the tenant's details below.
               </DialogDescription>
             </DialogHeader>
 
@@ -91,7 +91,7 @@ export function CompanyFormDialog({ isOpen, onOpenChange, onSave, company }: Com
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Company Name</FormLabel>
+                            <FormLabel>Tenant Name</FormLabel>
                             <FormControl>
                                 <Input {...field} />
                             </FormControl>
@@ -131,9 +131,9 @@ export function CompanyFormDialog({ isOpen, onOpenChange, onSave, company }: Com
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                             <div className="space-y-0.5">
-                                <FormLabel>Company Status</FormLabel>
+                                <FormLabel>Tenant Status</FormLabel>
                                 <FormDescription>
-                                    Inactive companies cannot post new tasks.
+                                    Inactive tenants cannot post new tasks.
                                 </FormDescription>
                             </div>
                             <FormControl>

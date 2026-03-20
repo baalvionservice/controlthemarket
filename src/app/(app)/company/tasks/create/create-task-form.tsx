@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -38,13 +39,13 @@ import type { RoleCategory, TaskDifficulty, TaskType, TaskTemplate } from '@/lib
 import { mockTemplates } from '@/lib/mock-data';
 
 const roleCategories: RoleCategory[] = ["Engineering", "Design", "Marketing", "Business", "Data"];
-const allTaskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads"];
+const allTaskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation"];
 
 const roleTaskTypesMap: Record<RoleCategory, TaskType[]> = {
   Engineering: ["Coding", "Project", "Documentation", "UI", "Component", "Styling", "Feature Implementation"],
   Design: ["Design", "Project", "Documentation", "UI", "Styling"],
   Marketing: ["Documentation", "Project", "MCQ", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads"],
-  Business: ["Documentation", "Project"],
+  Business: ["Documentation", "Project", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation"],
   Data: ["Coding", "Project", "MCQ", "Documentation"],
 };
 

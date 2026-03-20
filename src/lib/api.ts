@@ -55,6 +55,11 @@ export async function getSubmissions(): Promise<Submission[]> {
   return mockSubmissions;
 }
 
+export async function getSubmission(id: string): Promise<Submission | undefined> {
+    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+    return mockSubmissions.find(s => s.id === id);
+}
+
 export async function getSubmissionsByUser(userId: string): Promise<Submission[]> {
   await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
   return mockSubmissions.filter((s) => s.userId === userId);

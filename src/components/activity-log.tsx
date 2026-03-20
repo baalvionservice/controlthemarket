@@ -8,22 +8,39 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { format } from 'date-fns';
-import { FilePen, Send, Star, UserPlus } from 'lucide-react';
+import {
+  FilePen,
+  Send,
+  Star,
+  UserPlus,
+  CheckCircle,
+  XCircle,
+  ChevronsRight,
+  ShieldAlert,
+} from 'lucide-react';
 import type { Submission, Evaluation } from '@/lib/types';
 
 interface ActivityLogProps {
   submission: Submission;
   evaluation?: Evaluation;
+  isAdminOverride?: boolean;
 }
 
-export function ActivityLog({ submission, evaluation }: ActivityLogProps) {
-  const activityEvents = [];
+export function ActivityLog({ submission, evaluation, isAdminOverride }: ActivityLogProps) {
+  const activityEvents: {
+    icon: React.ElementType;
+    title: string;
+    timestamp: string;
+    description?: string;
+  }[] = [];
 
+  // Base events
   if (submission.assignedAt) {
     activityEvents.push({
       icon: UserPlus,
       title: 'Task Assigned',
       timestamp: submission.assignedAt,
+      description: 'The task was assigned to the candidate.',
     });
   }
 
@@ -32,15 +49,16 @@ export function ActivityLog({ submission, evaluation }: ActivityLogProps) {
       icon: Send,
       title: 'Initial Submission',
       timestamp: submission.submittedAt,
+      description: `Round ${submission.currentRound || 1} was submitted.`,
     });
   }
   
-  if (submission.status === 'in-review') {
-    // There's no specific timestamp for this, so use lastUpdated as a best guess
+  if (submission.status === 'in-review' && submission.lastUpdated !== submission.submittedAt) {
     activityEvents.push({
       icon: FilePen,
       title: 'Review Started',
       timestamp: submission.lastUpdated,
+      description: 'The submission is now being reviewed.',
     });
   }
 
@@ -49,6 +67,7 @@ export function ActivityLog({ submission, evaluation }: ActivityLogProps) {
       icon: Send,
       title: 'Work Resubmitted',
       timestamp: submission.resubmittedAt,
+      description: 'The candidate submitted a new version of their work.',
     });
   }
 
@@ -60,6 +79,46 @@ export function ActivityLog({ submission, evaluation }: ActivityLogProps) {
       description: `Final Score: ${evaluation.score}/100`,
     });
   }
+
+  // Final decision events
+  const evaluatedAtTime = evaluation ? new Date(evaluation.evaluatedAt).getTime() : 0;
+  const lastUpdatedTime = new Date(submission.lastUpdated).getTime();
+
+  // Only show these if they happened after the evaluation
+  if (lastUpdatedTime > evaluatedAtTime) {
+      if (submission.status === 'shortlisted') {
+        activityEvents.push({
+          icon: CheckCircle,
+          title: 'Candidate Shortlisted',
+          timestamp: submission.lastUpdated,
+          description: 'This candidate was moved to the shortlist.',
+        });
+      } else if (submission.status === 'rejected') {
+        activityEvents.push({
+          icon: XCircle,
+          title: 'Candidate Rejected',
+          timestamp: submission.lastUpdated,
+          description: 'This candidate was not selected to move forward.',
+        });
+      } else if (submission.status === 'moved-to-next-round') {
+        activityEvents.push({
+          icon: ChevronsRight,
+          title: 'Moved to Next Round',
+          timestamp: submission.lastUpdated,
+          description: 'The candidate has been advanced to the next round.',
+        });
+      }
+  }
+
+  if (isAdminOverride) {
+      activityEvents.push({
+          icon: ShieldAlert,
+          title: 'Admin Override',
+          timestamp: new Date().toISOString(), // Mocking current time for the override view
+          description: 'An admin is currently viewing or modifying this record.'
+      });
+  }
+
 
   const sortedEvents = activityEvents.sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -87,7 +146,7 @@ export function ActivityLog({ submission, evaluation }: ActivityLogProps) {
                   {format(new Date(event.timestamp), 'PPp')}
                 </p>
                 {event.description && (
-                  <p className="mt-1 text-sm text-muted-foreground italic">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {event.description}
                   </p>
                 )}

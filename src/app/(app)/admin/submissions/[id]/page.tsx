@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { ActivityLog } from '@/components/activity-log';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -56,7 +57,7 @@ export default function OverrideEvaluationPage({ params }: { params: { id: strin
     );
   }
 
-  const { task, candidate } = submission;
+  const { task, candidate, evaluation } = submission;
   
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -90,6 +91,8 @@ export default function OverrideEvaluationPage({ params }: { params: { id: strin
             <OverrideForm submission={submission} />
         </CardContent>
       </Card>
+      
+      <ActivityLog submission={submission} evaluation={evaluation} isAdminOverride={true} />
     </div>
   );
 }

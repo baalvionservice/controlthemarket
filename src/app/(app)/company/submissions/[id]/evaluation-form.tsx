@@ -147,14 +147,10 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
         return Math.round(average * 10);
     }, [watchedScores, sectionCriteria]);
     
-    let colorClass = "bg-primary";
-    if (subtotal < 50) colorClass = "bg-destructive";
-    else if (subtotal < 80) colorClass = "bg-yellow-500";
-
     return (
       <div className="text-right">
           <p className="font-semibold text-xl">{subtotal}<span className="text-sm text-muted-foreground">/100</span></p>
-          <Progress value={subtotal} className={cn("h-2 mt-1", colorClass)} indicatorClassName={colorClass} />
+          <Progress value={subtotal} className="h-2 mt-1" />
       </div>
     );
   }

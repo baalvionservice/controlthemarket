@@ -59,11 +59,13 @@ export const mockCompanies: Company[] = [
     id: 'company-1',
     name: 'TechCorp',
     description: 'A leading innovator in cloud solutions.',
+    ownerId: 'user-2',
   },
   {
     id: 'company-2',
     name: 'Innovate Inc.',
     description: 'Building the future of decentralized applications.',
+    ownerId: 'user-5',
   },
 ];
 
@@ -76,6 +78,7 @@ export const mockTasks: Task[] = [
     difficulty: 'Intermediate',
     deadline: '2024-08-15T23:59:59Z',
     companyId: 'company-1',
+    status: 'open',
   },
   {
     id: 'task-2',
@@ -85,6 +88,7 @@ export const mockTasks: Task[] = [
     difficulty: 'Beginner',
     deadline: '2024-08-20T23:59:59Z',
     companyId: 'company-1',
+    status: 'open',
   },
   {
     id: 'task-3',
@@ -94,6 +98,7 @@ export const mockTasks: Task[] = [
     difficulty: 'Advanced',
     deadline: '2024-08-25T23:59:59Z',
     companyId: 'company-2',
+    status: 'closed',
   },
 ];
 
@@ -102,6 +107,7 @@ export const mockSubmissions: Submission[] = [
     id: 'sub-1',
     taskId: 'task-1',
     userId: 'user-1',
+    companyId: 'company-1',
     content: {
       type: 'link',
       value: 'https://github.com/alice-candidate/responsive-navbar',
@@ -113,6 +119,7 @@ export const mockSubmissions: Submission[] = [
     id: 'sub-2',
     taskId: 'task-1',
     userId: 'user-4',
+    companyId: 'company-1',
     content: {
       type: 'link',
       value: 'https://github.com/diana-developer/navbar-project',
@@ -124,6 +131,7 @@ export const mockSubmissions: Submission[] = [
     id: 'sub-3',
     taskId: 'task-2',
     userId: 'user-1',
+    companyId: 'company-1',
     content: {
       type: 'link',
       value: 'https://gist.github.com/alice-candidate/schema.sql',

@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Briefcase, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.

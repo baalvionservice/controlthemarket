@@ -8,6 +8,7 @@ export interface User {
   profile?: {
     avatarUrl: string;
     bio?: string;
+    skills?: string[];
   };
   companyId?: string; // For users with the 'company' role
 }

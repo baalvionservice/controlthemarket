@@ -5,15 +5,19 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { mockUsers } from '@/lib/mock-data';
 
+interface SignupDetails {
+  name: string;
+  email: string;
+  role: UserRole;
+  skills?: string[];
+  companyName?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   users: User[]; // All available users for login selector
   login: (userId: string) => void;
-  signup: (
-    name: string,
-    email: string,
-    role: UserRole
-  ) => { success: boolean; message?: string };
+  signup: (details: SignupDetails) => { success: boolean; message?: string };
   logout: () => void;
   loading: boolean;
 }
@@ -51,12 +55,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signup = (
-    name: string,
-    email: string,
-    role: UserRole
+    details: SignupDetails
   ): { success: boolean; message?: string } => {
     // Check if user already exists
-    if (users.some((u) => u.email === email)) {
+    if (users.some((u) => u.email === details.email)) {
       return {
         success: false,
         message: 'An account with this email already exists.',
@@ -66,17 +68,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Create a new user
     const newUser: User = {
       id: `user-${Date.now()}`,
-      name,
-      email,
-      role,
+      name: details.name,
+      email: details.email,
+      role: details.role,
       profile: {
-        avatarUrl: `https://picsum.photos/seed/${name}/100/100`,
+        avatarUrl: `https://picsum.photos/seed/${details.name}/100/100`,
+        skills: details.skills || [],
       },
     };
 
     // If company, create a mock companyId
-    if (role === 'company') {
+    if (details.role === 'company') {
       newUser.companyId = `company-${Date.now()}`;
+      // In a real app, you would also create a company record here.
     }
 
     setUsers((prevUsers) => [...prevUsers, newUser]);
@@ -95,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (loading) return;
 
-    const isAuthPath = pathname === '/login' || pathname === '/signup';
+    const isAuthPath = pathname.startsWith('/login') || pathname.startsWith('/signup');
     // If user is not logged in and not on an auth path, redirect to login
     if (!user && !isAuthPath) {
       router.push('/login');

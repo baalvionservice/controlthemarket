@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/contexts/auth-context';
-import { mockUsers } from '@/lib/mock-data';
 import {
   Card,
   CardContent,
@@ -22,7 +21,7 @@ import Link from 'next/link';
 import { Label } from '@/components/ui/label';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, users } = useAuth(); // Use users from context
   const [selectedUserId, setSelectedUserId] = useState<string>('');
 
   const handleLogin = () => {
@@ -48,7 +47,7 @@ export default function LoginPage() {
                 <SelectValue placeholder="Select a user..." />
               </SelectTrigger>
               <SelectContent>
-                {mockUsers.map((user) => (
+                {users.map((user) => ( // Use users from context
                   <SelectItem key={user.id} value={user.id}>
                     {user.name} ({user.role})
                   </SelectItem>

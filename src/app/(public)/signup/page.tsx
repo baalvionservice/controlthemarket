@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,9 +19,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
+import type { UserRole } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SignupPage() {
+  const { signup } = useAuth();
+  const { toast } = useToast();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<UserRole | ''>('');
+
+  const handleSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName || !email || !password || !role) {
+      toast({
+        title: 'Missing fields',
+        description: 'Please fill out all fields to sign up.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    const result = signup(fullName, email, role);
+    if (!result.success) {
+      toast({
+        title: 'Signup Failed',
+        description: result.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="container flex h-[calc(100vh-8rem)] items-center justify-center">
       <Card className="mx-auto max-w-sm">
@@ -28,10 +61,16 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <form onSubmit={handleSignup} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="full-name">Full name</Label>
-              <Input id="full-name" placeholder="John Doe" required />
+              <Input
+                id="full-name"
+                placeholder="John Doe"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -40,15 +79,23 @@ export default function SignupPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="role">I am a...</Label>
-              <Select>
+              <Select onValueChange={(value) => setRole(value as UserRole)} value={role}>
                 <SelectTrigger id="role">
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
@@ -61,10 +108,10 @@ export default function SignupPage() {
             <Button type="submit" className="w-full">
               Create an account
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" type="button">
               Sign up with Google
             </Button>
-          </div>
+          </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{' '}
             <Link href="/login" className="underline">

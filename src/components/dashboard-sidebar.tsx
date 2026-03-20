@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -54,6 +55,7 @@ const companyNav = [
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
   { name: 'Compare', href: '/company/compare', icon: GitCompare },
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
+  { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
 
 const adminNav = [

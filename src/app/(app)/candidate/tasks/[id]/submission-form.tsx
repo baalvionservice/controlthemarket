@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -24,6 +25,11 @@ import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { useRouter } from 'next/navigation';
 
+// --- Validation Constants ---
+const MAX_FILE_SIZE_MB = 50;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const SUPPORTED_FILE_EXTENSIONS = ['.pdf', '.zip', '.docx', '.pptx', '.txt'];
+
 const formSchema = z.object({
   submissionType: z.enum(['link', 'file', 'externalLink']),
   link: z.string().optional(),
@@ -33,8 +39,9 @@ const formSchema = z.object({
   }).optional(),
   externalLink: z.string().optional(),
 }).superRefine((data, ctx) => {
+  // --- GitHub Link Validation ---
   if (data.submissionType === 'link') {
-    if (!data.link) {
+    if (!data.link || data.link.trim() === '') {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['link'],
@@ -47,33 +54,55 @@ const formSchema = z.object({
                  ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: ['link'],
-                    message: 'Please enter a valid GitHub repository URL.',
+                    message: 'URL must be a valid GitHub repository link (e.g., https://github.com/...).',
                 });
             } else if (url.pathname.split('/').filter(Boolean).length < 2) {
                  ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: ['link'],
-                    message: 'Please include both a username and repository in the URL (e.g., https://github.com/user/repo).',
+                    message: 'Please include both a username and repository in the URL (e.g., .../user/repo).',
                 });
             }
         } catch (e) {
              ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 path: ['link'],
-                message: 'Please enter a valid URL format.',
+                message: 'Invalid URL format. Please enter a full, valid URL.',
             });
         }
     }
   }
-  if (data.submissionType === 'file' && !data.file) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['file'],
-      message: 'A file is required for file uploads.',
-    });
+
+  // --- File Upload Validation ---
+  if (data.submissionType === 'file') {
+    if (!data.file) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['file'],
+        message: 'A file is required for this submission type.',
+      });
+    } else {
+      if (data.file.size > MAX_FILE_SIZE_BYTES) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['file'],
+          message: `File is too large. Maximum allowed size is ${MAX_FILE_SIZE_MB}MB.`,
+        });
+      }
+      const fileExtension = data.file.name.substring(data.file.name.lastIndexOf('.')).toLowerCase();
+      if (!SUPPORTED_FILE_EXTENSIONS.includes(fileExtension)) {
+          ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ['file'],
+              message: `File type not supported. Supported types: ${SUPPORTED_FILE_EXTENSIONS.join(', ')}`,
+          });
+      }
+    }
   }
+
+  // --- External Link Validation ---
   if (data.submissionType === 'externalLink') {
-    if (!data.externalLink) {
+    if (!data.externalLink || data.externalLink.trim() === '') {
         ctx.addIssue({
             code: 'custom',
             path: ['externalLink'],
@@ -86,7 +115,7 @@ const formSchema = z.object({
                 ctx.addIssue({
                     code: 'custom',
                     path: ['externalLink'],
-                    message: 'Please enter a valid URL.'
+                    message: 'Invalid URL. Must start with http:// or https://.'
                 });
             }
         } catch (e) {
@@ -99,6 +128,7 @@ const formSchema = z.object({
     }
   }
 });
+
 
 interface SubmissionFormProps {
     task: Task;
@@ -125,6 +155,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         defaultValues: {
             submissionType: 'link',
         },
+        mode: 'onChange', // Validate on change for real-time feedback
     });
 
     const watchedForm = form.watch();
@@ -141,13 +172,11 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         setActiveTab(value);
         form.setValue('submissionType', value as 'link' | 'file' | 'externalLink');
         form.clearErrors(); // Clear errors when switching tabs
-        form.resetField('link');
-        form.resetField('file');
-        form.resetField('externalLink');
+        form.reset({ submissionType: value as 'link' | 'file' | 'externalLink' });
     }
 
-    const handleFileSelect = () => {
-        form.setValue('file', { name: 'my-project-submission.zip', size: 1024 * 1024 * 2.5 });
+    const handleFileSelect = (file: { name: string, size: number }) => {
+        form.setValue('file', file, { shouldValidate: true });
     }
 
     const clearFile = () => {
@@ -284,6 +313,9 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                                                         <Input placeholder="https://github.com/your-username/your-repo" className="pl-10" {...field} />
                                                     </div>
                                                 </FormControl>
+                                                 <FormDescription>
+                                                    Enter the full URL of your public or private (if invited) GitHub repository.
+                                                </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -312,17 +344,23 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                                                 ) : (
                                                     <FormControl>
                                                         <div 
-                                                            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
-                                                            onClick={handleFileSelect}
+                                                            className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg"
                                                         >
                                                             <UploadCloud className="h-8 w-8 text-muted-foreground" />
                                                             <p className="text-sm text-muted-foreground mt-2">
-                                                                <span className="font-semibold text-primary">Click to select a file</span> (mock)
+                                                                Simulate a file selection to test validation.
                                                             </p>
-                                                            <p className="text-xs text-muted-foreground">PDF, ZIP, DOCX up to 10MB</p>
+                                                             <div className="mt-4 flex flex-wrap justify-center gap-2">
+                                                                <Button type="button" size="sm" variant="secondary" onClick={() => handleFileSelect({ name: 'my-project.zip', size: 1024 * 1024 * 2.5 })}>Select valid file</Button>
+                                                                <Button type="button" size="sm" variant="secondary" onClick={() => handleFileSelect({ name: 'large-video.mp4', size: 1024 * 1024 * 60 })}>Select large file</Button>
+                                                                <Button type="button" size="sm" variant="secondary" onClick={() => handleFileSelect({ name: 'script.sh', size: 1024 * 5 })}>Select invalid type</Button>
+                                                            </div>
                                                         </div>
                                                     </FormControl>
                                                 )}
+                                                <FormDescription>
+                                                   Supported types: PDF, ZIP, DOCX, PPTX. Max size: {MAX_FILE_SIZE_MB}MB.
+                                                </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -342,7 +380,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                                                     </div>
                                                 </FormControl>
                                                 <FormDescription>
-                                                    Provide a shareable link to your work (e.g., Google Drive, portfolio).
+                                                    Provide a shareable link to your work (e.g., Google Drive, portfolio, Figma).
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
@@ -352,8 +390,8 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                             </Tabs>
                         </fieldset>
                         <div className="flex justify-end gap-4">
-                            <Button type="button" variant="ghost" onClick={() => form.reset()} disabled={submissionDisabled}>Clear</Button>
-                            <Button type="submit" disabled={isLoading || submissionDisabled}>
+                            <Button type="button" variant="ghost" onClick={() => form.reset({ submissionType: activeTab as 'link' | 'file' | 'externalLink' })} disabled={submissionDisabled}>Clear</Button>
+                            <Button type="submit" disabled={isLoading || submissionDisabled || !form.formState.isValid}>
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -370,3 +408,5 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
        </Card>
     )
 }
+
+    

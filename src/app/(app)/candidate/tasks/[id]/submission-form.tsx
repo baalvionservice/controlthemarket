@@ -116,6 +116,8 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         
         setIsLoading(false);
         form.reset();
+        // After reset, ensure the form state matches the active tab
+        handleTabChange(activeTab);
     }
 
     return (
@@ -172,7 +174,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                                                             <p className="text-xs text-muted-foreground">{(field.value.size / (1024 * 1024)).toFixed(2)} MB</p>
                                                         </div>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" onClick={clearFile}>
+                                                    <Button variant="ghost" size="icon" onClick={clearFile} type="button">
                                                         <X className="h-4 w-4" />
                                                     </Button>
                                                 </div>

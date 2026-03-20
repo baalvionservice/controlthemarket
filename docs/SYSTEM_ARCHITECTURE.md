@@ -46,16 +46,54 @@ SkillMatch Pro is a full-stack web application built on a modern, serverless-ori
 
 ## 3. Backend Architecture
 
-The backend leverages a "Backend as a Service" (BaaS) model with Firebase, complemented by server-side logic within Next.js.
+### 3.1. API Structure (Server Actions & Client-Side SDK)
 
--   **API Structure:** We will favor Next.js Server Actions and direct client-to-Firestore communication over a traditional standalone REST API.
-    -   **Next.js Server Actions:** Used for mutations and form submissions (e.g., creating a task). This allows calling server-side functions directly from React components.
-    -   **Firebase Client SDK:** Used for real-time data fetching (`useCollection`, `useDocument`) directly within React components. Access is securely managed by Firestore Security Rules.
--   **Layered Logic:**
-    -   **Routes (Next.js):** The frontend routes in the `app` directory define the application's structure.
-    -   **UI Components:** Handle user interaction and trigger data operations.
-    -   **Server Actions / Flows (`src/ai/flows`):** Contain the core business logic for mutations and AI-related processing.
-    -   **Models (Firestore):** The database collections act as the data models.
+Instead of a traditional REST API, SkillMatch Pro will use a more modern, integrated approach that leverages the full power of the Next.js and Firebase stack. This eliminates the need for a separate API backend, reducing complexity and improving development velocity.
+
+-   **Data Mutations (Writes): Next.js Server Actions**
+    -   All create, update, and delete (CUD) operations will be handled by **Server Actions**. These are functions defined on the server (using the `'use server';` directive) that can be called directly and securely from our React components.
+    -   This provides a seamless, type-safe way to handle form submissions and data modifications without manually creating API endpoints.
+    -   **Example:** A `createTask` Server Action will be called from the "Create Task" form. This function will contain the logic to validate the input and write a new document to the `tasks` collection in Firestore.
+
+-   **Data Fetching (Reads): Firebase Client SDK**
+    -   All read operations will be performed directly on the client using the **Firebase Client SDK**, primarily through custom React hooks (`useCollection`, `useDocument`).
+    -   These hooks will wrap Firestore's real-time listeners (`onSnapshot`) to provide live data updates to the UI.
+    -   Security is not compromised because **Firestore Security Rules** provide robust server-side protection, ensuring users can only access the data they are authorized to see.
+
+-   **Authentication: Firebase Authentication SDK**
+    -   User identity management (signup, login, logout, session management) will be handled entirely by the Firebase Authentication client-side SDK. A React Context (`AuthContext`) will make the user's session state available throughout the application.
+
+### 3.2. "API" Contract Definition
+
+Here is how the traditional API endpoints map to our Server Action and client-side SDK approach:
+
+| Operation                           | Traditional REST Endpoint        | SkillMatch Pro Implementation                                                                                                                              |
+| :---------------------------------- | :------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Authentication**                  |                                  | **Firebase Auth Client SDK** (`firebase/auth`)                                                                                                             |
+| User Signup                         | `POST /auth/signup`              | `createUserWithEmailAndPassword()` or Google provider popup. A `users` document is created via a Cloud Function trigger on user creation.                |
+| User Login                          | `POST /auth/login`               | `signInWithEmailAndPassword()` or Google provider popup.                                                                                                   |
+| User Logout                         | `POST /auth/logout`              | `signOut()`.                                                                                                                                               |
+| Get Current User                    | `GET /auth/me`                   | `useAuth()` hook which listens to `onAuthStateChanged()`.                                                                                                  |
+| **Tasks**                           |                                  |                                                                                                                                                            |
+| Get All Tasks (with filtering)      | `GET /tasks`                     | Client-side `useCollection('tasks', { where: [...] })` hook, secured by rules.                                                                             |
+| Get Single Task                     | `GET /tasks/:id`                 | Client-side `useDocument('tasks', taskId)` hook.                                                                                                           |
+| Create Task                         | `POST /tasks`                    | **Server Action:** `createTask(data)`. Called from the create task form.                                                                                   |
+| Update Task                         | `PUT /tasks/:id`                 | **Server Action:** `updateTask(taskId, data)`.                                                                                                             |
+| Delete Task                         | `DELETE /tasks/:id`              | **Server Action:** `deleteTask(taskId)`.                                                                                                                   |
+| **Submissions**                     |                                  |                                                                                                                                                            |
+| Get Submissions for Task/User       | `GET /submissions`               | Client-side `useCollection('submissions', { where: [...] })` hook.                                                                                         |
+| Get Single Submission               | `GET /submissions/:id`           | Client-side `useDocument('submissions', submissionId)` hook.                                                                                               |
+| Create Submission                   | `POST /submissions`              | **Server Action:** `createSubmission(data)`. Handles file upload to Cloud Storage and creates the Firestore document.                                        |
+| **Evaluations**                     |                                  |                                                                                                                                                            |
+| Get Evaluation for Submission       | `GET /evaluations/:id`           | Client-side `useDocument('evaluations', evaluationId)` hook.                                                                                               |
+| Create/Update Evaluation            | `POST /evaluations`              | **Server Action:** `saveEvaluation(data)`. Creates or updates an evaluation document.                                                                      |
+
+### 3.3. Layered Logic
+
+-   **Routes (Next.js):** The frontend routes in the `app` directory define the application's structure.
+-   **UI Components:** Handle user interaction and trigger data operations.
+-   **Server Actions / Flows (`src/ai/flows`):** Contain the core business logic for mutations and AI-related processing.
+-   **Models (Firestore):** The database collections act as the data models.
 -   **Authentication:** Firebase Authentication will manage user identities (email/password, Google auth).
 -   **Role-Based Access Control (RBAC):**
     -   A `role` field ('candidate', 'company', 'admin') will be stored in each user's document in Firestore.
@@ -82,13 +120,13 @@ This section details the Firestore database schema, entity relationships, and da
     -   **Data:** `name`, `description`, `ownerId`.
 -   `tasks`:
     -   **Document ID:** `{taskId}`
-    -   **Data:** `title`, `description`, `difficulty`, `deadline`, `companyId`.
+    -   **Data:** `title`, `description`, `difficulty`, `deadline`, `companyId`, `status`.
 -   `submissions`:
     -   **Document ID:** `{submissionId}`
     -   **Data:** `taskId`, `userId` (candidate), `companyId`, `content` (link/file path), `status`, `submittedAt`.
 -   `evaluations`:
     -   **Document ID:** `{evaluationId}`
-    -   **Data:** `submissionId`, `score`, `feedback`, `evaluatedBy` (company user ID).
+    -   **Data:** `submissionId`, `score`, `feedback`, `evaluatedBy`.
 
 ### 4.3. Textual ER Diagram
 
@@ -213,18 +251,18 @@ _*Companies can only view profiles of candidates who have submitted a solution t
     -   For example, the "Create Task" button will only be visible to users with the 'company' role.
     -   This improves user experience by not showing actions that would be denied by the backend anyway.
 
--   **Server-Side Logic (Server Actions / Cloud Functions):**
-    -   Any backend logic will re-validate the user's role and permissions before executing an operation. This provides a second layer of defense and is crucial for any actions that have side-effects beyond a simple database write.
+-   **Server-Side Logic (Server Actions):**
+    -   Every Server Action will re-validate the user's role and permissions before executing an operation. This provides a second layer of defense and is crucial for any actions that have side-effects beyond a simple database write.
 
 ---
 
 ## 6. Core System Flow (Example: Task Submission & Evaluation)
 
-1.  **Task Creation:** A logged-in 'company' user fills out the "Create Task" form. A Next.js Server Action is invoked, which writes a new document to the `tasks` collection in Firestore.
-2.  **Task Discovery:** A 'candidate' user browses the tasks page, which securely reads from the `tasks` collection.
-3.  **Submission:** The candidate submits their work. The client uploads the file to **Cloud Storage** and then creates a new document in the `submissions` collection with the file path/link, `taskId`, and `userId`. Firestore Security Rules verify the user is a 'candidate'.
-4.  **Evaluation:** A 'company' user associated with the task views the submission. After reviewing, they submit a score and feedback. This action creates a new document in the `evaluations` collection and updates the `status` of the corresponding `submission` document to 'evaluated'. Security rules ensure only the correct company can evaluate.
-5.  **Feedback:** The candidate sees the updated 'evaluated' status and can view the data from the `evaluations` document.
+1.  **Task Creation:** A logged-in 'company' user fills out the "Create Task" form. A Next.js **Server Action** is invoked, which writes a new document to the `tasks` collection in Firestore.
+2.  **Task Discovery:** A 'candidate' user browses the tasks page, which securely reads from the `tasks` collection using the **Firebase Client SDK**.
+3.  **Submission:** The candidate submits their work. A **Server Action** is called, which uploads the file to **Cloud Storage** and then creates a new document in the `submissions` collection with the file path/link, `taskId`, and `userId`. Firestore Security Rules verify the user is a 'candidate'.
+4.  **Evaluation:** A 'company' user associated with the task views the submission. After reviewing, they submit a score and feedback via a form. This calls a **Server Action** that creates a new document in the `evaluations` collection and updates the `status` of the corresponding `submission` document to 'evaluated'. Security rules ensure only the correct company can evaluate.
+5.  **Feedback:** The candidate sees the updated 'evaluated' status and can view the data from the `evaluations` document, which is fetched securely via the client SDK.
 
 ---
 
@@ -327,6 +365,6 @@ The chosen architecture is inherently scalable.
 -   **Authentication & Authorization:** Firebase Auth provides robust authentication. **Firestore Security Rules are critical** and will be the primary method for authorization, preventing unauthorized data access.
 -   **Data Validation:**
     -   **Client-Side:** Libraries like `zod` will be used in forms.
-    -   **Backend:** Security rules will perform data validation on all writes to Firestore.
+    -   **Backend:** Security rules will perform data validation on all writes to Firestore. Server Actions will also validate data before execution.
 -   **Secure File Uploads:** Cloud Storage for Firebase has its own security rules system to ensure that only authenticated candidates can upload submissions for specific tasks.
 -   **Rate Limiting:** Firebase services have built-in abuse protection. Additional rate limiting can be implemented in Cloud Functions if needed.

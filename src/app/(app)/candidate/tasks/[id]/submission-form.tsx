@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Github, UploadCloud, File, X, Loader2, Link as LinkIcon } from 'lucide-react';
-import type { Task, SubmissionContentType } from '@/lib/types';
+import type { Task, SubmissionContentType, SubmissionStatus } from '@/lib/types';
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { useRouter } from 'next/navigation';
@@ -154,6 +154,37 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         form.resetField('file');
     }
 
+    const { submissionDisabled, buttonText, cardDescription } = useMemo(() => {
+        if (!submission) {
+            return {
+                submissionDisabled: true,
+                buttonText: 'Submit Work',
+                cardDescription: 'This task has not been assigned to you.',
+            };
+        }
+
+        const isReviewing = ['pending', 'in-review'].includes(submission.status);
+        const isCompleted = ['shortlisted'].includes(submission.status);
+        const canResubmit = ['evaluated', 'rejected', 'resubmitted'].includes(submission.status);
+
+        const descriptions: Record<SubmissionStatus, string> = {
+            assigned: 'Once you have completed the task, submit your work here.',
+            'in-progress': 'Once you have completed the task, submit your work here.',
+            pending: 'Your submission is awaiting review. You cannot make changes at this time.',
+            'in-review': 'Your submission is currently under review. You cannot make changes at this time.',
+            evaluated: 'Your submission has been evaluated. You are welcome to resubmit.',
+            shortlisted: 'Congratulations! Your submission was shortlisted. No further action is needed.',
+            rejected: 'Your submission did not meet the requirements. You are welcome to resubmit.',
+            resubmitted: 'Your latest submission is awaiting review. You may resubmit again if you wish.',
+        };
+
+        return {
+            submissionDisabled: isReviewing || isCompleted,
+            buttonText: canResubmit ? 'Resubmit Work' : 'Submit Work',
+            cardDescription: descriptions[submission.status],
+        };
+    }, [submission]);
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
         if (!submission) {
             toast({ title: 'Error', description: 'Could not find submission record for this task.', variant: 'destructive'});
@@ -165,7 +196,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        const isResubmission = ['pending', 'in-review', 'evaluated', 'rejected', 'resubmitted'].includes(submission.status);
+        const isResubmission = ['evaluated', 'rejected', 'resubmitted'].includes(submission.status);
         
         let contentValue: string | undefined;
         if (values.submissionType === 'link') contentValue = values.link;
@@ -185,14 +216,14 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                 value: contentValue,
                 ...(values.file && { fileName: values.file.name, fileSize: values.file.size }),
             },
-            submittedAt: new Date().toISOString(),
+            submittedAt: !isResubmission ? new Date().toISOString() : submission.submittedAt,
             ...(isResubmission && { resubmittedAt: new Date().toISOString() })
         };
 
         updateSubmission(submission.id, submissionUpdate);
 
         toast({
-            title: 'Submission Successful!',
+            title: isResubmission ? 'Resubmission Successful!' : 'Submission Successful!',
             description: `Your work for "${task.title}" has been submitted.`,
         });
         
@@ -205,13 +236,11 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
             <Card>
                 <CardHeader>
                     <CardTitle>Unable to Submit</CardTitle>
-                    <CardDescription>This task has not been assigned to you.</CardDescription>
+                    <CardDescription>{cardDescription}</CardDescription>
                 </CardHeader>
             </Card>
         )
     }
-
-    const submissionDisabled = ['pending', 'in-review', 'evaluated', 'shortlisted'].includes(submission.status);
 
     return (
          <Card>
@@ -220,9 +249,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                     {task.multiRound ? `Submit Your Work for Round ${currentRoundNumber}` : 'Submit Your Work'}
                 </CardTitle>
                 <CardDescription>
-                    {submissionDisabled
-                        ? 'Your submission is currently under review. You can resubmit if requested.'
-                        : 'Once you have completed the task, submit your work here.'}
+                    {cardDescription}
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -333,7 +360,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                                         Submitting...
                                     </>
                                 ) : (
-                                    "Submit Work"
+                                    buttonText
                                 )}
                             </Button>
                         </div>

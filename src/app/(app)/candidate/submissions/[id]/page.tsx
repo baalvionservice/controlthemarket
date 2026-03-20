@@ -62,12 +62,10 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
   }
 
   let currentStepIndex = statusSteps.indexOf(submission.status);
-  if (['shortlisted', 'rejected', 'resubmitted'].includes(submission.status)) {
-    if (submission.status === 'resubmitted') {
-        currentStepIndex = statusSteps.indexOf('pending');
-    } else {
-        currentStepIndex = statusSteps.indexOf('evaluated');
-    }
+  if (['shortlisted', 'rejected'].includes(submission.status)) {
+    currentStepIndex = statusSteps.indexOf('evaluated');
+  } else if (submission.status === 'resubmitted') {
+    currentStepIndex = statusSteps.indexOf('pending');
   }
   const currentStep = currentStepIndex;
 

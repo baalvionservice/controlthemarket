@@ -21,6 +21,7 @@ import {
   Building,
   LogOut,
   ChevronDown,
+  Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -37,6 +38,7 @@ const candidateNav = [
   { name: 'Dashboard', href: '/candidate/dashboard', icon: LayoutDashboard },
   { name: 'Browse Tasks', href: '/candidate/tasks', icon: Briefcase },
   { name: 'My Submissions', href: '/candidate/submissions', icon: FileText },
+  { name: 'Rankings', href: '/candidate/rankings', icon: Trophy },
 ];
 
 const companyNav = [
@@ -111,7 +113,12 @@ export function DashboardSidebar({ children }: { children: React.ReactNode }) {
               <DropdownMenuContent side="top" align="start" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={`/${user.role}/profile`}>
+                    <Users className="mr-2 h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>

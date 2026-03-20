@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRight, Briefcase, FileText } from 'lucide-react';
+import { ArrowRight, Trophy, FileText, CheckCircle, Star } from 'lucide-react';
 import Link from 'next/link';
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
@@ -61,7 +61,7 @@ export default async function CandidateDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Evaluated</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -69,6 +69,30 @@ export default async function CandidateDashboard() {
             </div>
             <p className="text-xs text-muted-foreground">
               Submissions reviewed
+            </p>
+          </CardContent>
+        </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{user?.candidatePerformance?.averageScore || 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">
+              Across all evaluated tasks
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Overall Rank</CardTitle>
+            <Trophy className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">#{user?.candidatePerformance?.ranking || 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">
+              On the platform
             </p>
           </CardContent>
         </Card>
@@ -97,7 +121,7 @@ export default async function CandidateDashboard() {
                   <TableCell className="font-medium">{sub.task?.title}</TableCell>
                   <TableCell>
                     <Badge variant={
-                      sub.status === 'evaluated' ? 'default' :
+                      sub.status === 'evaluated' || sub.status === 'shortlisted' ? 'default' :
                       sub.status === 'in-review' ? 'secondary' : 'outline'
                     }>
                       {sub.status}
@@ -107,9 +131,9 @@ export default async function CandidateDashboard() {
                     {sub.evaluation ? `${sub.evaluation.score}/100` : 'N/A'}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button asChild variant="outline" size="sm">
+                    <Button asChild variant="outline" size="sm" disabled={!sub.evaluation}>
                       <Link href={`/candidate/submissions/${sub.id}`}>
-                        View Details <ArrowRight className="ml-2 h-4 w-4" />
+                        View Feedback <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
                   </TableCell>

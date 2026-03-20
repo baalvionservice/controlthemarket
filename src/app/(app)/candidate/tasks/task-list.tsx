@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { TaskCard } from './task-card';
-import type { Task, RoleCategory, TaskDifficulty } from '@/lib/types';
+import type { Task, RoleCategory, TaskDifficulty, TaskType } from '@/lib/types';
 import { Search } from 'lucide-react';
 
 export type TaskWithCompany = Task & {
@@ -20,21 +20,24 @@ export type TaskWithCompany = Task & {
 
 const roleCategories: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
+const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project"];
 
 
 export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('All');
   const [difficultyFilter, setDifficultyFilter] = useState<TaskDifficulty | 'All'>('All');
+  const [taskTypeFilter, setTaskTypeFilter] = useState<TaskType | 'All'>('All');
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
       const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) || task.companyName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = roleFilter === 'All' || task.roleCategory === roleFilter;
       const matchesDifficulty = difficultyFilter === 'All' || task.difficulty === difficultyFilter;
-      return matchesSearch && matchesRole && matchesDifficulty;
+      const matchesTaskType = taskTypeFilter === 'All' || (task.taskTypes || []).includes(taskTypeFilter);
+      return matchesSearch && matchesRole && matchesDifficulty && matchesTaskType;
     });
-  }, [tasks, searchTerm, roleFilter, difficultyFilter]);
+  }, [tasks, searchTerm, roleFilter, difficultyFilter, taskTypeFilter]);
 
   return (
     <div className="space-y-6">
@@ -62,6 +65,14 @@ export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
           </SelectTrigger>
           <SelectContent>
             {difficulties.map(diff => <SelectItem key={diff} value={diff}>{diff}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={taskTypeFilter} onValueChange={(value) => setTaskTypeFilter(value as TaskType | 'All')}>
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Filter by type" />
+          </SelectTrigger>
+          <SelectContent>
+            {taskTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>

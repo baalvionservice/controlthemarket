@@ -1,4 +1,4 @@
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -538,5 +538,68 @@ export const mockActivityLogs: Activity[] = [
     targetEntity: { type: 'Company', id: 'company-2', name: 'Innovate Inc.' },
     status: 'Success',
     description: 'Admin created a new company profile: Innovate Inc.'
+  },
+];
+
+export const mockAlerts: Alert[] = [
+  {
+    id: 'alert-1',
+    type: 'task_deadline',
+    priority: 'High',
+    status: 'New',
+    timestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
+    title: 'Task Deadline Approaching',
+    description: 'Task "Build a Responsive Navbar Component" is due in less than 24 hours.',
+    relatedEntity: { type: 'Task', id: 'task-1', name: 'Build a Responsive Navbar Component' },
+  },
+  {
+    id: 'alert-2',
+    type: 'new_submission',
+    priority: 'Medium',
+    status: 'New',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
+    title: 'New Submission Received',
+    description: 'A new submission was received from Diana Developer for "Database Schema Design".',
+    relatedEntity: { type: 'Submission', id: 'sub-6' },
+  },
+  {
+    id: 'alert-3',
+    type: 'user_signup',
+    priority: 'Low',
+    status: 'Acknowledged',
+    timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+    title: 'New Company Signed Up',
+    description: 'A new company, "Innovate Inc.", has joined the platform.',
+    relatedEntity: { type: 'Company', id: 'company-2', name: 'Innovate Inc.' },
+  },
+  {
+    id: 'alert-4',
+    type: 'system_warning',
+    priority: 'High',
+    status: 'Resolved',
+    timestamp: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    title: 'High API Error Rate',
+    description: 'Third-party API for stock data is reporting a high error rate (over 5%).',
+    relatedEntity: { type: 'System', id: 'api-financial-prep', name: 'Financial Modeling Prep API' },
+  },
+  {
+    id: 'alert-5',
+    type: 'flagged_submission',
+    priority: 'High',
+    status: 'New',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 3)).toISOString(),
+    title: 'Submission Flagged for Review',
+    description: 'Submission from a candidate was flagged for potential plagiarism.',
+    relatedEntity: { type: 'Submission', id: 'sub-2', name: 'Navbar Project by Diana Developer' },
+  },
+  {
+    id: 'alert-6',
+    type: 'task_deadline',
+    priority: 'Medium',
+    status: 'New',
+    timestamp: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(),
+    title: 'Task Deadline Approaching',
+    description: 'Task "Create a Serverless API Endpoint" is due in 3 days.',
+    relatedEntity: { type: 'Task', id: 'task-3', name: 'Create a Serverless API Endpoint' },
   },
 ];

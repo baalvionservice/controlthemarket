@@ -28,6 +28,7 @@ import {
   Settings,
   GitCompare,
   History,
+  AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -63,6 +64,7 @@ const adminNav = [
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
+  { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },
   { name: 'System Settings', href: '/admin/settings', icon: Settings },
 ];
 

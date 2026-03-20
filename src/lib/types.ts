@@ -170,3 +170,22 @@ export interface Activity {
   status: ActivityStatus;
   description: string;
 }
+
+export type AlertType = 'task_deadline' | 'new_submission' | 'user_signup' | 'system_warning' | 'flagged_submission';
+export type AlertPriority = 'High' | 'Medium' | 'Low';
+export type AlertStatus = 'New' | 'Acknowledged' | 'Resolved';
+
+export interface Alert {
+  id: string;
+  type: AlertType;
+  priority: AlertPriority;
+  status: AlertStatus;
+  timestamp: string; // ISO 8601
+  title: string;
+  description: string;
+  relatedEntity: {
+    type: 'Task' | 'User' | 'Company' | 'Submission' | 'System';
+    id: string;
+    name?: string;
+  };
+}

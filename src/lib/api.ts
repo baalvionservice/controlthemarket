@@ -6,8 +6,9 @@ import {
   mockTasks,
   mockSubmissions,
   mockEvaluations,
+  mockEvaluationSchemas,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -76,4 +77,10 @@ export async function getEvaluationBySubmission(
 export async function getEvaluations(): Promise<Evaluation[]> {
     await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
     return mockEvaluations;
+}
+
+// --- Evaluation Schema API ---
+export async function getEvaluationSchemas(): Promise<EvaluationSchema[]> {
+    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+    return mockEvaluationSchemas;
 }

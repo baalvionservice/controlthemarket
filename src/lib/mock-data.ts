@@ -134,6 +134,7 @@ export const mockTasks: Task[] = [
     status: 'published',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 9)).toISOString(),
+    assignedCandidateIds: ['user-1'],
   },
   {
     id: 'task-2',

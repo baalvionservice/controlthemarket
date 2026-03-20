@@ -17,17 +17,23 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, ArrowRight } from 'lucide-react';
 import type { FeedbackData } from './page';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { RoleCategory } from '@/lib/types';
 
+const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 
 export function FeedbackList({ data }: { data: FeedbackData[] }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('All');
 
   const filteredData = useMemo(() => {
-    return data.filter(item => 
-        item.candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.task.title.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => new Date(b.evaluationDate).getTime() - new Date(a.evaluationDate).getTime());
-  }, [data, searchTerm]);
+    return data.filter(item => {
+        const matchesSearch = item.candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.task.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesRole = roleFilter === 'All' || item.task.roleCategory === roleFilter;
+        return matchesSearch && matchesRole;
+    }).sort((a, b) => new Date(b.evaluationDate).getTime() - new Date(a.evaluationDate).getTime());
+  }, [data, searchTerm, roleFilter]);
 
   const getStatusVariant = (status: FeedbackData['feedbackStatus']) => {
     switch (status) {
@@ -40,7 +46,7 @@ export function FeedbackList({ data }: { data: FeedbackData[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-start">
+      <div className="flex flex-col md:flex-row gap-4">
          <div className="relative flex-1 md:grow-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -50,6 +56,14 @@ export function FeedbackList({ data }: { data: FeedbackData[] }) {
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
         </div>
+        <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleCategory | 'All')}>
+            <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by role" />
+            </SelectTrigger>
+            <SelectContent>
+                {roles.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}
+            </SelectContent>
+        </Select>
       </div>
 
       <div className="rounded-md border">

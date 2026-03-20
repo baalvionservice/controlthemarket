@@ -67,6 +67,17 @@ export const getStatusVariant = (status: SubmissionStatus): 'default' | 'seconda
     }
   }
 
+const getRoleCategoryVariant = (roleCategory: RoleCategory): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
+    switch (roleCategory) {
+        case 'Engineering': return 'secondary';
+        case 'Design': return 'purple';
+        case 'Marketing': return 'warning';
+        case 'Business': return 'default'; // primary
+        case 'Data': return 'outline';
+        default: return 'outline';
+    }
+}
+
 export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const { toast } = useToast();
   const [tableData, setTableData] = useState<EvaluationData[]>(data);
@@ -345,7 +356,9 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                         <span className="font-medium">{item.candidate.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{item.task.roleCategory}</TableCell>
+                  <TableCell>
+                    <Badge variant={getRoleCategoryVariant(item.task.roleCategory)}>{item.task.roleCategory}</Badge>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>

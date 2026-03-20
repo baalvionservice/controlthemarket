@@ -1,7 +1,7 @@
 import { getSubmissions, getUsers, getTasksByCompany, getEvaluations } from "@/lib/api";
 import { mockUsers } from "@/lib/mock-data";
 import { FeedbackList } from "./feedback-list";
-import type { Submission, Task, User, Evaluation } from '@/lib/types';
+import type { Submission, Task, User, Evaluation, RoleCategory } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -19,6 +19,7 @@ export type FeedbackData = {
   task: {
     id: string;
     title: string;
+    roleCategory: RoleCategory;
   };
   score?: number;
   feedbackStatus: 'Pending' | 'Draft' | 'Completed';
@@ -60,6 +61,7 @@ export default async function FeedbackDashboardPage() {
             task: {
                 id: task.id,
                 title: task.title,
+                roleCategory: task.roleCategory,
             },
             score: evaluation?.score,
             feedbackStatus,

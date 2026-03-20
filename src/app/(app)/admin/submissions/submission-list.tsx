@@ -35,7 +35,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, FileWarning, History, Undo2 } from 'lucide-react';
-import type { SubmissionStatus, User } from '@/lib/types';
+import type { SubmissionStatus, User, RoleCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { AdminSubmissionData } from './page';
 import { cn } from '@/lib/utils';
@@ -46,6 +46,7 @@ type SortKey = 'candidate.name' | 'score' | 'applicationDate';
 type SortDirection = 'asc' | 'desc';
 
 const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round", "flagged"];
+const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 
 export const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
      switch (status) {
@@ -70,6 +71,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
   const [tableData, setTableData] = useState<AdminSubmissionData[]>(data);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'All'>('All');
+  const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('All');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [sortKey, setSortKey] = useState<SortKey>('applicationDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -86,6 +88,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                             item.task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             item.company.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
+      const matchesRole = roleFilter === 'All' || item.task.roleCategory === roleFilter;
       const matchesDate = (() => {
         if (!dateRange?.from) return true;
         const itemDate = new Date(item.applicationDate);
@@ -95,7 +98,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
         }
         return itemDate.getTime() === dateRange.from.getTime();
       })();
-      return matchesSearch && matchesStatus && matchesDate;
+      return matchesSearch && matchesStatus && matchesRole && matchesDate;
     });
 
     return filtered.sort((a, b) => {
@@ -115,7 +118,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
       if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [tableData, searchTerm, statusFilter, dateRange, sortKey, sortDirection]);
+  }, [tableData, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -217,6 +220,14 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                 </SelectTrigger>
                 <SelectContent>
                     {statuses.map(status => <SelectItem key={status} value={status} className="capitalize">{status.replace('-', ' ')}</SelectItem>)}
+                </SelectContent>
+            </Select>
+            <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleCategory | 'All')}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectValue placeholder="Filter by role" />
+                </SelectTrigger>
+                <SelectContent>
+                    {roles.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}
                 </SelectContent>
             </Select>
              <Popover>

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { mockTasks, mockEvaluations } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
@@ -12,11 +13,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { Star, MessageSquare, Briefcase, ExternalLink, FileText, CheckCircle, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const statusSteps = ['assigned', 'in-progress', 'pending', 'in-review', 'evaluated'];
 
@@ -29,10 +31,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
   const evaluation = useMemo(() => submission ? mockEvaluations.find(e => e.submissionId === submission.id) : undefined, [submission]);
 
   if (!submission) {
-    // Since this is now a client component, we can't use notFound() directly in the render path
-    // in the same way. A redirect or a "not found" component would be better.
-    // For this mock, we can show a simple message or redirect.
-    // In a real app, you'd handle this more gracefully, maybe in a useEffect.
+    // In a real app, handle not found case. For this mock, we can show a message or redirect.
      return (
       <div className="flex-1 space-y-6 p-8 pt-6">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
@@ -46,9 +45,39 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
      )
   }
 
-  const currentStep = statusSteps.indexOf(submission.status);
-  const progressValue = currentStep === -1 ? 0 : (currentStep + 1) / statusSteps.length * 100;
-  const isCompleted = submission.status === 'evaluated' || submission.status === 'shortlisted' || submission.status === 'rejected';
+  let currentStepIndex = statusSteps.indexOf(submission.status);
+  if (['shortlisted', 'rejected', 'resubmitted'].includes(submission.status)) {
+    // 'resubmitted' should be visually at the 'pending' stage
+    if (submission.status === 'resubmitted') {
+        currentStepIndex = statusSteps.indexOf('pending');
+    } else { // 'shortlisted' and 'rejected' are post-evaluation
+        currentStepIndex = statusSteps.indexOf('evaluated');
+    }
+  }
+  const currentStep = currentStepIndex;
+
+  const isFinalState = submission.status === 'evaluated' || submission.status === 'shortlisted' || submission.status === 'rejected';
+
+  const getTimestampForStep = (step: string) => {
+    switch(step) {
+        case 'assigned':
+            return submission.assignedAt ? `Assigned: ${format(new Date(submission.assignedAt), 'PPp')}` : 'Not assigned yet';
+        case 'in-progress':
+             if (submission.status === 'in-progress') return `Last updated: ${format(new Date(submission.lastUpdated), 'PPp')}`;
+             return 'In Progress';
+        case 'pending':
+            if (submission.resubmittedAt) return `Resubmitted: ${format(new Date(submission.resubmittedAt), 'PPp')}`;
+            if (submission.submittedAt) return `Submitted: ${format(new Date(submission.submittedAt), 'PPp')}`;
+            return 'Not submitted yet';
+        case 'in-review':
+            return submission.status === 'in-review' ? 'Currently under review' : 'Awaiting review';
+        case 'evaluated':
+            if (evaluation?.evaluatedAt) return `Evaluated: ${format(new Date(evaluation.evaluatedAt), 'PPp')}`;
+            return 'Awaiting evaluation';
+        default:
+            return '';
+    }
+}
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -66,18 +95,63 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
       <Card>
         <CardHeader>
           <CardTitle>Your Progress</CardTitle>
+           <CardDescription>
+            {task?.multiRound && submission.currentRound
+                ? `Currently on Round ${submission.currentRound} of ${task?.rounds?.length || 1}.`
+                : `Follow the status of your submission.`}
+            </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Progress value={progressValue} className="w-full" />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            {statusSteps.map((step, index) => (
-              <span key={step} className={cn("capitalize", index <= currentStep && "font-semibold text-primary")}>
-                {step.replace('-', ' ')}
-              </span>
-            ))}
-          </div>
+        <CardContent className="pt-2 overflow-x-auto">
+            <TooltipProvider>
+                <div className="flex items-start min-w-[500px]">
+                    {statusSteps.map((step, index) => {
+                        const isCompletedStep = currentStep > index;
+                        const isCurrentStep = currentStep === index;
+                        const isFutureStep = currentStep < index;
+
+                        return (
+                            <React.Fragment key={step}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="flex flex-col items-center text-center">
+                                            <div
+                                                className={cn(
+                                                    'flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold transition-all',
+                                                    isCompletedStep && 'bg-primary text-primary-foreground',
+                                                    isCurrentStep && 'bg-primary/20 text-primary ring-2 ring-primary',
+                                                    isFutureStep && 'bg-muted text-muted-foreground'
+                                                )}
+                                            >
+                                                {isCompletedStep ? <CheckCircle className="h-6 w-6" /> : index + 1}
+                                            </div>
+                                            <p className={cn(
+                                                "mt-2 w-20 text-xs capitalize",
+                                                isCurrentStep && "font-semibold text-primary",
+                                                isFutureStep && "text-muted-foreground"
+                                            )}>
+                                                {step.replace('-', ' ')}
+                                            </p>
+                                        </div>
+                                    </TooltipTrigger>
+                                     <TooltipContent>
+                                        <p>{getTimestampForStep(step)}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                                
+                                {index < statusSteps.length - 1 && (
+                                    <div className={cn(
+                                        "flex-1 h-1 mt-5 rounded-full mx-2",
+                                        isCompletedStep ? "bg-primary" : "bg-muted"
+                                    )} />
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
+                </div>
+            </TooltipProvider>
         </CardContent>
       </Card>
+
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
@@ -109,7 +183,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
             </div>
              <div className="space-y-1">
                 <h4 className="font-semibold flex items-center gap-2"><Clock className="h-4 w-4" /> Status</h4>
-                 <Badge variant={isCompleted ? "default" : "outline"}>{submission.status}</Badge>
+                 <Badge variant={isFinalState ? "default" : "outline"} className="capitalize">{submission.status.replace('-', ' ')}</Badge>
             </div>
           </CardContent>
         </Card>
@@ -118,8 +192,8 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
                 <span>Evaluation</span>
-                 <Badge variant={isCompleted ? "default" : "outline"}>
-                    {isCompleted ? "Completed" : "Pending"}
+                 <Badge variant={isFinalState ? "default" : "outline"}>
+                    {isFinalState ? "Completed" : "Pending"}
                  </Badge>
             </CardTitle>
             <CardDescription>

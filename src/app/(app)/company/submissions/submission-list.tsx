@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight, History } from 'lucide-react';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight, History, GitCompare } from 'lucide-react';
 import type { SubmissionStatus, RoleCategory, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
@@ -269,7 +269,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
             </Popover>
           </div>
           {selectedRows.size > 0 && (
-             <div className="flex gap-2">
+             <div className="flex items-center gap-2">
                 <Button variant="outline" onClick={() => handleBulkAction('shortlist')}>
                     <Star className="mr-2 h-4 w-4" /> Shortlist ({selectedRows.size})
                 </Button>
@@ -277,8 +277,15 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     <XCircle className="mr-2 h-4 w-4" /> Reject ({selectedRows.size})
                 </Button>
                 <Button variant="outline" onClick={() => handleBulkAction('move-to-next-round')}>
-                    <ChevronRight className="mr-2 h-4 w-4" /> Move to Next Round ({selectedRows.size})
+                    <ChevronRight className="mr-2 h-4 w-4" /> Next Round ({selectedRows.size})
                 </Button>
+                {selectedRows.size > 1 && (
+                  <Button asChild variant="outline">
+                    <Link href={`/company/compare?ids=${Array.from(selectedRows).join(',')}`}>
+                      <GitCompare className="mr-2 h-4 w-4" /> Compare ({selectedRows.size})
+                    </Link>
+                  </Button>
+                )}
              </div>
           )}
       </div>

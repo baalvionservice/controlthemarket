@@ -22,6 +22,7 @@ import {
   LogOut,
   ChevronDown,
   Trophy,
+  AreaChart,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -45,6 +46,7 @@ const companyNav = [
   { name: 'Dashboard', href: '/company/dashboard', icon: LayoutDashboard },
   { name: 'Manage Tasks', href: '/company/tasks', icon: Briefcase },
   { name: 'Submissions', href: '/company/submissions', icon: FileText },
+  { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
 ];
 
 const adminNav = [

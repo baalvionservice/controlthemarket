@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -30,6 +29,7 @@ import {
   GitCompare,
   History,
   AlertTriangle,
+  LayoutGrid,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -60,6 +60,7 @@ const companyNav = [
 
 const adminNav = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Role Dashboards', href: '/admin/roles', icon: LayoutGrid },
   { name: 'Manage Users', href: '/admin/users', icon: Users },
   { name: 'Manage Companies', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },

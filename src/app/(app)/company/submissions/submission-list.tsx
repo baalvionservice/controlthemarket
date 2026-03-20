@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { DateRange } from "react-day-picker";
 import {
   Table,
   TableBody,
@@ -21,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,10 +34,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown } from 'lucide-react';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon } from 'lucide-react';
 import type { SubmissionStatus, RoleCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
+import { cn } from '@/lib/utils';
 
 type SortKey = 'candidate.name' | 'score' | 'applicationDate';
 type SortDirection = 'asc' | 'desc';
@@ -47,6 +51,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'All'>('All');
   const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('All');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [sortKey, setSortKey] = useState<SortKey>('applicationDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -56,7 +61,16 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
       const matchesSearch = item.candidate.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
       const matchesRole = roleFilter === 'All' || item.task.roleCategory === roleFilter;
-      return matchesSearch && matchesStatus && matchesRole;
+      const matchesDate = (() => {
+        if (!dateRange?.from) return true;
+        const itemDate = new Date(item.applicationDate);
+        itemDate.setHours(0,0,0,0);
+        if (dateRange.to) {
+            return itemDate >= dateRange.from && itemDate <= dateRange.to;
+        }
+        return itemDate.getTime() === dateRange.from.getTime();
+      })();
+      return matchesSearch && matchesStatus && matchesRole && matchesDate;
     });
 
     return filtered.sort((a, b) => {
@@ -76,7 +90,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
       if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [data, searchTerm, statusFilter, roleFilter, sortKey, sortDirection]);
+  }, [data, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -90,14 +104,14 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' => {
      switch (status) {
       case 'evaluated':
-      case 'shortlisted': // Completed -> green
+      case 'shortlisted':
         return 'default'; 
-      case 'in-review': // In Progress -> blue
+      case 'in-review':
         return 'secondary';
-      case 'pending': // Pending -> yellow
+      case 'pending':
       case 'resubmitted':
         return 'warning';
-      case 'rejected': // Rejected -> red
+      case 'rejected':
         return 'destructive';
       default:
         return 'outline';
@@ -137,12 +151,12 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
     <div className="space-y-6">
       {/* Filters and Actions */}
       <div className="flex flex-col gap-4 md:flex-row justify-between">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-center">
              <div className="relative flex-1 md:grow-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                     placeholder="Search by candidate name..."
-                    className="pl-10"
+                    className="pl-10 min-w-[200px]"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -163,6 +177,42 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     {statuses.map(status => <SelectItem key={status} value={status} className="capitalize">{status.replace('-', ' ')}</SelectItem>)}
                 </SelectContent>
             </Select>
+             <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                    id="date"
+                    variant={"outline"}
+                    className={cn(
+                        "w-full justify-start text-left font-normal md:w-[240px]",
+                        !dateRange && "text-muted-foreground"
+                    )}
+                    >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange?.from ? (
+                        dateRange.to ? (
+                        <>
+                            {format(dateRange.from, "LLL dd, y")} -{" "}
+                            {format(dateRange.to, "LLL dd, y")}
+                        </>
+                        ) : (
+                        format(dateRange.from, "LLL dd, y")
+                        )
+                    ) : (
+                        <span>Filter by date</span>
+                    )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={dateRange?.from}
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    numberOfMonths={2}
+                    />
+                </PopoverContent>
+            </Popover>
           </div>
           {selectedRows.size > 0 && (
              <div className="flex gap-2">

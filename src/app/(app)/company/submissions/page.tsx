@@ -1,5 +1,5 @@
-import { getSubmissions, getUser, getTask, getEvaluations } from "@/lib/api";
-import { mockUsers } from "@/lib/mock-data";
+import { getSubmissions, getUsers, getTasksByCompany } from "@/lib/api";
+import { mockUsers, mockEvaluations } from "@/lib/mock-data";
 import { CompanySubmissionsList } from "./submission-list";
 import type { Submission, Task, User, Evaluation, RoleCategory } from '@/lib/types';
 import {
@@ -72,9 +72,8 @@ export default async function CompanySubmissionsPage() {
     .filter((item): item is EvaluationData => item !== null);
 
   const totalCandidates = new Set(evaluationData.map(e => e.candidate.id)).size;
-  const pending = evaluationData.filter(e => e.status === 'pending').length;
-  const inReview = evaluationData.filter(e => e.status === 'in-review').length;
-  const completed = evaluationData.filter(e => e.status === 'evaluated').length;
+  const pending = evaluationData.filter(e => e.status === 'pending' || e.status === 'in-review' || e.status === 'resubmitted').length;
+  const completed = evaluationData.filter(e => e.status === 'evaluated' || e.status === 'shortlisted' || e.status === 'rejected').length;
   const shortlisted = evaluationData.filter(e => e.status === 'shortlisted').length;
   const rejected = evaluationData.filter(e => e.status === 'rejected').length;
 
@@ -82,7 +81,7 @@ export default async function CompanySubmissionsPage() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
-          Candidate Evaluations
+          Evaluator Dashboard
         </h2>
       </div>
 
@@ -98,20 +97,20 @@ export default async function CompanySubmissionsPage() {
         </Card>
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+                <CardTitle className="text-sm font-medium">Pending Evaluations</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{pending + inReview}</div>
+                <div className="text-2xl font-bold">{pending}</div>
             </CardContent>
         </Card>
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Evaluations Done</CardTitle>
+                <CardTitle className="text-sm font-medium">Completed Evaluations</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{completed + shortlisted}</div>
+                <div className="text-2xl font-bold">{completed}</div>
             </CardContent>
         </Card>
         <Card>

@@ -24,6 +24,8 @@ import {
   Trophy,
   AreaChart,
   FileCheck,
+  MessageSquare,
+  Settings,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -45,9 +47,10 @@ const candidateNav = [
 
 const companyNav = [
   { name: 'Dashboard', href: '/company/dashboard', icon: LayoutDashboard },
-  { name: 'Manage Tasks', href: '/company/tasks', icon: Briefcase },
   { name: 'Evaluations', href: '/company/submissions', icon: FileCheck },
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
+  { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
+  { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
 
 const adminNav = [

@@ -85,7 +85,7 @@ export default function CandidateDashboard() {
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{stats.total}</div>
           </CardContent>
         </Card>
@@ -94,7 +94,7 @@ export default function CandidateDashboard() {
             <CardTitle className="text-sm font-medium">Tasks Submitted</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">
               {stats.submitted}
             </div>
@@ -105,7 +105,7 @@ export default function CandidateDashboard() {
             <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{stats.pending}</div>
           </CardContent>
         </Card>

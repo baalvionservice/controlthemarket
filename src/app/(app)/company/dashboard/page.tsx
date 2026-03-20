@@ -62,7 +62,7 @@ export default async function CompanyDashboard() {
             <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{tasks.length}</div>
             <p className="text-xs text-muted-foreground">
               Tasks currently open for submissions
@@ -74,7 +74,7 @@ export default async function CompanyDashboard() {
             <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{companySubmissions.length}</div>
             <p className="text-xs text-muted-foreground">
               Received for all your tasks

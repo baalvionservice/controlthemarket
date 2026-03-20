@@ -22,7 +22,7 @@ export default function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">23</div>
              <p className="text-xs text-muted-foreground">
               Across all categories
@@ -34,7 +34,7 @@ export default function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">48</div>
             <p className="text-xs text-muted-foreground">
               Received across all tasks
@@ -46,7 +46,7 @@ export default function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Avg. Candidate Score</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">88.5</div>
              <p className="text-xs text-muted-foreground">
               Based on 25 evaluations
@@ -58,7 +58,7 @@ export default function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Top Performers</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">+5</div>
              <p className="text-xs text-muted-foreground">
               Candidates shortlisted this month

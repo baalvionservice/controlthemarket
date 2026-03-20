@@ -27,7 +27,7 @@ export default async function AdminDashboard() {
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{users.length}</div>
           </CardContent>
         </Card>
@@ -38,7 +38,7 @@ export default async function AdminDashboard() {
             </CardTitle>
             <Building className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{companies.length}</div>
           </CardContent>
         </Card>
@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
             <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{tasks.length}</div>
           </CardContent>
         </Card>
@@ -58,7 +58,7 @@ export default async function AdminDashboard() {
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="text-2xl font-bold">{submissions.length}</div>
           </CardContent>
         </Card>

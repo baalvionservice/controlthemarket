@@ -63,26 +63,102 @@ The backend leverages a "Backend as a Service" (BaaS) model with Firebase, compl
 
 ---
 
-## 4. Database Design
+## 4. Database Design & Entity Relationships
 
--   **Database Type:** Firestore (NoSQL). Its flexible, scalable nature is a perfect fit for this application.
--   **Core Collections:**
-    -   `users`:
-        -   **Document ID:** `{userId}` (from Firebase Auth)
-        -   **Data:** `name`, `email`, `role`, `companyId` (if applicable), `profile` object.
-    -   `companies`:
-        -   **Document ID:** `{companyId}`
-        -   **Data:** `name`, `description`, `ownerId`.
-    -   `tasks`:
-        -   **Document ID:** `{taskId}`
-        -   **Data:** `title`, `description`, `difficulty`, `deadline`, `companyId`.
-    -   `submissions`:
-        -   **Document ID:** `{submissionId}`
-        -   **Data:** `taskId`, `userId` (candidate), `companyId`, `content` (link/file path), `status`, `submittedAt`.
-    -   `evaluations`:
-        -   **Document ID:** `{evaluationId}`
-        -   **Data:** `submissionId`, `score`, `feedback`, `evaluatedBy` (company user ID).
--   **Relationships:** Relationships are managed via stored IDs. For example, a `Submission` document contains a `taskId` and a `userId` to link it to the corresponding Task and User.
+This section details the Firestore database schema, entity relationships, and data integrity rules.
+
+### 4.1. Database Type
+
+-   **Database:** Firestore (NoSQL)
+-   **Reasoning:** Its flexible, document-based data model is ideal for the evolving requirements of SkillMatch Pro. The real-time capabilities are a plus for live updates on submission statuses, and its serverless nature ensures scalability with minimal operational overhead.
+
+### 4.2. Core Collections
+
+-   `users`:
+    -   **Document ID:** `{userId}` (from Firebase Auth)
+    -   **Data:** `name`, `email`, `role`, `companyId` (if applicable), `profile` object.
+-   `companies`:
+    -   **Document ID:** `{companyId}`
+    -   **Data:** `name`, `description`, `ownerId`.
+-   `tasks`:
+    -   **Document ID:** `{taskId}`
+    -   **Data:** `title`, `description`, `difficulty`, `deadline`, `companyId`.
+-   `submissions`:
+    -   **Document ID:** `{submissionId}`
+    -   **Data:** `taskId`, `userId` (candidate), `companyId`, `content` (link/file path), `status`, `submittedAt`.
+-   `evaluations`:
+    -   **Document ID:** `{evaluationId}`
+    -   **Data:** `submissionId`, `score`, `feedback`, `evaluatedBy` (company user ID).
+
+### 4.3. Textual ER Diagram
+
+The relationships are managed via stored IDs in documents, representing foreign keys in a relational model.
+
+`
+  Company (1) --< (M) User      // A company has multiple users (employees)
+  User (1) >-- (1) Company     // A user belongs to at most one company
+
+  Company (1) --< (M) Task      // A company creates multiple tasks
+
+  User (1) --< (M) Submission  // A candidate makes multiple submissions
+  Task (1) --< (M) Submission  // A task receives multiple submissions
+
+  Submission (1) -- (1) Evaluation // A submission receives one evaluation
+
+  User (1) --< (M) Evaluation  // A company user performs multiple evaluations
+`
+
+### 4.4. Detailed Relationship Explanations
+
+-   **User ↔ Company (Many-to-One)**
+    -   **Description:** A `User` with the role of 'company' is associated with one `Company`. A `Company` can have multiple `Users` (employees, recruiters, hiring managers).
+    -   **Implementation:**
+        -   The `users` document for a company employee contains a `companyId` field.
+        -   The `companies` document has an `ownerId` to denote the primary administrator.
+    -   **Cardinality:** `User (M)` to `Company (1)`.
+
+-   **Company ↔ Task (One-to-Many)**
+    -   **Description:** A `Company` can post multiple `Tasks` to the platform. Each `Task` is created by and belongs to exactly one `Company`.
+    -   **Implementation:** The `tasks` document contains a `companyId` field.
+    -   **Cardinality:** `Company (1)` to `Task (M)`.
+
+-   **User (Candidate) ↔ Submission (One-to-Many)**
+    -   **Description:** A `User` with the role of 'candidate' can make multiple `Submissions` for different tasks. Each `Submission` belongs to a single candidate.
+    -   **Implementation:** The `submissions` document contains a `userId` field.
+    -   **Cardinality:** `User (1)` to `Submission (M)`.
+
+-   **Task ↔ Submission (One-to-Many)**
+    -   **Description:** A `Task` can receive many `Submissions` from different candidates. Each `Submission` is for exactly one `Task`.
+    -   **Implementation:** The `submissions` document contains a `taskId` field.
+    -   **Cardinality:** `Task (1)` to `Submission (M)`.
+
+-   **Submission ↔ Evaluation (One-to-One)**
+    -   **Description:** For the initial version, each `Submission` will have at most one `Evaluation`. This establishes a direct link between the work submitted and the feedback provided.
+    -   **Implementation:** The `evaluations` document contains a `submissionId`. Firestore security rules will enforce that only one evaluation can be created per submission ID.
+    -   **Cardinality:** `Submission (1)` to `Evaluation (1)`.
+
+-   **User (Evaluator) ↔ Evaluation (One-to-Many)**
+    -   **Description:** A `User` (with 'company' or 'admin' role) can perform multiple `Evaluations`. Each `Evaluation` is performed by a single `User`.
+    -   **Implementation:** The `evaluations` document contains an `evaluatedBy` field, which stores the `userId` of the evaluator.
+    -   **Cardinality:** `User (1)` to `Evaluation (M)`.
+
+### 4.5. Data Integrity & Constraints
+
+These rules will be enforced primarily through Firestore Security Rules to ensure the database remains consistent and secure.
+
+-   A `Task` can only be created by a user with the 'company' role, and its `companyId` must match the user's `companyId`.
+-   A `Submission` can only be created by a user with the 'candidate' role.
+-   The `taskId` in a `Submission` must correspond to a valid, existing document in the `tasks` collection.
+-   An `Evaluation` can only be created by a user belonging to the same company that posted the task.
+-   An `Evaluation` cannot be created unless a corresponding `Submission` exists.
+-   The `score` in an `Evaluation` must be within a predefined range (e.g., 0-100).
+-   Once a `Submission` is evaluated, it cannot be modified by the candidate.
+
+### 4.6. Future Relationship Extensions
+
+-   **Multiple Evaluators:** The `Submission` to `Evaluation` relationship could become One-to-Many to allow for peer reviews or multiple rounds of feedback. This would require `evaluations` to be a sub-collection of `submissions`.
+-   **Company Teams:** A `teams` sub-collection could be added under `companies` to group users, allowing tasks and submissions to be assigned to specific teams.
+-   **Team Submissions:** The `Submission` entity could be modified to include an array of `userIds` to support collaborative tasks.
 
 ---
 

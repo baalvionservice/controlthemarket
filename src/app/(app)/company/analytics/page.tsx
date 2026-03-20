@@ -4,71 +4,119 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Briefcase, FileText, Star, Users } from "lucide-react";
-import { AnalyticsCharts } from './charts';
+import { Star, Users, CheckCircle, Percent } from "lucide-react";
+import { AnalyticsCharts, Leaderboard } from './charts';
+import { getTasksByCompany, getSubmissions, getEvaluations, getUsers } from '@/lib/api';
+import { mockUsers } from '@/lib/mock-data';
+import type { Submission, Evaluation } from '@/lib/types';
 
-export default function AnalyticsPage() {
+// For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
+const CURRENT_USER_ID = 'user-2';
+
+export default async function AnalyticsPage() {
+  const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
+  if (!user || !user.companyId) return <div>Company not found</div>;
+  
+  const tasks = await getTasksByCompany(user.companyId);
+  const allSubmissions = await getSubmissions();
+  const allEvaluations = await getEvaluations();
+  const allUsers = await getUsers();
+
+  const companyTaskIds = new Set(tasks.map(task => task.id));
+  const companySubmissions = allSubmissions.filter(sub => companyTaskIds.has(sub.taskId));
+  const companySubmissionIds = new Set(companySubmissions.map(sub => sub.id));
+  const companyEvaluations = allEvaluations.filter(evals => companySubmissionIds.has(evals.submissionId));
+
+  const evaluatedCount = companyEvaluations.length;
+  const totalSubmissions = companySubmissions.filter(s => s.status !== 'assigned' && s.status !== 'in-progress').length;
+  const completionRate = totalSubmissions > 0 ? Math.round((evaluatedCount / totalSubmissions) * 100) : 0;
+  
+  const averageScore = companyEvaluations.length > 0 
+    ? Math.round(companyEvaluations.reduce((acc, curr) => acc + curr.score, 0) / companyEvaluations.length)
+    : 0;
+
+  const shortlistedCount = companySubmissions.filter(s => s.status === 'shortlisted').length;
+  
+  const leaderboardData = companyEvaluations
+    .map(ev => {
+      const submission = companySubmissions.find(s => s.id === ev.submissionId);
+      const candidate = allUsers.find(u => u.id === submission?.userId);
+      return {
+        candidateName: candidate?.name || 'Unknown',
+        score: ev.score,
+        avatarUrl: candidate?.profile?.avatarUrl,
+      };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+  
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
-          Task Analytics
+          Evaluation Analytics
         </h2>
       </div>
 
-       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Evaluations Completed</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">23</div>
+            <div className="text-2xl font-bold">{evaluatedCount}</div>
              <p className="text-xs text-muted-foreground">
-              Across all categories
+              Total candidate submissions reviewed
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="text-2xl font-bold">48</div>
-            <p className="text-xs text-muted-foreground">
-              Received across all tasks
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Candidate Score</CardTitle>
+            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">88.5</div>
+            <div className="text-2xl font-bold">{averageScore}</div>
+            <p className="text-xs text-muted-foreground">
+              Across all completed evaluations
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Shortlisted Candidates</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{shortlistedCount}</div>
              <p className="text-xs text-muted-foreground">
-              Based on 25 evaluations
+              Top performers from evaluations
             </p>
           </CardContent>
         </Card>
          <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Top Performers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+            <Percent className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">+5</div>
+            <div className="text-2xl font-bold">{completionRate}%</div>
              <p className="text-xs text-muted-foreground">
-              Candidates shortlisted this month
+              Of submissions that have been evaluated
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <AnalyticsCharts />
-
+      <div className="grid gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-3">
+          <AnalyticsCharts submissions={companySubmissions} evaluations={companyEvaluations} />
+        </div>
+        <div className="lg:col-span-2">
+           <Leaderboard data={leaderboardData} />
+        </div>
+      </div>
     </div>
   );
 }

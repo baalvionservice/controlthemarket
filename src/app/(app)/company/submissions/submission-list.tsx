@@ -34,17 +34,38 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight } from 'lucide-react';
-import type { SubmissionStatus, RoleCategory } from '@/lib/types';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight, History } from 'lucide-react';
+import type { SubmissionStatus, RoleCategory, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
 import { cn } from '@/lib/utils';
+import { CandidateHistoryDialog } from './candidate-history-dialog';
+
 
 type SortKey = 'candidate.name' | 'score' | 'applicationDate';
 type SortDirection = 'asc' | 'desc';
 
 const statuses: (SubmissionStatus | 'All')[] = ["All", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round"];
 const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
+
+export const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
+     switch (status) {
+      case 'shortlisted':
+        return 'default'; 
+      case 'moved-to-next-round':
+        return 'purple';
+      case 'in-review':
+      case 'evaluated':
+        return 'secondary';
+      case 'pending':
+      case 'resubmitted':
+        return 'warning';
+      case 'rejected':
+        return 'destructive';
+      default:
+        return 'outline';
+    }
+  }
 
 export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const { toast } = useToast();
@@ -56,6 +77,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const [sortKey, setSortKey] = useState<SortKey>('applicationDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [historyCandidate, setHistoryCandidate] = useState<User | null>(null);
 
   useEffect(() => {
     setTableData(data);
@@ -105,25 +127,6 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
       setSortDirection('asc');
     }
   };
-
-  const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
-     switch (status) {
-      case 'shortlisted':
-        return 'default'; 
-      case 'moved-to-next-round':
-        return 'purple';
-      case 'in-review':
-      case 'evaluated':
-        return 'secondary';
-      case 'pending':
-      case 'resubmitted':
-        return 'warning';
-      case 'rejected':
-        return 'destructive';
-      default:
-        return 'outline';
-    }
-  }
 
   const handleStatusChange = (ids: string[], status: SubmissionStatus) => {
     setTableData(prev => prev.map(item => ids.includes(item.id) ? {...item, status} : item));
@@ -329,7 +332,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                   <TableCell>
                     <div className="flex items-center gap-3">
                         <Avatar>
-                            <AvatarImage src={item.candidate.avatarUrl} alt={item.candidate.name} />
+                            <AvatarImage src={item.candidate.profile?.avatarUrl} alt={item.candidate.name} />
                             <AvatarFallback>{item.candidate.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className="font-medium">{item.candidate.name}</span>
@@ -354,7 +357,10 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                         <DropdownMenuItem asChild>
                            <Link href={`/company/submissions/${item.id}`}>Review Submission</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>View History</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setHistoryCandidate(item.candidate)}>
+                            <History className="mr-2 h-4 w-4"/>
+                            View History
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         {item.task.multiRound && (
                             <DropdownMenuItem onClick={() => handleRowAction('move-to-next-round', item.id)}>
@@ -391,6 +397,12 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
           </TableBody>
         </Table>
       </div>
+
+      <CandidateHistoryDialog
+        isOpen={!!historyCandidate}
+        onOpenChange={() => setHistoryCandidate(null)}
+        candidate={historyCandidate}
+      />
     </div>
   );
 }

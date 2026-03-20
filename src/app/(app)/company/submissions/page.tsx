@@ -15,11 +15,7 @@ const CURRENT_USER_ID = 'user-2';
 
 export type EvaluationData = {
   id: string; // submissionId
-  candidate: {
-    id: string;
-    name: string;
-    avatarUrl: string;
-  };
+  candidate: User;
   task: {
     id: string;
     title: string;
@@ -55,11 +51,7 @@ export default async function CompanySubmissionsPage() {
 
         return {
             id: submission.id,
-            candidate: {
-                id: candidate.id,
-                name: candidate.name,
-                avatarUrl: candidate.profile?.avatarUrl || '',
-            },
+            candidate: candidate,
             task: {
                 id: task.id,
                 title: task.title,
@@ -75,7 +67,7 @@ export default async function CompanySubmissionsPage() {
 
   const totalCandidates = new Set(evaluationData.map(e => e.candidate.id)).size;
   const pending = evaluationData.filter(e => e.status === 'pending' || e.status === 'in-review' || e.status === 'resubmitted').length;
-  const completed = evaluationData.filter(e => e.status === 'evaluated' || e.status === 'shortlisted' || e.status === 'rejected').length;
+  const completed = evaluationData.filter(e => e.status === 'evaluated' || e.status === 'shortlisted' || e.status === 'rejected' || e.status === 'moved-to-next-round').length;
   const shortlisted = evaluationData.filter(e => e.status === 'shortlisted').length;
   const rejected = evaluationData.filter(e => e.status === 'rejected').length;
 

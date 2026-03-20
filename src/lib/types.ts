@@ -128,16 +128,7 @@ export interface Evaluation {
   submissionId: string;
   score: number; // 0-100 overall score
   criteriaScores?: {
-    'Proficiency': number;
-    'Best Practices': number;
-    'Clarity': number;
-    'Documentation': number;
-    'Analysis': number;
-    'Solution Quality': number;
-    'Innovation': number;
-    'Polish & Initiative': number;
-    'Collaboration': number;
-    'Proactiveness': number;
+    [key: string]: number;
   },
   feedback: string;
   evaluatedBy: string; // userId of company member

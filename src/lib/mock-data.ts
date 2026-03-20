@@ -343,21 +343,32 @@ export const mockEvaluations: Evaluation[] = [
     submissionId: 'sub-1',
     score: 84,
     criteriaScores: {
-      'Proficiency': 9,
-      'Best Practices': 8,
-      'Clarity': 7,
-      'Documentation': 8,
-      'Analysis': 9,
-      'Solution Quality': 9,
-      'Innovation': 7,
-      'Polish & Initiative': 8,
-      'Collaboration': 9,
-      'Proactiveness': 8,
+      'Technical Skills': 8,
+      'Communication': 9,
+      'Problem Solving': 8,
+      'Creativity': 9,
+      'Cultural Fit': 8,
     },
     feedback:
       'Excellent work! The component is well-structured and fully responsive. Great use of Tailwind CSS variants. Consider adding ARIA attributes for better accessibility.',
     evaluatedBy: 'user-2',
     evaluatedAt: '2024-08-11T18:00:00Z',
+  },
+  {
+    id: 'eval-2',
+    submissionId: 'sub-3',
+    score: 75,
+    criteriaScores: {
+      'Technical Skills': 7,
+      'Communication': 8,
+      'Problem Solving': 9,
+      'Creativity': 6,
+      'Cultural Fit': 7,
+    },
+    feedback:
+      'The SQL script is mostly correct, but the relationship between Posts and Tags should be many-to-many, requiring a join table. The schema is otherwise well-defined.',
+    evaluatedBy: 'user-2',
+    evaluatedAt: '2024-08-12T15:00:00Z',
   },
 ];
 

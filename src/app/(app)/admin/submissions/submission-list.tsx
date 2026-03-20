@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { DateRange } from "react-day-picker";
 import {
   Table,
   TableBody,
@@ -21,19 +22,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Edit } from 'lucide-react';
-import type { SubmissionStatus } from '@/lib/types';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, FileWarning, History } from 'lucide-react';
+import type { SubmissionStatus, User } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 import type { AdminSubmissionData } from './page';
+import { cn } from '@/lib/utils';
+import { CandidateHistoryDialog } from '../../company/submissions/candidate-history-dialog';
 
-const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round"];
 
+type SortKey = 'candidate.name' | 'score' | 'applicationDate';
+type SortDirection = 'asc' | 'desc';
 
-export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'All'>('All');
-  
-  const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
+const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round", "flagged"];
+
+export const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
      switch (status) {
       case 'shortlisted': return 'default';
       case 'moved-to-next-round': return 'purple';
@@ -44,94 +58,261 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
       case 'resubmitted':
       case 'in-progress':
         return 'warning';
-      case 'rejected': return 'destructive';
+      case 'rejected': 
+      case 'flagged':
+        return 'destructive';
       default: return 'outline';
     }
-  }
+}
 
-  const filteredData = useMemo(() => {
-    return data.filter(item => {
+export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) {
+  const { toast } = useToast();
+  const [tableData, setTableData] = useState<AdminSubmissionData[]>(data);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'All'>('All');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [sortKey, setSortKey] = useState<SortKey>('applicationDate');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [historyCandidate, setHistoryCandidate] = useState<User | null>(null);
+
+  useEffect(() => {
+    setTableData(data);
+  }, [data]);
+
+  const filteredAndSortedData = useMemo(() => {
+    const filtered = tableData.filter(item => {
       const matchesSearch = item.candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             item.task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             item.company.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    }).sort((a, b) => new Date(b.applicationDate).getTime() - new Date(a.applicationDate).getTime());
-  }, [data, searchTerm, statusFilter]);
+      const matchesDate = (() => {
+        if (!dateRange?.from) return true;
+        const itemDate = new Date(item.applicationDate);
+        itemDate.setHours(0,0,0,0);
+        if (dateRange.to) {
+            return itemDate >= dateRange.from && itemDate <= dateRange.to;
+        }
+        return itemDate.getTime() === dateRange.from.getTime();
+      })();
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+
+    return filtered.sort((a, b) => {
+      let valA, valB;
+      if (sortKey === 'candidate.name') {
+        valA = a.candidate.name;
+        valB = b.candidate.name;
+      } else if (sortKey === 'score') {
+        valA = a.score || 0;
+        valB = b.score || 0;
+      } else { // applicationDate
+        valA = new Date(a.applicationDate).getTime();
+        valB = new Date(b.applicationDate).getTime();
+      }
+
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [tableData, searchTerm, statusFilter, dateRange, sortKey, sortDirection]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDirection('asc');
+    }
+  };
+
+  const handleStatusChange = (ids: string[], status: SubmissionStatus) => {
+    setTableData(prev => prev.map(item => ids.includes(item.id) ? {...item, status} : item));
+  };
+  
+  const handleBulkAction = (action: 'approve' | 'reject' | 'flag') => {
+    if (selectedRows.size === 0) return;
+    
+    let newStatus: SubmissionStatus;
+    let actionVerb: string;
+
+    if (action === 'approve') {
+        newStatus = 'shortlisted';
+        actionVerb = 'approved (shortlisted)';
+    } else if (action === 'reject') {
+        newStatus = 'rejected';
+        actionVerb = 'rejected';
+    } else {
+        newStatus = 'flagged';
+        actionVerb = 'flagged for review';
+    }
+    
+    handleStatusChange(Array.from(selectedRows), newStatus);
+    
+    toast({
+        title: 'Bulk Action Successful',
+        description: `${selectedRows.size} submission(s) have been ${actionVerb}.`
+    });
+    setSelectedRows(new Set());
+  }
+
+  const handleRowAction = (action: 'approve' | 'reject' | 'flag', id: string) => {
+    const submission = tableData.find(d => d.id === id);
+    if (!submission) return;
+
+    let newStatus: SubmissionStatus;
+    let toastDescription: string;
+
+    if (action === 'approve') {
+        newStatus = 'shortlisted';
+        toastDescription = `Submission for ${submission.candidate.name} has been approved.`;
+    } else if (action === 'reject') {
+        newStatus = 'rejected';
+        toastDescription = `Submission for ${submission.candidate.name} has been rejected.`;
+    } else {
+        newStatus = 'flagged';
+        toastDescription = `Submission for ${submission.candidate.name} has been flagged.`;
+    }
+    
+    handleStatusChange([id], newStatus);
+    toast({ title: 'Action Successful', description: toastDescription });
+  };
+  
+  const toggleRow = (id: string) => {
+    setSelectedRows(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(id)) newSet.delete(id);
+        else newSet.add(id);
+        return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedRows.size === filteredAndSortedData.length) {
+        setSelectedRows(new Set());
+    } else {
+        setSelectedRows(new Set(filteredAndSortedData.map(item => item.id)));
+    }
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row">
-        <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-                placeholder="Search by candidate, task, or company..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-        </div>
-        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as SubmissionStatus | 'All')}>
-            <SelectTrigger className="w-full md:w-[240px]">
-                <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-                {statuses.map(status => <SelectItem key={status} value={status} className="capitalize">{status.replace('-', ' ')}</SelectItem>)}
-            </SelectContent>
-        </Select>
+      <div className="flex flex-col gap-4 md:flex-row justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-center">
+             <div className="relative flex-1 md:grow-0">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search candidate, task, or company..."
+                    className="pl-10 min-w-[200px] md:min-w-[300px]"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as SubmissionStatus | 'All')}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                    {statuses.map(status => <SelectItem key={status} value={status} className="capitalize">{status.replace('-', ' ')}</SelectItem>)}
+                </SelectContent>
+            </Select>
+             <Popover>
+                <PopoverTrigger asChild>
+                    <Button id="date" variant={"outline"} className={cn("w-full justify-start text-left font-normal md:w-[240px]", !dateRange && "text-muted-foreground")}>
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Filter by date</span>)}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2}/>
+                </PopoverContent>
+            </Popover>
+          </div>
+          {selectedRows.size > 0 && (
+             <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => handleBulkAction('approve')}>
+                    <Star className="mr-2 h-4 w-4" /> Approve ({selectedRows.size})
+                </Button>
+                <Button variant="outline" onClick={() => handleBulkAction('reject')}>
+                    <XCircle className="mr-2 h-4 w-4" /> Reject ({selectedRows.size})
+                </Button>
+                 <Button variant="destructive" onClick={() => handleBulkAction('flag')}>
+                    <FileWarning className="mr-2 h-4 w-4" /> Flag ({selectedRows.size})
+                </Button>
+             </div>
+          )}
       </div>
 
-      <div className="rounded-md border">
+       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Candidate</TableHead>
-              <TableHead>Task</TableHead>
-              <TableHead>Company</TableHead>
+              <TableHead className="w-[50px]">
+                  <Checkbox checked={selectedRows.size > 0 && selectedRows.size === filteredAndSortedData.length} onCheckedChange={toggleSelectAll} aria-label="Select all"/>
+              </TableHead>
+              <TableHead>
+                 <Button variant="ghost" onClick={() => handleSort('candidate.name')}>Candidate<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
+              </TableHead>
+              <TableHead>Task / Company</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Score</TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('score')}>Score<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
+              </TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('applicationDate')}>Submitted<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
+              </TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredData.length > 0 ? (
-              filteredData.map((item) => (
-                <TableRow key={item.id}>
+            {filteredAndSortedData.length > 0 ? (
+              filteredAndSortedData.map((item) => (
+                <TableRow key={item.id} data-state={selectedRows.has(item.id) && "selected"}>
+                  <TableCell>
+                      <Checkbox checked={selectedRows.has(item.id)} onCheckedChange={() => toggleRow(item.id)} aria-label="Select row"/>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src={item.candidate.profile?.avatarUrl} alt={item.candidate.name} />
-                            <AvatarFallback>{item.candidate.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <Avatar><AvatarImage src={item.candidate.profile?.avatarUrl} alt={item.candidate.name} /><AvatarFallback>{item.candidate.name.charAt(0)}</AvatarFallback></Avatar>
                         <span className="font-medium">{item.candidate.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{item.task.title}</TableCell>
-                  <TableCell>{item.company.name}</TableCell>
+                  <TableCell>
+                    <div>{item.task.title}</div>
+                    <div className="text-sm text-muted-foreground">{item.company.name}</div>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
+                  <TableCell>{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
-                    <Button asChild variant="outline" size="sm">
-                       <Link href={`/admin/submissions/${item.id}`}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Override
-                       </Link>
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0"><span className="sr-only">Open menu</span><MoreHorizontal className="h-4 w-4" /></Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem asChild><Link href={`/admin/submissions/${item.id}`}>View / Override</Link></DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setHistoryCandidate(item.candidate)}><History className="mr-2 h-4 w-4"/>View History</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleRowAction('approve', item.id)}><Star className="mr-2 h-4 w-4"/>Approve</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleRowAction('reject', item.id)} className="text-destructive focus:text-destructive"><XCircle className="mr-2 h-4 w-4"/>Reject</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleRowAction('flag', item.id)} className="text-destructive focus:text-destructive"><FileWarning className="mr-2 h-4 w-4"/>Flag</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  No submissions found.
-                </TableCell>
+                <TableCell colSpan={7} className="h-24 text-center">No submissions found.</TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+      <CandidateHistoryDialog isOpen={!!historyCandidate} onOpenChange={() => setHistoryCandidate(null)} candidate={historyCandidate}/>
     </div>
   );
 }

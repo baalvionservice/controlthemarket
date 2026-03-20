@@ -60,7 +60,7 @@ export default async function AdminSubmissionsPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Manage Submissions
+                Global Submissions
             </h2>
             <p className="text-muted-foreground">
                 View, manage, and override all submissions across the platform.
@@ -71,7 +71,7 @@ export default async function AdminSubmissionsPage() {
         <CardHeader>
             <CardTitle>All Candidate Submissions</CardTitle>
             <CardDescription>
-                Use the filters to narrow down the list and click "Override" to edit an evaluation.
+                Use the filters to narrow down the list and perform bulk actions.
             </CardDescription>
         </CardHeader>
         <CardContent>

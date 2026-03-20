@@ -40,7 +40,7 @@ const evaluationSections = {
 };
 
 const allCriteria = Object.values(evaluationSections).flat();
-const allStatuses: SubmissionStatus[] = ["assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round"];
+const allStatuses: SubmissionStatus[] = ["assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round", "flagged"];
 
 
 const formSchema = z.object({

@@ -101,7 +101,8 @@ export type SubmissionStatus =
   | 'shortlisted'
   | 'rejected'
   | 'resubmitted'
-  | 'moved-to-next-round';
+  | 'moved-to-next-round'
+  | 'flagged';
 
 export interface Submission {
   id: string;

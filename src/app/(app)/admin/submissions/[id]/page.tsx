@@ -23,7 +23,7 @@ export type SubmissionWithRelations = Submission & {
   evaluation?: Evaluation;
 };
 
-export default function OverrideEvaluationPage({ params }: { params: { id: string } }) {
+export default function AdminManageSubmissionPage({ params }: { params: { id: string } }) {
   const [submission, setSubmission] = useState<SubmissionWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,7 +64,7 @@ export default function OverrideEvaluationPage({ params }: { params: { id: strin
       <div className="flex items-center justify-between space-y-2">
         <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Override Evaluation
+                Manage Submission
             </h2>
              <div className="text-muted-foreground flex items-center gap-4">
                 <Link href="#" className="flex items-center gap-2 hover:underline">
@@ -82,7 +82,7 @@ export default function OverrideEvaluationPage({ params }: { params: { id: strin
 
       <Card>
         <CardHeader>
-            <CardTitle>Admin Override Panel</CardTitle>
+            <CardTitle>Admin Control Panel</CardTitle>
             <CardDescription>
                 Modify scores, feedback, and submission status. All changes are final.
             </CardDescription>

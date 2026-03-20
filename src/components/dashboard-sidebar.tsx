@@ -23,6 +23,7 @@ import {
   ChevronDown,
   Trophy,
   AreaChart,
+  FileCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -45,7 +46,7 @@ const candidateNav = [
 const companyNav = [
   { name: 'Dashboard', href: '/company/dashboard', icon: LayoutDashboard },
   { name: 'Manage Tasks', href: '/company/tasks', icon: Briefcase },
-  { name: 'Submissions', href: '/company/submissions', icon: FileText },
+  { name: 'Evaluations', href: '/company/submissions', icon: FileCheck },
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
 ];
 

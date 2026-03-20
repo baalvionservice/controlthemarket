@@ -72,3 +72,8 @@ export async function getEvaluationBySubmission(
   await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
   return mockEvaluations.find((e) => e.submissionId === submissionId);
 }
+
+export async function getEvaluations(): Promise<Evaluation[]> {
+    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+    return mockEvaluations;
+}

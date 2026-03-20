@@ -1,9 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import Link from "next/link";
 import { getTasks, getSubmissions, getCompanies } from "@/lib/api";
 import { AdminTaskList } from "./task-list";
 import type { TaskWithDetails } from './task-list';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default async function ManageTasksPage() {
   const tasks = await getTasks();
@@ -22,11 +26,26 @@ export default async function ManageTasksPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="font-headline text-3xl font-bold tracking-tight">
-          Manage All Tasks
-        </h2>
+        <div>
+            <h2 className="font-headline text-3xl font-bold tracking-tight">
+            Manage All Tasks
+            </h2>
+            <p className="text-muted-foreground">
+                View, edit, and manage all tasks across the platform.
+            </p>
+        </div>
       </div>
-      <AdminTaskList tasks={tasksWithDetails} />
+      <Card>
+        <CardHeader>
+            <CardTitle>All Platform Tasks</CardTitle>
+            <CardDescription>
+                Use the filters to find specific tasks and perform actions.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <AdminTaskList tasks={tasksWithDetails} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -12,21 +12,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Github, UploadCloud, File, X, Loader2 } from 'lucide-react';
+import { Github, UploadCloud, File, X, Loader2, Link as LinkIcon } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 const formSchema = z.object({
-  submissionType: z.enum(['link', 'file']),
+  submissionType: z.enum(['link', 'file', 'externalLink']),
   link: z.string().optional(),
   file: z.object({
     name: z.string(),
     size: z.number(),
   }).optional(),
+  externalLink: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.submissionType === 'link') {
     if (!data.link) {
@@ -67,6 +69,32 @@ const formSchema = z.object({
       message: 'A file is required for file uploads.',
     });
   }
+  if (data.submissionType === 'externalLink') {
+    if (!data.externalLink) {
+        ctx.addIssue({
+            code: 'custom',
+            path: ['externalLink'],
+            message: 'An external link is required.'
+        });
+    } else {
+        try {
+            const url = new URL(data.externalLink);
+            if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+                ctx.addIssue({
+                    code: 'custom',
+                    path: ['externalLink'],
+                    message: 'Please enter a valid URL.'
+                });
+            }
+        } catch (e) {
+            ctx.addIssue({
+                code: 'custom',
+                path: ['externalLink'],
+                message: 'Please enter a valid URL format.'
+            });
+        }
+    }
+  }
 });
 
 interface SubmissionFormProps {
@@ -87,10 +115,11 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
 
     const handleTabChange = (value: string) => {
         setActiveTab(value);
-        form.setValue('submissionType', value as 'link' | 'file');
+        form.setValue('submissionType', value as 'link' | 'file' | 'externalLink');
         form.clearErrors(); // Clear errors when switching tabs
         form.resetField('link');
         form.resetField('file');
+        form.resetField('externalLink');
     }
 
     // Mock file selection
@@ -130,14 +159,18 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                            <TabsList className="grid w-full grid-cols-2">
+                            <TabsList className="grid w-full grid-cols-3">
                                 <TabsTrigger value="link">
                                     <Github className="mr-2 h-4 w-4" />
-                                    Submit GitHub Link
+                                    GitHub Repo
                                 </TabsTrigger>
                                 <TabsTrigger value="file">
                                     <UploadCloud className="mr-2 h-4 w-4" />
                                     Upload File
+                                </TabsTrigger>
+                                <TabsTrigger value="externalLink">
+                                    <LinkIcon className="mr-2 h-4 w-4" />
+                                    External Link
                                 </TabsTrigger>
                             </TabsList>
                             <TabsContent value="link" className="pt-4">
@@ -192,6 +225,27 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                                                     </div>
                                                 </FormControl>
                                             )}
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </TabsContent>
+                            <TabsContent value="externalLink" className="pt-4">
+                                <FormField
+                                    control={form.control}
+                                    name="externalLink"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>External Link</FormLabel>
+                                            <FormControl>
+                                                <div className="relative">
+                                                     <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                    <Input placeholder="https://example.com/your-project" className="pl-10" {...field} />
+                                                </div>
+                                            </FormControl>
+                                            <FormDescription>
+                                                Provide a shareable link to your work (e.g., Google Drive, portfolio).
+                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}

@@ -54,15 +54,16 @@ export function CandidateSignupForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     const skillsArray = values.skills
       ? values.skills.split(',').map((s) => s.trim()).filter(Boolean)
       : [];
 
-    const result = signup({
+    const result = await signup({
       name: values.fullName,
       email: values.email,
+      password: values.password,
       role: 'candidate',
       skills: skillsArray,
     });
@@ -73,9 +74,9 @@ export function CandidateSignupForm() {
         description: result.message,
         variant: 'destructive',
       });
-       setIsSubmitting(false);
     }
     // On success, the auth context handles redirection.
+    setIsSubmitting(false);
   }
 
   return (

@@ -56,12 +56,13 @@ export function CompanySignupForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     
-    const result = signup({
+    const result = await signup({
       name: values.companyName, // For company user, name can be company name initially
       email: values.email,
+      password: values.password,
       role: 'company',
       companyName: values.companyName,
       companyDescription: values.companyDescription,
@@ -74,9 +75,9 @@ export function CompanySignupForm() {
         description: result.message,
         variant: 'destructive',
       });
-       setIsSubmitting(false);
     }
     // On success, the auth context handles redirection.
+    setIsSubmitting(false);
   }
 
   return (

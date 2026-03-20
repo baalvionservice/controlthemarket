@@ -7,16 +7,15 @@ import { mockUsers, mockCompanies } from '@/lib/mock-data';
 
 export interface LoginCredentials {
   email: string;
-  password?: string; // Password check is mocked
+  password: string;
 }
 
 interface SignupDetails {
   name: string;
   email: string;
+  password: string;
   role: UserRole;
-  // Candidate fields
   skills?: string[];
-  // Company fields
   companyName?: string;
   companyDescription?: string;
   companyWebsite?: string;
@@ -29,149 +28,114 @@ interface AuthResult {
 
 interface AuthContextType {
   user: User | null;
-  users: User[];
-  companies: Company[];
   login: (credentials: LoginCredentials) => Promise<AuthResult>;
-  signup: (details: SignupDetails) => AuthResult;
+  signup: (details: SignupDetails) => Promise<AuthResult>;
   logout: () => void;
   loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const getInitialState = <T,>(key: string, fallback: T): T => {
-  if (typeof window === 'undefined') return fallback;
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
-  } catch (error) {
-    console.warn(`Error reading localStorage key “${key}”:`, error);
-    return fallback;
-  }
-};
-
+// In-memory store for session-specific mock data
+let sessionUsers: User[] = [...mockUsers];
+let sessionCompanies: Company[] = [...mockCompanies];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(() => getInitialState('skillmatch-users', mockUsers));
-  const [companies, setCompanies] = useState<Company[]>(() => getInitialState('skillmatch-companies', mockCompanies));
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    localStorage.setItem('skillmatch-users', JSON.stringify(users));
-  }, [users]);
-  
-  useEffect(() => {
-    localStorage.setItem('skillmatch-companies', JSON.stringify(companies));
-  }, [companies]);
-
-  useEffect(() => {
-    // On initial load, try to log in the user from localStorage
-    const storedUserId = localStorage.getItem('skillmatch-user-id');
-    if (storedUserId) {
-      const foundUser = users.find((u) => u.id === storedUserId);
-      if (foundUser) {
-        setUser(foundUser);
+    try {
+      const storedUser = localStorage.getItem('skillmatch-user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
       }
+    } catch (error) {
+      console.error('Failed to parse user from localStorage', error);
+      localStorage.removeItem('skillmatch-user');
     }
     setLoading(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // This should only run once on initial load
+  }, []);
 
   const login = async (credentials: LoginCredentials): Promise<AuthResult> => {
-    // Artificial delay to simulate network request
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const foundUser = users.find((u) => u.email.toLowerCase() === credentials.email.toLowerCase());
-    
+    const foundUser = sessionUsers.find(
+      (u) => u.email.toLowerCase() === credentials.email.toLowerCase()
+    );
+    // Password is not checked in this mock implementation
     if (foundUser) {
-      // In a real app, you'd also verify the password here.
       setUser(foundUser);
-      localStorage.setItem('skillmatch-user-id', foundUser.id);
-      router.push('/dashboard');
+      localStorage.setItem('skillmatch-user', JSON.stringify(foundUser));
       return { success: true };
-    } else {
-      return { success: false, message: 'Invalid email or password.' };
     }
+    return { success: false, message: 'Invalid credentials.' };
   };
 
-  const signup = (
-    details: SignupDetails
-  ): AuthResult => {
-    // Check if user already exists
-    if (users.some((u) => u.email.toLowerCase() === details.email.toLowerCase())) {
-      return {
-        success: false,
-        message: 'An account with this email already exists.',
-      };
+  const signup = async (details: SignupDetails): Promise<AuthResult> => {
+    if (sessionUsers.some((u) => u.email.toLowerCase() === details.email.toLowerCase())) {
+      return { success: false, message: 'An account with this email already exists.' };
     }
 
-    const userId = `user-${Date.now()}`;
+    const newUserId = `user-${Date.now()}`;
     const newUser: User = {
-      id: userId,
+      id: newUserId,
       name: details.name,
       email: details.email,
       role: details.role,
       createdAt: new Date().toISOString(),
       isActive: true,
+      isVerified: true, // Auto-verify in mock
       profile: {
-        avatarUrl: `https://picsum.photos/seed/${userId}/100/100`,
+        avatarUrl: `https://picsum.photos/seed/${newUserId}/100/100`,
       },
     };
 
     if (details.role === 'candidate') {
-        newUser.profile!.skills = details.skills || [];
+      newUser.profile!.skills = details.skills || [];
     }
-    
+
     if (details.role === 'company' && details.companyName) {
       const companyId = `company-${Date.now()}`;
       const newCompany: Company = {
         id: companyId,
         name: details.companyName,
         description: details.companyDescription || 'No description provided.',
-        ownerId: newUser.id,
+        ownerId: newUserId,
         website: details.companyWebsite,
         logoUrl: `https://picsum.photos/seed/${companyId}/100/100`,
-        isActive: true,
-        isVerified: false, // Companies start as unverified
+        createdAt: new Date().toISOString(),
       };
-      setCompanies((prevCompanies) => [...prevCompanies, newCompany]);
-      newUser.companyId = newCompany.id;
+      sessionCompanies.push(newCompany);
+      newUser.companyId = companyId;
     }
 
-    setUsers((prevUsers) => [...prevUsers, newUser]);
+    sessionUsers.push(newUser);
     setUser(newUser);
-    localStorage.setItem('skillmatch-user-id', newUser.id);
-    router.push('/dashboard');
+    localStorage.setItem('skillmatch-user', JSON.stringify(newUser));
+
     return { success: true };
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('skillmatch-user-id');
-    router.push('/login');
+    localStorage.removeItem('skillmatch-user');
   };
 
   useEffect(() => {
     if (loading) return;
 
     const isAuthPath = pathname.startsWith('/login') || pathname.startsWith('/signup');
-    // If user is not logged in and not on an auth path, redirect to login
     if (!user && !isAuthPath) {
       router.push('/login');
     }
-    // If user is logged in and on an auth path, redirect to their dashboard
     if (user && isAuthPath) {
       router.push('/dashboard');
     }
   }, [user, loading, pathname, router]);
 
   return (
-    <AuthContext.Provider
-      value={{ user, users, companies, login, signup, logout, loading }}
-    >
+    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

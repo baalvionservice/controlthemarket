@@ -16,26 +16,38 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { Loader2, Sparkles, Send } from 'lucide-react';
 import type { SubmissionWithRelations } from './page';
 import { aiSubmissionFeedback, type SubmissionFeedbackInput } from '@/ai/flows/ai-submission-feedback-flow';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
-const evaluationCriteria = {
-    'Technical Skills': 'Assesses mastery of required technologies and tools.',
+
+const evaluationSections = {
+  Logic: {
     'Problem Solving': 'Evaluates the ability to analyze problems and devise effective solutions.',
-    'Communication': 'Judges the clarity and effectiveness of communication.',
+    'Reasoning': 'Assesses the logical consistency and soundness of the approach.',
+  },
+  Structure: {
     'Code Quality': 'Reviews code for readability, structure, and best practices.',
+    'Organization': 'Clarity of project structure and file organization.',
+  },
+  Performance: {
+    'Efficiency': 'Assesses the performance and resource usage of the solution.',
+    'Output Quality': 'The quality and correctness of the final output/deliverable.',
+  }
 };
 
-const criteriaKeys = Object.keys(evaluationCriteria) as (keyof typeof evaluationCriteria)[];
+const allCriteria = Object.values(evaluationSections).flatMap(section => Object.keys(section));
 
 const formSchema = z.object({
   criteriaScores: z.object(
-    criteriaKeys.reduce((acc, key) => {
+    allCriteria.reduce((acc, key) => {
       acc[key] = z.number().min(0).max(10).default(8);
       return acc;
-    }, {} as Record<keyof typeof evaluationCriteria, z.ZodNumber>)
+    }, {} as Record<string, z.ZodNumber>)
   ),
   feedback: z.string().min(10, { message: 'Feedback must be at least 10 characters long.' }),
 });
@@ -51,7 +63,7 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
     defaultValues: {
       criteriaScores: submission.evaluation?.criteriaScores 
         ? (submission.evaluation.criteriaScores as any)
-        : criteriaKeys.reduce((acc, key) => ({...acc, [key]: 8}), {}),
+        : allCriteria.reduce((acc, key) => ({...acc, [key]: 8}), {}),
       feedback: submission.evaluation?.feedback || '',
     },
   });
@@ -59,6 +71,7 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
   const watchedScores = form.watch('criteriaScores');
   const totalScore = useMemo(() => {
     const scores = Object.values(watchedScores);
+    if (scores.length === 0) return 0;
     const average = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     return Math.round(average * 10); // Scale to 0-100
   }, [watchedScores]);
@@ -85,10 +98,10 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
       form.setValue('feedback', result.overallFeedback, { shouldValidate: true });
       
       const aiScoreOutOf10 = Math.round(result.overallScore / 10);
-      const newScores = criteriaKeys.reduce((acc, key) => {
+      const newScores = allCriteria.reduce((acc, key) => {
         acc[key] = aiScoreOutOf10;
         return acc;
-      }, {} as Record<keyof typeof evaluationCriteria, number>);
+      }, {} as Record<string, number>);
 
       form.setValue('criteriaScores', newScores, { shouldValidate: true });
 
@@ -117,68 +130,150 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
     }, 1000);
   }
 
+  const SectionSubtotal = ({ sectionName, criteria }: {sectionName: string, criteria: Record<string, string>}) => {
+    const sectionCriteria = Object.keys(criteria);
+    const subtotal = useMemo(() => {
+        const sectionScores = sectionCriteria.map(c => watchedScores[c] || 0);
+        if (sectionScores.length === 0) return 0;
+        const average = sectionScores.reduce((sum, score) => sum + score, 0) / sectionScores.length;
+        return Math.round(average * 10);
+    }, [watchedScores, sectionCriteria]);
+    
+    let colorClass = "bg-primary";
+    if (subtotal < 50) colorClass = "bg-destructive";
+    else if (subtotal < 80) colorClass = "bg-yellow-500";
+
+    return (
+      <div className="text-right">
+          <p className="font-semibold text-xl">{subtotal}<span className="text-sm text-muted-foreground">/100</span></p>
+          <Progress value={subtotal} className={cn("h-2 mt-1", colorClass)} indicatorClassName={colorClass} />
+      </div>
+    );
+  }
+  
+  const ScoreCircle = ({ score }: { score: number }) => {
+    const circumference = 2 * Math.PI * 30; // 2 * pi * radius
+    const offset = circumference - (score / 100) * circumference;
+  
+    let colorClass = 'text-primary';
+    if (score < 50) colorClass = 'text-destructive';
+    else if (score < 80) colorClass = 'text-yellow-500';
+  
+    return (
+      <div className="relative h-40 w-40 mx-auto">
+        <svg className="h-full w-full" viewBox="0 0 80 80">
+          <circle
+            className="text-muted/20"
+            strokeWidth="8"
+            stroke="currentColor"
+            fill="transparent"
+            r="30"
+            cx="40"
+            cy="40"
+          />
+          <circle
+            className={colorClass}
+            strokeWidth="8"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            stroke="currentColor"
+            fill="transparent"
+            r="30"
+            cx="40"
+            cy="40"
+            transform="rotate(-90 40 40)"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span className="text-3xl font-bold">
+            {score}
+            </span>
+            <span className="text-xs text-muted-foreground">Overall</span>
+        </div>
+      </div>
+    );
+  };
+
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="space-y-4">
-          <Button type="button" variant="outline" onClick={generateAiFeedback} disabled={isAiLoading}>
+        <Button type="button" variant="outline" onClick={generateAiFeedback} disabled={isAiLoading}>
             {isAiLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4 text-primary" />}
             Generate with AI
-          </Button>
-
-          <FormField
+        </Button>
+        <FormField
             control={form.control}
             name="feedback"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Feedback</FormLabel>
+                <FormLabel>Summary Feedback</FormLabel>
                 <FormControl>
                   <Textarea placeholder="Provide constructive feedback for the candidate..." className="min-h-[150px]" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />
-          <div className="space-y-6 rounded-md border p-4">
-            <div className='flex justify-between items-center'>
-                <h3 className="font-medium">Scoring Criteria</h3>
-                <div className="text-right">
-                    <p className="text-sm text-muted-foreground">Total Score</p>
-                    <p className="text-2xl font-bold text-primary">{totalScore}/100</p>
-                </div>
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                 {Object.entries(evaluationSections).map(([sectionName, criteria]) => (
+                    <Card key={sectionName}>
+                        <CardHeader className="flex-row items-start justify-between">
+                            <CardTitle>{sectionName}</CardTitle>
+                            <SectionSubtotal sectionName={sectionName} criteria={criteria} />
+                        </CardHeader>
+                        <CardContent className="space-y-6 pt-0">
+                             {Object.keys(criteria).map(criterionName => (
+                                <FormField
+                                    key={criterionName}
+                                    control={form.control}
+                                    name={`criteriaScores.${criterionName}`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex justify-between items-center">
+                                            <span>{criterionName}</span>
+                                            <span className="font-bold text-primary">{field.value}/10</span>
+                                        </FormLabel>
+                                        <FormControl>
+                                        <Slider
+                                            min={0}
+                                            max={10}
+                                            step={1}
+                                            value={[field.value]}
+                                            onValueChange={(vals) => field.onChange(vals[0])}
+                                        />
+                                        </FormControl>
+                                    </FormItem>
+                                    )}
+                                />
+                            ))}
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
 
-            {criteriaKeys.map(key => (
-              <FormField
-                key={key}
-                control={form.control}
-                name={`criteriaScores.${key}`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {key}: <span className="font-bold text-primary">{field.value}</span>/10
-                    </FormLabel>
-                    <FormControl>
-                      <Slider
-                        min={0}
-                        max={10}
-                        step={1}
-                        value={[field.value]}
-                        onValueChange={(vals) => field.onChange(vals[0])}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                Submit Evaluation
-            </Button>
+            <div className="space-y-6 lg:sticky lg:top-6">
+                <Card className="text-center">
+                    <CardHeader>
+                        <CardTitle>Overall Score</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                       <ScoreCircle score={totalScore} />
+                    </CardContent>
+                </Card>
+                <div className="flex flex-col gap-2">
+                     <Button type="submit" disabled={isSubmitting} size="lg">
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                        Submit Evaluation
+                    </Button>
+                     <Button type="button" variant="outline" disabled={isSubmitting}>
+                        Save as Draft
+                    </Button>
+                </div>
+            </div>
         </div>
       </form>
     </Form>

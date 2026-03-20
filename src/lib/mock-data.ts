@@ -1,3 +1,4 @@
+
 import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert } from './types';
 
 export const mockUsers: User[] = [
@@ -297,6 +298,25 @@ export const mockTasks: Task[] = [
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 6)).toISOString(),
     multiRound: false,
   },
+  {
+    id: 'task-10',
+    title: 'Design a Landing Page Mockup',
+    description: 'Create a high-fidelity mockup for a new SaaS product landing page.',
+    instructions: '1. Design a hero section, a features section, and a pricing section.\n2. The design should be modern, clean, and professional.\n3. You can use any design tool you prefer (e.g., Figma, Sketch, Adobe XD).',
+    expectedOutputs: 'A shareable link to your design file or a high-resolution image of the mockup.',
+    roleCategory: 'Design',
+    taskTypes: ['Design', 'UI'],
+    difficulty: 'Intermediate',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 8)).toISOString(),
+    companyId: 'company-2',
+    createdBy: 'user-5',
+    status: 'published',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    updatedAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    imageUrl: 'https://picsum.photos/seed/landingpage/600/400',
+    imageHint: 'website design',
+    multiRound: false,
+  },
 ];
 
 export const mockTemplates: TaskTemplate[] = [
@@ -390,8 +410,9 @@ export const mockSubmissions: Submission[] = [
     resubmittedAt: '2024-08-13T11:00:00Z',
     lastUpdated: '2024-08-13T11:00:00Z',
     content: {
-        type: 'externalLink',
-        value: 'https://gist.github.com/alice-candidate/schema.sql',
+        type: 'file',
+        value: '/mock-uploads/alice-schema.sql',
+        fileName: 'alice-schema-v2.sql',
     },
   },
   {
@@ -429,6 +450,20 @@ export const mockSubmissions: Submission[] = [
     status: 'pending',
     assignedAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(),
     submittedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+    lastUpdated: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+  },
+  {
+    id: 'sub-7',
+    taskId: 'task-10',
+    userId: 'user-1',
+    companyId: 'company-2',
+    content: {
+      type: 'externalLink',
+      value: 'https://www.figma.com/proto/your-prototype-link',
+    },
+    status: 'evaluated',
+    assignedAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
+    submittedAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(),
     lastUpdated: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
   },
 ];
@@ -521,6 +556,26 @@ export const mockEvaluations: Evaluation[] = [
       'The submission was okay, but did not meet all requirements. The mobile view was not fully responsive.',
     evaluatedBy: 'user-2',
     evaluatedAt: '2024-08-12T10:00:00Z',
+  },
+    {
+    id: 'eval-4',
+    submissionId: 'sub-7',
+    score: 92,
+    criteriaScores: {
+      'Proficiency': 9,
+      'Best Practices': 9,
+      'Clarity': 10,
+      'Documentation': 8,
+      'Analysis': 9,
+      'Solution Quality': 9,
+      'Innovation': 9,
+      'Polish & Initiative': 10,
+      'Collaboration': 9,
+      'Proactiveness': 9,
+    },
+    feedback: 'Outstanding design work. The mockup is pixel-perfect and the user flow is intuitive and well-thought-out.',
+    evaluatedBy: 'user-5',
+    evaluatedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
   },
 ];
 
@@ -699,3 +754,5 @@ export const mockAlerts: Alert[] = [
     relatedEntity: { type: 'Task', id: 'task-3', name: 'Create a Serverless API Endpoint' },
   },
 ];
+
+    

@@ -22,7 +22,7 @@ export type TaskWithCompany = Task & {
 
 const roleCategories: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
-const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation"];
+const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation", "Data Cleaning", "Visualization", "Statistical Analysis", "Reporting"];
 const priorities: (TaskPriority | 'All')[] = ["All", "High", "Medium", "Low"];
 
 

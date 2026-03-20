@@ -405,6 +405,26 @@ export const mockTasks: Task[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
     multiRound: false,
+  },
+  {
+    id: 'task-16',
+    title: 'Analyze Sales Data and Create Dashboard',
+    description: 'Analyze a provided sales dataset to identify trends and create a visualization dashboard.',
+    instructions: '1. Clean the provided CSV data.\n2. Analyze monthly revenue and top-selling products.\n3. Create a dashboard with at least 3 charts (e.g., bar, line, pie) to visualize your findings.\n4. Provide a summary of your key insights.',
+    expectedOutputs: 'A link to a public dashboard (e.g., Tableau, Power BI, Looker) or a Jupyter Notebook containing your analysis and visualizations.',
+    roleCategory: 'Data',
+    taskTypes: ['Data Cleaning', 'Visualization', 'Reporting'],
+    difficulty: 'Intermediate',
+    priority: 'Medium',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 14)).toISOString(),
+    companyId: 'company-1',
+    createdBy: 'user-2',
+    status: 'published',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+    updatedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/dataviz/600/400',
+    imageHint: 'data dashboard'
   }
 ];
 

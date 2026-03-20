@@ -64,6 +64,11 @@
         "ownerId": {
           "type": "string",
           "description": "The ID of the user who owns/created the company."
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "The company's official website."
         }
       },
       "required": ["id", "name", "ownerId"]

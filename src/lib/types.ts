@@ -16,8 +16,9 @@ export interface User {
 export interface Company {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   ownerId: string; // The ID of the user who owns the company
+  website?: string;
 }
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';

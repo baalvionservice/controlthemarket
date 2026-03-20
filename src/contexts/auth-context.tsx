@@ -1,21 +1,26 @@
 'use client';
 
-import type { User, UserRole } from '@/lib/types';
+import type { User, UserRole, Company } from '@/lib/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { mockUsers } from '@/lib/mock-data';
+import { mockUsers, mockCompanies } from '@/lib/mock-data';
 
 interface SignupDetails {
   name: string;
   email: string;
   role: UserRole;
+  // Candidate fields
   skills?: string[];
+  // Company fields
   companyName?: string;
+  companyDescription?: string;
+  companyWebsite?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   users: User[]; // All available users for login selector
+  companies: Company[];
   login: (userId: string) => void;
   signup: (details: SignupDetails) => { success: boolean; message?: string };
   logout: () => void;
@@ -26,7 +31,8 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(mockUsers); // Manage users in state
+  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [companies, setCompanies] = useState<Company[]>(mockCompanies);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -65,22 +71,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
-    // Create a new user
+    const userId = `user-${Date.now()}`;
     const newUser: User = {
-      id: `user-${Date.now()}`,
+      id: userId,
       name: details.name,
       email: details.email,
       role: details.role,
       profile: {
-        avatarUrl: `https://picsum.photos/seed/${details.name}/100/100`,
-        skills: details.skills || [],
+        avatarUrl: `https://picsum.photos/seed/${userId}/100/100`,
       },
     };
 
-    // If company, create a mock companyId
-    if (details.role === 'company') {
-      newUser.companyId = `company-${Date.now()}`;
-      // In a real app, you would also create a company record here.
+    if (details.role === 'candidate') {
+        newUser.profile!.skills = details.skills || [];
+    }
+    
+    if (details.role === 'company' && details.companyName) {
+      const newCompany: Company = {
+        id: `company-${Date.now()}`,
+        name: details.companyName,
+        description: details.companyDescription || 'No description provided.',
+        ownerId: newUser.id,
+        website: details.companyWebsite,
+      };
+      setCompanies((prevCompanies) => [...prevCompanies, newCompany]);
+      newUser.companyId = newCompany.id;
     }
 
     setUsers((prevUsers) => [...prevUsers, newUser]);
@@ -112,7 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, users, login, signup, logout, loading }}
+      value={{ user, users, companies, login, signup, logout, loading }}
     >
       {children}
     </AuthContext.Provider>

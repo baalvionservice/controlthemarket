@@ -45,7 +45,7 @@ export interface Company {
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 export type TaskStatus = 'draft' | 'published' | 'closed' | 'archived';
 export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
-export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project' | 'UI' | 'Component' | 'Styling' | 'Feature Implementation';
+export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project' | 'UI' | 'Component' | 'Styling' | 'Feature Implementation' | 'Campaign Planning' | 'Content Creation' | 'Social Media' | 'Email Marketing' | 'Ads';
 export type TaskPriority = 'High' | 'Medium' | 'Low';
 
 export interface TaskRound {

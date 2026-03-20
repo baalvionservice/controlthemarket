@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -20,7 +21,7 @@ export type TaskWithCompany = Task & {
 
 const roleCategories: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
-const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation"];
+const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads"];
 const priorities: (TaskPriority | 'All')[] = ["All", "High", "Medium", "Low"];
 
 
@@ -79,7 +80,7 @@ export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
-                {taskTypes.map(type => <SelectItem key={type} value={type} className="capitalize">{type}</SelectItem>)}
+                {taskTypes.map(type => <SelectItem key={type} value={type} className="capitalize">{type.replace(/([A-Z])/g, ' $1').trim()}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={priorityFilter} onValueChange={(value) => setPriorityFilter(value as TaskPriority | 'All')}>

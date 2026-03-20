@@ -26,17 +26,25 @@ import { cn } from '@/lib/utils';
 
 
 const evaluationSections = {
-  Logic: {
-    'Problem Solving': 'Evaluates the ability to analyze problems and devise effective solutions.',
-    'Reasoning': 'Assesses the logical consistency and soundness of the approach.',
+  'Technical Skills': {
+    'Proficiency': 'Demonstrates mastery of required technologies and tools.',
+    'Best Practices': 'Adheres to coding standards, patterns, and best practices.',
   },
-  Structure: {
-    'Code Quality': 'Reviews code for readability, structure, and best practices.',
-    'Organization': 'Clarity of project structure and file organization.',
+  'Communication': {
+    'Clarity': 'Clearly explains their thought process, ideas, and solutions.',
+    'Documentation': 'Quality and clarity of comments, documentation, and explanations provided.',
   },
-  Performance: {
-    'Efficiency': 'Assesses the performance and resource usage of the solution.',
-    'Output Quality': 'The quality and correctness of the final output/deliverable.',
+  'Problem Solving': {
+    'Analysis': 'Effectively breaks down complex problems into manageable parts.',
+    'Solution Quality': 'Provides a robust, efficient, and well-reasoned solution.',
+  },
+  'Creativity': {
+      'Innovation': 'Demonstrates original thinking and innovative approaches to the problem.',
+      'Polish & Initiative': 'The submission is well-polished and shows initiative beyond the basic requirements.'
+  },
+  'Cultural Fit': {
+      'Collaboration': 'Shows potential for being a collaborative and positive team member.',
+      'Proactiveness': 'Demonstrates a proactive attitude and a willingness to learn.'
   }
 };
 
@@ -226,7 +234,7 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
                             <SectionSubtotal sectionName={sectionName} criteria={criteria} />
                         </CardHeader>
                         <CardContent className="space-y-6 pt-0">
-                             {Object.keys(criteria).map(criterionName => (
+                             {Object.entries(criteria).map(([criterionName, criterionDescription]) => (
                                 <FormField
                                     key={criterionName}
                                     control={form.control}
@@ -246,6 +254,7 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
                                             onValueChange={(vals) => field.onChange(vals[0])}
                                         />
                                         </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                     )}
                                 />

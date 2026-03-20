@@ -1,0 +1,223 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents a user of the platform, who can be a candidate, a company representative, or an admin.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user, typically from Firebase Auth."
+        },
+        "name": {
+          "type": "string",
+          "description": "The full name of the user."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["candidate", "company", "admin"],
+          "description": "The role of the user on the platform."
+        },
+        "companyId": {
+          "type": "string",
+          "description": "The ID of the company the user belongs to (if role is 'company')."
+        },
+        "profile": {
+          "type": "object",
+          "properties": {
+            "avatarUrl": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL for the user's profile picture."
+            },
+            "bio": {
+              "type": "string",
+              "description": "A short biography of the user."
+            }
+          }
+        }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Company": {
+      "title": "Company",
+      "description": "Represents a company that posts tasks and hires candidates.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the company."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the company."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the company."
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "The ID of the user who owns/created the company."
+        }
+      },
+      "required": ["id", "name", "ownerId"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Represents a skill-based task created by a company.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the task."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the task."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the task requirements."
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["Beginner", "Intermediate", "Advanced", "Expert"],
+          "description": "The difficulty level of the task."
+        },
+        "deadline": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The submission deadline for the task."
+        },
+        "companyId": {
+          "type": "string",
+          "description": "The ID of the company that created the task."
+        }
+      },
+      "required": ["id", "title", "description", "difficulty", "deadline", "companyId"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Represents a candidate's submission for a specific task.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the submission."
+        },
+        "taskId": {
+          "type": "string",
+          "description": "The ID of the task being submitted for."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The ID of the candidate who made the submission."
+        },
+        "companyId": {
+            "type": "string",
+            "description": "The ID of the company that owns the task (denormalized)."
+        },
+        "content": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["link", "file"],
+              "description": "The type of submission content."
+            },
+            "value": {
+              "type": "string",
+              "description": "The URL to the submission content (e.g., GitHub repo, Figma file) or a path to a stored file."
+            }
+          },
+          "required": ["type", "value"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "in-review", "evaluated"],
+          "description": "The current status of the submission."
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the submission was made."
+        }
+      },
+      "required": ["id", "taskId", "userId", "companyId", "content", "status", "submittedAt"]
+    },
+    "Evaluation": {
+      "title": "Evaluation",
+      "description": "Represents a company's evaluation of a candidate's submission.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the evaluation."
+        },
+        "submissionId": {
+          "type": "string",
+          "description": "The ID of the submission being evaluated."
+        },
+        "score": {
+          "type": "number",
+          "description": "The score (0-100) given to the submission."
+        },
+        "feedback": {
+          "type": "string",
+          "description": "Constructive feedback provided by the evaluator."
+        },
+        "evaluatedBy": {
+          "type": "string",
+          "description": "The ID of the company user who performed the evaluation."
+        },
+        "evaluatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the evaluation was completed."
+        }
+      },
+      "required": ["id", "submissionId", "score", "feedback", "evaluatedBy", "evaluatedAt"]
+    }
+  },
+  "auth": {
+    "providers": ["password", "google.com"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/backend/entities/User"
+      },
+      "description": "Stores individual user profiles for all roles."
+    },
+    "/companies/{companyId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Company"
+      },
+      "description": "Stores company profiles."
+    },
+    "/tasks/{taskId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Task"
+      },
+      "description": "Stores all tasks created by companies."
+    },
+    "/submissions/{submissionId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Submission"
+      },
+      "description": "Stores all candidate submissions for tasks."
+    },
+    "/evaluations/{evaluationId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Evaluation"
+      },
+      "description": "Stores evaluation feedback and scores for submissions."
+    }
+  }
+}

@@ -16,6 +16,7 @@ export interface Company {
   id: string;
   name: string;
   description: string;
+  ownerId: string; // The ID of the user who owns the company
 }
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
@@ -35,6 +36,7 @@ export interface Submission {
   id: string;
   taskId: string;
   userId: string; // candidateId
+  companyId: string; // Denormalized for easier querying
   content: {
     type: 'link' | 'file';
     value: string; // URL or file path

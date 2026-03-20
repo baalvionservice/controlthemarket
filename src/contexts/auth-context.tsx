@@ -5,6 +5,11 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { mockUsers, mockCompanies } from '@/lib/mock-data';
 
+export interface LoginCredentials {
+  email: string;
+  password?: string; // Password check is mocked
+}
+
 interface SignupDetails {
   name: string;
   email: string;
@@ -17,54 +22,86 @@ interface SignupDetails {
   companyWebsite?: string;
 }
 
+interface AuthResult {
+  success: boolean;
+  message?: string;
+}
+
 interface AuthContextType {
   user: User | null;
-  users: User[]; // All available users for login selector
+  users: User[];
   companies: Company[];
-  login: (userId: string) => void;
-  signup: (details: SignupDetails) => { success: boolean; message?: string };
+  login: (credentials: LoginCredentials) => Promise<AuthResult>;
+  signup: (details: SignupDetails) => AuthResult;
   logout: () => void;
   loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const getInitialState = <T,>(key: string, fallback: T): T => {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch (error) {
+    console.warn(`Error reading localStorage key “${key}”:`, error);
+    return fallback;
+  }
+};
+
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const [companies, setCompanies] = useState<Company[]>(mockCompanies);
+  const [users, setUsers] = useState<User[]>(() => getInitialState('skillmatch-users', mockUsers));
+  const [companies, setCompanies] = useState<Company[]>(() => getInitialState('skillmatch-companies', mockCompanies));
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    localStorage.setItem('skillmatch-users', JSON.stringify(users));
+  }, [users]);
+  
+  useEffect(() => {
+    localStorage.setItem('skillmatch-companies', JSON.stringify(companies));
+  }, [companies]);
+
+  useEffect(() => {
     // On initial load, try to log in the user from localStorage
     const storedUserId = localStorage.getItem('skillmatch-user-id');
     if (storedUserId) {
-      // Find user in the initial mock user list
-      const foundUser = mockUsers.find((u) => u.id === storedUserId);
+      const foundUser = users.find((u) => u.id === storedUserId);
       if (foundUser) {
         setUser(foundUser);
       }
     }
     setLoading(false);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // This should only run once on initial load
 
-  const login = (userId: string) => {
-    // Find user from the dynamic list of users in state
-    const foundUser = users.find((u) => u.id === userId);
+  const login = async (credentials: LoginCredentials): Promise<AuthResult> => {
+    // Artificial delay to simulate network request
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const foundUser = users.find((u) => u.email.toLowerCase() === credentials.email.toLowerCase());
+    
     if (foundUser) {
+      // In a real app, you'd also verify the password here.
       setUser(foundUser);
-      localStorage.setItem('skillmatch-user-id', userId);
+      localStorage.setItem('skillmatch-user-id', foundUser.id);
       router.push('/dashboard');
+      return { success: true };
+    } else {
+      return { success: false, message: 'Invalid email or password.' };
     }
   };
 
   const signup = (
     details: SignupDetails
-  ): { success: boolean; message?: string } => {
+  ): AuthResult => {
     // Check if user already exists
-    if (users.some((u) => u.email === details.email)) {
+    if (users.some((u) => u.email.toLowerCase() === details.email.toLowerCase())) {
       return {
         success: false,
         message: 'An account with this email already exists.',

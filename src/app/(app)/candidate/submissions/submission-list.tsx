@@ -25,7 +25,7 @@ import { ArrowRight, Search } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
-const statuses: (SubmissionStatus | 'All')[] = ["All", "pending", "in-review", "evaluated", "shortlisted", "rejected"];
+const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
 
 export function SubmissionList({ submissions }: { submissions: SubmissionWithDetails[] }) {
@@ -43,19 +43,21 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
         const matchesDifficulty = difficultyFilter === 'All' || task.difficulty === difficultyFilter;
         
         return matchesSearch && matchesStatus && matchesDifficulty;
-    }).sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+    }).sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
   }, [submissions, searchTerm, statusFilter, difficultyFilter]);
 
    const getStatusVariant = (status: SubmissionStatus) => {
     switch (status) {
       case 'evaluated':
       case 'shortlisted':
-        return 'default';
-      case 'in-review':
-        return 'secondary';
-      case 'rejected':
-        return 'destructive';
+        return 'default'; // Blue-ish, indicates completion/success
+      case 'assigned':
+      case 'in-progress':
       case 'pending':
+      case 'in-review':
+        return 'secondary'; // Neutral Gray
+      case 'rejected':
+        return 'destructive'; // Red
       default:
         return 'outline';
     }
@@ -97,7 +99,7 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
             <TableRow>
               <TableHead>Task</TableHead>
               <TableHead>Difficulty</TableHead>
-              <TableHead>Submitted</TableHead>
+              <TableHead>Last Updated</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Score</TableHead>
               <TableHead className="text-right">Action</TableHead>
@@ -111,7 +113,7 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                    <TableCell>
                     <Badge variant="outline">{sub.task?.difficulty}</Badge>
                   </TableCell>
-                  <TableCell>{format(new Date(sub.submittedAt), 'PPP')}</TableCell>
+                  <TableCell>{format(new Date(sub.lastUpdated), 'PPP')}</TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(sub.status)}>
                       {sub.status}
@@ -132,7 +134,7 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
             ) : (
                 <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
-                        No submissions found.
+                        No tasks found.
                     </TableCell>
                 </TableRow>
             )}

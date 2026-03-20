@@ -16,7 +16,7 @@ export default async function SubmissionsPage() {
   const submissionsWithDetails: SubmissionWithDetails[] = await Promise.all(
     submissions.map(async (submission) => {
       const task = await getTask(submission.taskId);
-      const evaluation = await getEvaluationBySubmission(submission.id);
+      const evaluation = submission.id ? await getEvaluationBySubmission(submission.id) : undefined;
       return { ...submission, task, evaluation };
     })
   );
@@ -25,7 +25,7 @@ export default async function SubmissionsPage() {
     <div className="flex-1 space-y-4 p-8 pt-6">
        <div className="flex items-center justify-between space-y-2">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
-          My Submissions
+          My Tasks
         </h2>
       </div>
       <SubmissionList submissions={submissionsWithDetails} />

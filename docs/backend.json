@@ -324,16 +324,34 @@
         },
         "status": {
           "type": "string",
-          "enum": ["pending", "in-review", "evaluated", "shortlisted", "rejected"],
+          "enum": ["assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected"],
           "description": "The current lifecycle status of the submission."
+        },
+        "assignedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the task was assigned."
         },
         "submittedAt": {
           "type": "string",
           "format": "date-time",
           "description": "The timestamp when the submission was made."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the submission was last updated."
+        },
+        "attemptsCount": {
+          "type": "number",
+          "description": "The number of times the candidate has attempted this task."
+        },
+        "currentRound": {
+          "type": "number",
+          "description": "The current round number for a multi-round task."
         }
       },
-      "required": ["id", "taskId", "userId", "companyId", "content", "status", "submittedAt"]
+      "required": ["id", "taskId", "userId", "companyId", "status", "assignedAt", "lastUpdated"]
     },
     "Evaluation": {
       "title": "Evaluation",

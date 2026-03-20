@@ -92,6 +92,8 @@ export interface TaskTemplate {
 }
 
 export type SubmissionStatus =
+  | 'assigned'
+  | 'in-progress'
   | 'pending'
   | 'in-review'
   | 'evaluated'
@@ -103,12 +105,16 @@ export interface Submission {
   taskId: string;
   userId: string; // candidateId
   companyId: string; // Denormalized for easier querying
-  content: {
+  content?: {
     type: 'link' | 'file';
     value: string; // URL or file path
   };
   status: SubmissionStatus;
-  submittedAt: string; // ISO 8601 date string
+  assignedAt: string; // ISO 8601 date string
+  submittedAt?: string; // ISO 8601 date string
+  lastUpdated: string; // ISO 8601 date string
+  attemptsCount?: number;
+  currentRound?: number;
 }
 
 export interface Evaluation {

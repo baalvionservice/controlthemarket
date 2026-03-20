@@ -20,6 +20,7 @@ export interface Company {
 }
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+export type TaskStatus = 'draft' | 'open' | 'closed' | 'archived';
 
 export interface Task {
   id: string;
@@ -28,9 +29,15 @@ export interface Task {
   difficulty: TaskDifficulty;
   deadline: string; // ISO 8601 date string
   companyId: string;
+  status: TaskStatus;
 }
 
-export type SubmissionStatus = 'pending' | 'in-review' | 'evaluated';
+export type SubmissionStatus =
+  | 'pending'
+  | 'in-review'
+  | 'evaluated'
+  | 'shortlisted'
+  | 'rejected';
 
 export interface Submission {
   id: string;

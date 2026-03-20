@@ -98,9 +98,14 @@
         "companyId": {
           "type": "string",
           "description": "The ID of the company that created the task."
+        },
+        "status": {
+            "type": "string",
+            "enum": ["draft", "open", "closed", "archived"],
+            "description": "The current lifecycle state of the task."
         }
       },
-      "required": ["id", "title", "description", "difficulty", "deadline", "companyId"]
+      "required": ["id", "title", "description", "difficulty", "deadline", "companyId", "status"]
     },
     "Submission": {
       "title": "Submission",
@@ -140,8 +145,8 @@
         },
         "status": {
           "type": "string",
-          "enum": ["pending", "in-review", "evaluated"],
-          "description": "The current status of the submission."
+          "enum": ["pending", "in-review", "evaluated", "shortlisted", "rejected"],
+          "description": "The current lifecycle status of the submission."
         },
         "submittedAt": {
           "type": "string",

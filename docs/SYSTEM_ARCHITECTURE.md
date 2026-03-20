@@ -228,7 +228,80 @@ _*Companies can only view profiles of candidates who have submitted a solution t
 
 ---
 
-## 7. Infrastructure
+## 7. Lifecycle States
+
+This section defines the lifecycle states for the primary entities in the system. These states are critical for managing the application workflow, tracking progress, and enforcing business rules.
+
+### 7.1. Task Lifecycle
+
+The task lifecycle tracks a task from its creation to its eventual archiving.
+
+-   **States:**
+    1.  **Draft:** The initial state when a company user is creating a task. It is not yet visible to candidates.
+    2.  **Open:** The task is published and visible on the marketplace. Candidates can view details and submit their work.
+    3.  **Closed:** The submission deadline has passed. The task is still visible but no longer accepts new submissions.
+    4.  **Archived:** The task is no longer active and has been moved to an archive for record-keeping. It is not visible on the main task list.
+
+-   **State Details & Transitions:**
+    -   **`Draft` → `Open`**
+        -   **Action:** "Publish Task"
+        -   **Actor:** Company user, Admin.
+        -   **Rule:** The task must have all required fields (title, description, etc.) before it can be published.
+    -   **`Open` → `Closed`**
+        -   **Action:** This is an automated transition.
+        -   **Trigger:** The system automatically changes the state when `current_time` > `deadline`.
+        -   **Rule:** No new submissions are accepted once the task is closed.
+    -   **`Closed` → `Archived`**
+        -   **Action:** "Archive Task"
+        -   **Actor:** Company user, Admin.
+        -   **Rule:** A task can be archived to clean up the main view. This is a manual action.
+
+### 7.2. Submission Lifecycle
+
+The submission lifecycle tracks a candidate's work from the moment it's submitted until a final decision is made.
+
+-   **States:**
+    1.  **Pending:** A candidate has successfully submitted their work. It is now awaiting review from the company. This is the initial state upon creation.
+    2.  **In-Review:** A company user has started reviewing the submission. This state indicates to the candidate and other company members that the submission is actively being assessed.
+    3.  **Evaluated:** The submission has been scored and feedback has been provided.
+    4.  **Shortlisted:** The company has marked this submission as a top performer. This candidate is considered for the next stage of the hiring process.
+    5.  **Rejected:** The company has decided not to move forward with this candidate for this task.
+
+-   **State Details & Transitions:**
+    -   **`Pending` → `In-Review`**
+        -   **Action:** "Start Review"
+        -   **Actor:** Company user, Admin.
+        -   **Rule:** This is a manual action taken by a reviewer from the submission dashboard. It helps prevent multiple reviewers from assessing the same submission simultaneously.
+    -   **`In-Review` → `Evaluated`**
+        -   **Action:** "Submit Evaluation"
+        -   **Actor:** Company user, Admin.
+        -   **Rule:** This transition occurs when an `evaluations` document is successfully created and linked to the submission. The evaluation must contain a score and feedback.
+    -   **`Evaluated` → `Shortlisted` / `Rejected`**
+        -   **Action:** "Shortlist Candidate" or "Reject Candidate"
+        -   **Actor:** Company user, Admin.
+        -   **Rule:** After evaluation, the company makes a final decision. This is a manual action that sets the final status of the submission.
+
+-   **Automation & Rules:**
+    -   Candidates cannot submit work for tasks that are not in the `Open` state.
+    -   Submissions cannot be edited by the candidate after being submitted.
+    -   Notifications should be triggered to inform the candidate when their submission moves to `Evaluated`.
+
+### 7.3. Candidate Lifecycle (High-Level)
+
+This describes the journey of a candidate on the platform, which can be tracked for analytics and user engagement purposes.
+
+-   **States:**
+    -   **Registered:** User has created an account with the 'candidate' role.
+    -   **Active:** Candidate has completed their profile (e.g., added skills, bio).
+    -   **Participated:** Candidate has made at least one submission.
+    -   **Evaluated:** At least one of the candidate's submissions has been evaluated.
+    -   **Shortlisted:** Candidate has been shortlisted for at least one task.
+
+-   **State Updates:** These are not strict states but rather milestones. They would be derived from user activity rather than being a single field in the `users` document. For example, a candidate is "shortlisted" if any of their submissions have a status of `shortlisted`.
+
+---
+
+## 8. Infrastructure
 
 -   **Hosting:**
     -   **Frontend (Next.js):** Vercel (Recommended) or Firebase App Hosting. Vercel provides seamless integration with Next.js.
@@ -238,7 +311,7 @@ _*Companies can only view profiles of candidates who have submitted a solution t
 
 ---
 
-## 8. Scalability Considerations
+## 9. Scalability Considerations
 
 The chosen architecture is inherently scalable.
 
@@ -249,7 +322,7 @@ The chosen architecture is inherently scalable.
 
 ---
 
-## 9. Security Considerations
+## 10. Security Considerations
 
 -   **Authentication & Authorization:** Firebase Auth provides robust authentication. **Firestore Security Rules are critical** and will be the primary method for authorization, preventing unauthorized data access.
 -   **Data Validation:**

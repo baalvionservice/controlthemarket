@@ -162,7 +162,63 @@ These rules will be enforced primarily through Firestore Security Rules to ensur
 
 ---
 
-## 5. Core System Flow (Example: Task Submission & Evaluation)
+## 5. Role-Based Access Control (RBAC)
+
+This section defines the permissions for each user role and the logic for enforcing them.
+
+### 5.1. Role Overview
+
+-   **Candidate:** A user who is looking for job opportunities. They can browse and complete tasks to showcase their skills.
+-   **Company:** A user representing an organization. They create tasks to find and evaluate potential hires.
+-   **Admin:** A superuser with full control over the platform. They manage users, moderate content, and oversee all platform activity.
+
+### 5.2. Permission Matrix
+
+| Feature/Action                     | Candidate | Company | Admin |
+| :--------------------------------- | :-------: | :-----: | :---: |
+| **User Management**                |           |         |       |
+| View own profile                   |     ✅    |    ✅   |   ✅  |
+| Edit own profile                   |     ✅    |    ✅   |   ✅  |
+| View other user profiles           |     ❌    |    ✅*  |   ✅  |
+| Manage all users (CRUD)            |     ❌    |    ❌   |   ✅  |
+| **Company Management**             |           |         |       |
+| View company profiles              |     ✅    |    ✅   |   ✅  |
+| Create/Edit own company profile    |     ❌    |    ✅   |   ✅  |
+| Manage all companies               |     ❌    |    ❌   |   ✅  |
+| **Task Management**                |           |         |       |
+| View/Browse all tasks              |     ✅    |    ✅   |   ✅  |
+| Create/Edit/Delete own tasks       |     ❌    |    ✅   |   ✅  |
+| Manage all tasks                   |     ❌    |    ❌   |   ✅  |
+| **Submission Management**          |           |         |       |
+| Create submission for a task       |     ✅    |    ❌   |   ❌  |
+| View own submissions & status      |     ✅    |    ❌   |   ✅  |
+| View submissions for own tasks     |     ❌    |    ✅   |   ✅  |
+| Manage all submissions             |     ❌    |    ❌   |   ✅  |
+| **Evaluation Management**          |           |         |       |
+| View evaluation for own submission |     ✅    |    ❌   |   ✅  |
+| Create/Edit evaluation for tasks   |     ❌    |    ✅   |   ✅  |
+| Manage all evaluations             |     ❌    |    ❌   |   ✅  |
+
+_*Companies can only view profiles of candidates who have submitted a solution to one of their tasks._
+
+### 5.3. Access Control Enforcement
+
+-   **Primary Enforcement: Firestore Security Rules**
+    -   This is the most critical layer of security. Rules will be written to secure the database at the source.
+    -   **Example Rule:** A user can only write to a `submissions` document if their `auth.uid` matches the `userId` on the document and their `role` is 'candidate'.
+    -   **Example Rule:** A user can only read `submissions` for a task if their `companyId` matches the `companyId` on the task.
+
+-   **Client-Side UI Control:**
+    -   The Next.js frontend will use the authenticated user's role (from `useAuth` context) to conditionally render UI elements.
+    -   For example, the "Create Task" button will only be visible to users with the 'company' role.
+    -   This improves user experience by not showing actions that would be denied by the backend anyway.
+
+-   **Server-Side Logic (Server Actions / Cloud Functions):**
+    -   Any backend logic will re-validate the user's role and permissions before executing an operation. This provides a second layer of defense and is crucial for any actions that have side-effects beyond a simple database write.
+
+---
+
+## 6. Core System Flow (Example: Task Submission & Evaluation)
 
 1.  **Task Creation:** A logged-in 'company' user fills out the "Create Task" form. A Next.js Server Action is invoked, which writes a new document to the `tasks` collection in Firestore.
 2.  **Task Discovery:** A 'candidate' user browses the tasks page, which securely reads from the `tasks` collection.
@@ -172,7 +228,7 @@ These rules will be enforced primarily through Firestore Security Rules to ensur
 
 ---
 
-## 6. Infrastructure
+## 7. Infrastructure
 
 -   **Hosting:**
     -   **Frontend (Next.js):** Vercel (Recommended) or Firebase App Hosting. Vercel provides seamless integration with Next.js.
@@ -182,7 +238,7 @@ These rules will be enforced primarily through Firestore Security Rules to ensur
 
 ---
 
-## 7. Scalability Considerations
+## 8. Scalability Considerations
 
 The chosen architecture is inherently scalable.
 
@@ -193,7 +249,7 @@ The chosen architecture is inherently scalable.
 
 ---
 
-## 8. Security Considerations
+## 9. Security Considerations
 
 -   **Authentication & Authorization:** Firebase Auth provides robust authentication. **Firestore Security Rules are critical** and will be the primary method for authorization, preventing unauthorized data access.
 -   **Data Validation:**

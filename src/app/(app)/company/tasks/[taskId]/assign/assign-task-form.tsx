@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { User, Task } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useSubmissions } from '@/contexts/submissions-context';
 
 const formSchema = z.object({
   candidateIds: z.array(z.string()).refine((value) => value.length > 0, {
@@ -27,25 +28,47 @@ const formSchema = z.object({
 interface AssignTaskFormProps {
   candidates: User[];
   task: Task;
+  assignedCandidateIds: string[];
 }
 
-export function AssignTaskForm({ candidates, task }: AssignTaskFormProps) {
+export function AssignTaskForm({ candidates, task, assignedCandidateIds }: AssignTaskFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const { addSubmission, findSubmissionByTask } = useSubmissions();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      candidateIds: task.assignedCandidateIds || [],
+      candidateIds: assignedCandidateIds,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log('Assigning task to candidates:', values.candidateIds);
-    toast({
-      title: 'Task Assigned (Mock)',
-      description: `The task "${task.title}" has been assigned to ${values.candidateIds.length} candidate(s).`,
+    const newAssignments = values.candidateIds.filter(
+        id => !findSubmissionByTask(task.id, id)
+    );
+
+    newAssignments.forEach(candidateId => {
+        addSubmission({
+            taskId: task.id,
+            userId: candidateId,
+            companyId: task.companyId,
+            status: 'assigned',
+        });
     });
+
+    if (newAssignments.length > 0) {
+        toast({
+            title: 'Task Assigned',
+            description: `The task "${task.title}" has been assigned to ${newAssignments.length} new candidate(s).`,
+        });
+    } else {
+        toast({
+            title: 'No New Assignments',
+            description: 'All selected candidates were already assigned this task.',
+        });
+    }
+    
     router.push('/company/tasks');
   }
 

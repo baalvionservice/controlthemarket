@@ -1,3 +1,5 @@
+'use client';
+
 import { getTask, getUsers } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import {
@@ -8,17 +10,46 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { AssignTaskForm } from './assign-task-form';
-import type { User } from '@/lib/types';
+import type { User, Task } from '@/lib/types';
+import { useSubmissions } from '@/contexts/submissions-context';
+import { useEffect, useState, useMemo } from 'react';
+import { Loader2 } from 'lucide-react';
 
-export default async function AssignTaskPage({ params }: { params: { taskId: string } }) {
-  const task = await getTask(params.taskId);
-  const users = await getUsers();
+export default function AssignTaskPage({ params }: { params: { taskId: string } }) {
+  const [task, setTask] = useState<Task | null>(null);
+  const [candidates, setCandidates] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { submissions } = useSubmissions();
+
+  useEffect(() => {
+    const fetchData = async () => {
+        const taskData = await getTask(params.taskId);
+        if (!taskData) {
+            notFound();
+        }
+        setTask(taskData);
+
+        const allUsers = await getUsers();
+        const candidateUsers = allUsers.filter((user): user is User & { role: 'candidate' } => user.role === 'candidate');
+        setCandidates(candidateUsers);
+        setLoading(false);
+    };
+    fetchData();
+  }, [params.taskId]);
+
+  const assignedCandidateIds = useMemo(() => {
+    return submissions
+        .filter(s => s.taskId === params.taskId)
+        .map(s => s.userId);
+  }, [submissions, params.taskId]);
   
-  if (!task) {
-    notFound();
+  if (loading || !task) {
+    return (
+        <div className="flex-1 space-y-4 p-8 pt-6 flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+    );
   }
-
-  const candidates = users.filter((user): user is User & { role: 'candidate' } => user.role === 'candidate');
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -38,7 +69,7 @@ export default async function AssignTaskPage({ params }: { params: { taskId: str
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AssignTaskForm candidates={candidates} task={task} />
+          <AssignTaskForm candidates={candidates} task={task} assignedCandidateIds={assignedCandidateIds} />
         </CardContent>
       </Card>
     </div>

@@ -69,7 +69,6 @@ export interface Task {
   status: TaskStatus;
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
-  assignedCandidateIds?: string[];
   multiRound?: boolean;
   rounds?: TaskRound[];
 }

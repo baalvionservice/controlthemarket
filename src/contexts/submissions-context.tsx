@@ -4,8 +4,11 @@ import type { Submission } from '@/lib/types';
 import { mockSubmissions } from '@/lib/mock-data';
 import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
 
+type NewSubmissionData = Pick<Submission, 'taskId' | 'userId' | 'companyId' | 'status'>;
+
 interface SubmissionsContextType {
   submissions: Submission[];
+  addSubmission: (submissionData: NewSubmissionData) => void;
   updateSubmission: (submissionId: string, updates: Partial<Submission>) => void;
   findSubmissionByTask: (taskId: string, userId: string) => Submission | undefined;
 }
@@ -14,6 +17,18 @@ const SubmissionsContext = createContext<SubmissionsContextType | undefined>(und
 
 export function SubmissionsProvider({ children }: { children: ReactNode }) {
   const [submissions, setSubmissions] = useState<Submission[]>(mockSubmissions);
+
+  const addSubmission = useCallback((submissionData: NewSubmissionData) => {
+    const newSubmission: Submission = {
+      id: `sub-${Date.now()}`,
+      ...submissionData,
+      assignedAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+      attemptsCount: 0,
+      currentRound: 1
+    };
+    setSubmissions(prev => [...prev, newSubmission]);
+  }, []);
 
   const updateSubmission = useCallback((submissionId: string, updates: Partial<Submission>) => {
     setSubmissions(prev =>
@@ -29,7 +44,7 @@ export function SubmissionsProvider({ children }: { children: ReactNode }) {
       return submissions.find(sub => sub.taskId === taskId && sub.userId === userId);
   }, [submissions]);
 
-  const value = useMemo(() => ({ submissions, updateSubmission, findSubmissionByTask }), [submissions, updateSubmission, findSubmissionByTask]);
+  const value = useMemo(() => ({ submissions, addSubmission, updateSubmission, findSubmissionByTask }), [submissions, addSubmission, updateSubmission, findSubmissionByTask]);
 
   return (
     <SubmissionsContext.Provider value={value}>

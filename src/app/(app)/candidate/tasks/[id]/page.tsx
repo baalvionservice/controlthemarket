@@ -28,6 +28,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
+import { SubmissionForm } from './submission-form';
 
 export default async function TaskDetailPage({ params }: { params: { id: string } }) {
   const task = await getTask(params.id);
@@ -164,20 +165,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
         </div>
       </div>
       
-       <Card>
-            <CardHeader>
-                <CardTitle>Submit Your Work</CardTitle>
-                <CardDescription>Once you have completed the task, submit your work here.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex h-32 w-full items-center justify-center rounded-md border-2 border-dashed">
-                    <div className="text-center">
-                        <p className="text-muted-foreground">This is where the submission UI will be.</p>
-                        <Button variant="secondary" className="mt-2" disabled>Submit Work</Button>
-                    </div>
-                </div>
-            </CardContent>
-       </Card>
+       <SubmissionForm task={task} />
 
     </div>
   );

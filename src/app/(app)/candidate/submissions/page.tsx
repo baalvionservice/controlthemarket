@@ -1,25 +1,34 @@
-import { getSubmissionsByUser, getTask, getEvaluationBySubmission } from '@/lib/api';
-import { SubmissionList } from './submission-list';
-import type { Submission } from '@/lib/types';
+'use client';
 
-// For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
-const CURRENT_USER_ID = 'user-1';
+import { useMemo } from 'react';
+import { useAuth } from '@/contexts/auth-context';
+import { useSubmissions } from '@/contexts/submissions-context';
+import { SubmissionList } from './submission-list';
+import { mockTasks, mockEvaluations } from '@/lib/mock-data';
+import type { Submission } from '@/lib/types';
+import type { getTask, getEvaluationBySubmission } from '@/lib/api';
 
 export type SubmissionWithDetails = Submission & {
-  task?: Awaited<ReturnType<typeof getTask>>;
-  evaluation?: Awaited<ReturnType<typeof getEvaluationBySubmission>>;
+  task?: ReturnType<typeof mockTasks.find>;
+  evaluation?: ReturnType<typeof mockEvaluations.find>;
 };
 
-export default async function SubmissionsPage() {
-  const submissions = await getSubmissionsByUser(CURRENT_USER_ID);
+export default function SubmissionsPage() {
+  const { user } = useAuth();
+  const { submissions: allSubmissions } = useSubmissions();
+  
+  const submissionsForUser = useMemo(() => {
+    if (!user) return [];
+    return allSubmissions.filter(sub => sub.userId === user.id);
+  }, [allSubmissions, user]);
 
-  const submissionsWithDetails: SubmissionWithDetails[] = await Promise.all(
-    submissions.map(async (submission) => {
-      const task = await getTask(submission.taskId);
-      const evaluation = submission.id ? await getEvaluationBySubmission(submission.id) : undefined;
+  const submissionsWithDetails: SubmissionWithDetails[] = useMemo(() => {
+    return submissionsForUser.map((submission) => {
+      const task = mockTasks.find(t => t.id === submission.taskId);
+      const evaluation = submission.id ? mockEvaluations.find(e => e.submissionId === submission.id) : undefined;
       return { ...submission, task, evaluation };
-    })
-  );
+    });
+  }, [submissionsForUser]);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

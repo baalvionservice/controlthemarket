@@ -1,5 +1,9 @@
-import { getSubmission, getTask, getEvaluationBySubmission } from '@/lib/api';
+'use client';
+
+import { useSubmissions } from '@/contexts/submissions-context';
+import { mockTasks, mockEvaluations } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
+import { useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -16,17 +20,34 @@ import Link from 'next/link';
 
 const statusSteps = ['assigned', 'in-progress', 'pending', 'in-review', 'evaluated'];
 
-export default async function SubmissionDetailPage({ params }: { params: { id: string } }) {
-  const submission = await getSubmission(params.id);
+export default function SubmissionDetailPage({ params }: { params: { id: string } }) {
+  const { submissions } = useSubmissions();
+  
+  const submission = useMemo(() => submissions.find(s => s.id === params.id), [submissions, params.id]);
+
+  const task = useMemo(() => submission ? mockTasks.find(t => t.id === submission.taskId) : undefined, [submission]);
+  const evaluation = useMemo(() => submission ? mockEvaluations.find(e => e.submissionId === submission.id) : undefined, [submission]);
+
   if (!submission) {
-    notFound();
+    // Since this is now a client component, we can't use notFound() directly in the render path
+    // in the same way. A redirect or a "not found" component would be better.
+    // For this mock, we can show a simple message or redirect.
+    // In a real app, you'd handle this more gracefully, maybe in a useEffect.
+     return (
+      <div className="flex-1 space-y-6 p-8 pt-6">
+        <h2 className="font-headline text-3xl font-bold tracking-tight">
+          Submission Not Found
+        </h2>
+        <p className="text-muted-foreground">The submission you are looking for does not exist.</p>
+        <Button asChild>
+          <Link href="/candidate/submissions">Go to My Tasks</Link>
+        </Button>
+      </div>
+     )
   }
 
-  const task = await getTask(submission.taskId);
-  const evaluation = await getEvaluationBySubmission(submission.id);
-
   const currentStep = statusSteps.indexOf(submission.status);
-  const progressValue = (currentStep + 1) / statusSteps.length * 100;
+  const progressValue = currentStep === -1 ? 0 : (currentStep + 1) / statusSteps.length * 100;
   const isCompleted = submission.status === 'evaluated' || submission.status === 'shortlisted' || submission.status === 'rejected';
 
   return (
@@ -49,11 +70,11 @@ export default async function SubmissionDetailPage({ params }: { params: { id: s
         <CardContent className="space-y-4">
           <Progress value={progressValue} className="w-full" />
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>Assigned</span>
-            <span>In Progress</span>
-            <span>Submitted</span>
-            <span>In Review</span>
-            <span>Evaluated</span>
+            {statusSteps.map((step, index) => (
+              <span key={step} className={cn("capitalize", index <= currentStep && "font-semibold text-primary")}>
+                {step.replace('-', ' ')}
+              </span>
+            ))}
           </div>
         </CardContent>
       </Card>

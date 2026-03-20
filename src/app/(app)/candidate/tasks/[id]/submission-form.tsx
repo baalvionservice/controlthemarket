@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -19,7 +19,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Github, UploadCloud, File, X, Loader2, Link as LinkIcon } from 'lucide-react';
-import type { Task } from '@/lib/types';
+import type { Task, SubmissionContentType } from '@/lib/types';
+import { useAuth } from '@/contexts/auth-context';
+import { useSubmissions } from '@/contexts/submissions-context';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   submissionType: z.enum(['link', 'file', 'externalLink']),
@@ -103,8 +106,17 @@ interface SubmissionFormProps {
 
 export function SubmissionForm({ task }: SubmissionFormProps) {
     const { toast } = useToast();
+    const router = useRouter();
+    const { user } = useAuth();
+    const { findSubmissionByTask, updateSubmission } = useSubmissions();
+
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('link');
+
+    const submission = useMemo(() => {
+        if (!user) return undefined;
+        return findSubmissionByTask(task.id, user.id);
+    }, [task, user, findSubmissionByTask]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -112,6 +124,16 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
             submissionType: 'link',
         },
     });
+
+    const watchedForm = form.watch();
+    useEffect(() => {
+        if (submission && submission.status === 'assigned') {
+            const hasInput = watchedForm.link || watchedForm.externalLink || watchedForm.file;
+            if(hasInput) {
+                updateSubmission(submission.id, { status: 'in-progress' });
+            }
+        }
+    }, [watchedForm, submission, updateSubmission]);
 
     const handleTabChange = (value: string) => {
         setActiveTab(value);
@@ -122,7 +144,6 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         form.resetField('externalLink');
     }
 
-    // Mock file selection
     const handleFileSelect = () => {
         form.setValue('file', { name: 'my-project-submission.zip', size: 1024 * 1024 * 2.5 });
     }
@@ -132,11 +153,41 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
     }
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (!submission) {
+            toast({ title: 'Error', description: 'Could not find submission record for this task.', variant: 'destructive'});
+            return;
+        }
+
         setIsLoading(true);
         console.log('Submitting:', values);
         
-        // Mock API call
         await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const isResubmission = ['pending', 'in-review', 'evaluated', 'rejected', 'resubmitted'].includes(submission.status);
+        
+        let contentValue: string | undefined;
+        if (values.submissionType === 'link') contentValue = values.link;
+        if (values.submissionType === 'externalLink') contentValue = values.externalLink;
+        if (values.submissionType === 'file') contentValue = `/mock-uploads/${values.file?.name}`;
+
+        if (!contentValue) {
+            toast({ title: 'Error', description: 'Submission content is missing.', variant: 'destructive'});
+            setIsLoading(false);
+            return;
+        }
+        
+        const submissionUpdate: Partial<any> = {
+            status: isResubmission ? 'resubmitted' : 'pending',
+            content: {
+                type: values.submissionType as SubmissionContentType,
+                value: contentValue,
+                ...(values.file && { fileName: values.file.name, fileSize: values.file.size }),
+            },
+            submittedAt: new Date().toISOString(),
+            ...(isResubmission && { resubmittedAt: new Date().toISOString() })
+        };
+
+        updateSubmission(submission.id, submissionUpdate);
 
         toast({
             title: 'Submission Successful!',
@@ -144,9 +195,18 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         });
         
         setIsLoading(false);
-        form.reset();
-        // After reset, ensure the form state matches the active tab
-        handleTabChange(activeTab);
+        router.push('/candidate/submissions');
+    }
+
+    if (!submission) {
+         return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Unable to Submit</CardTitle>
+                    <CardDescription>This task has not been assigned to you.</CardDescription>
+                </CardHeader>
+            </Card>
+        )
     }
 
     return (

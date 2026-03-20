@@ -289,10 +289,11 @@ export const mockSubmissions: Submission[] = [
     taskId: 'task-2',
     userId: 'user-1',
     companyId: 'company-1',
-    status: 'pending',
+    status: 'resubmitted',
     assignedAt: '2024-08-11T09:00:00Z',
     submittedAt: '2024-08-12T09:00:00Z',
-    lastUpdated: '2024-08-12T09:00:00Z',
+    resubmittedAt: '2024-08-13T11:00:00Z',
+    lastUpdated: '2024-08-13T11:00:00Z',
     content: {
         type: 'externalLink',
         value: 'https://gist.github.com/alice-candidate/schema.sql',

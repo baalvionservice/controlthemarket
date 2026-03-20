@@ -100,7 +100,8 @@ export type SubmissionStatus =
   | 'in-review'
   | 'evaluated'
   | 'shortlisted'
-  | 'rejected';
+  | 'rejected'
+  | 'resubmitted';
 
 export interface Submission {
   id: string;
@@ -116,6 +117,7 @@ export interface Submission {
   status: SubmissionStatus;
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
+  resubmittedAt?: string; // ISO 8601 date string
   lastUpdated: string; // ISO 8601 date string
   attemptsCount?: number;
   currentRound?: number;

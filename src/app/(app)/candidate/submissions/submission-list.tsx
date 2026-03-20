@@ -21,11 +21,17 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { ArrowRight, Search } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
-const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected"];
+const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
 
 export function SubmissionList({ submissions }: { submissions: SubmissionWithDetails[] }) {
@@ -50,12 +56,14 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
     switch (status) {
       case 'evaluated':
       case 'shortlisted':
-        return 'default'; // Blue-ish, indicates completion/success
-      case 'assigned':
+      case 'pending': // Submitted
+      case 'resubmitted':
+        return 'default'; // Blue-ish for "completed" user actions
       case 'in-progress':
-      case 'pending':
       case 'in-review':
-        return 'secondary'; // Neutral Gray
+        return 'secondary'; // Neutral Gray for active states
+      case 'assigned':
+        return 'outline'; // Lightest gray for initial state
       case 'rejected':
         return 'destructive'; // Red
       default:
@@ -80,7 +88,7 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            {statuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+            {statuses.map(status => <SelectItem key={status} value={status} className="capitalize">{status.replace('-', ' ')}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={difficultyFilter} onValueChange={(value) => setDifficultyFilter(value as TaskDifficulty | 'All')}>
@@ -94,52 +102,65 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
       </div>
 
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Task</TableHead>
-              <TableHead>Difficulty</TableHead>
-              <TableHead>Last Updated</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Score</TableHead>
-              <TableHead className="text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredSubmissions.length > 0 ? (
-              filteredSubmissions.map((sub) => (
-                <TableRow key={sub.id}>
-                  <TableCell className="font-medium">{sub.task?.title}</TableCell>
-                   <TableCell>
-                    <Badge variant="outline">{sub.task?.difficulty}</Badge>
-                  </TableCell>
-                  <TableCell>{format(new Date(sub.lastUpdated), 'PPP')}</TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusVariant(sub.status)}>
-                      {sub.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {sub.evaluation ? `${sub.evaluation.score}/100` : 'N/A'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/candidate/submissions/${sub.id}`}>
-                        View Details <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-                <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
-                        No tasks found.
+        <TooltipProvider>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Task</TableHead>
+                <TableHead>Difficulty</TableHead>
+                <TableHead>Last Updated</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Score</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredSubmissions.length > 0 ? (
+                filteredSubmissions.map((sub) => (
+                  <TableRow key={sub.id}>
+                    <TableCell className="font-medium">{sub.task?.title}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{sub.task?.difficulty}</Badge>
                     </TableCell>
-                </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                    <TableCell>
+                      <Tooltip>
+                        <TooltipTrigger>{format(new Date(sub.lastUpdated), 'PPP')}</TooltipTrigger>
+                        <TooltipContent>
+                           <div className="flex flex-col gap-1 text-xs">
+                              {sub.submittedAt && <p>Submitted: {format(new Date(sub.submittedAt), 'PPp')}</p>}
+                              {sub.resubmittedAt && <p>Resubmitted: {format(new Date(sub.resubmittedAt), 'PPp')}</p>}
+                              <p>Assigned: {format(new Date(sub.assignedAt), 'PPp')}</p>
+                           </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusVariant(sub.status)} className="capitalize">
+                        {sub.status.replace('-', ' ')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {sub.evaluation ? `${sub.evaluation.score}/100` : 'N/A'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/candidate/submissions/${sub.id}`}>
+                          View Details <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                  <TableRow>
+                      <TableCell colSpan={6} className="h-24 text-center">
+                          No tasks found.
+                      </TableCell>
+                  </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TooltipProvider>
       </div>
     </div>
   );

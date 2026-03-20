@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/contexts/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
+import { SubmissionsProvider } from '@/contexts/submissions-context';
 
 export const metadata: Metadata = {
   title: 'SkillMatch Pro',
@@ -29,8 +30,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          {children}
-          <Toaster />
+          <SubmissionsProvider>
+            {children}
+            <Toaster />
+          </SubmissionsProvider>
         </AuthProvider>
       </body>
     </html>

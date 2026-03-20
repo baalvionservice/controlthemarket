@@ -56,7 +56,7 @@ export const mockUsers: User[] = [
     email: 'diana@example.com',
     role: 'candidate',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
-    isActive: true,
+    isActive: false, // Changed for testing
     isVerified: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar4/100/100',

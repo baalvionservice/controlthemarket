@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts';
 import { ActivityLog } from '@/components/activity-log';
+import type { SubmissionStatus } from '@/lib/types';
 
 
 const statusSteps = ['assigned', 'in-progress', 'pending', 'in-review', 'evaluated'];
@@ -62,14 +63,14 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
   }
 
   let currentStepIndex = statusSteps.indexOf(submission.status);
-  if (['shortlisted', 'rejected'].includes(submission.status)) {
+  if (['shortlisted', 'rejected', 'moved-to-next-round'].includes(submission.status)) {
     currentStepIndex = statusSteps.indexOf('evaluated');
   } else if (submission.status === 'resubmitted') {
     currentStepIndex = statusSteps.indexOf('pending');
   }
   const currentStep = currentStepIndex;
 
-  const isFinalState = submission.status === 'evaluated' || submission.status === 'shortlisted' || submission.status === 'rejected';
+  const isFinalState = ['evaluated', 'shortlisted', 'rejected', 'moved-to-next-round'].includes(submission.status);
   
   const canProceed = isFinalState && task.multiRound && !isFinalRound;
 
@@ -93,6 +94,22 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
             return '';
     }
 }
+
+  const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
+     switch (status) {
+      case 'shortlisted': return 'default';
+      case 'moved-to-next-round': return 'purple';
+      case 'in-review':
+      case 'evaluated':
+        return 'secondary';
+      case 'pending':
+      case 'resubmitted':
+      case 'in-progress':
+        return 'warning';
+      case 'rejected': return 'destructive';
+      default: return 'outline';
+    }
+  }
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -204,7 +221,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         <span>Task Details</span>
-                        <Badge variant="secondary">{task.difficulty}</Badge>
+                        <Badge variant="outline">{task.difficulty}</Badge>
                     </CardTitle>
                     <CardDescription>
                         Assigned on {format(new Date(submission.assignedAt), 'PPP')}
@@ -229,7 +246,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
                     </div>
                     <div className="space-y-1">
                         <h4 className="font-semibold flex items-center gap-2"><Clock className="h-4 w-4" /> Status</h4>
-                        <Badge variant={isFinalState ? "default" : "outline"} className="capitalize">{submission.status.replace('-', ' ')}</Badge>
+                        <Badge variant={getStatusVariant(submission.status)} className="capitalize">{submission.status.replace('-', ' ')}</Badge>
                     </div>
                 </CardContent>
             </Card>

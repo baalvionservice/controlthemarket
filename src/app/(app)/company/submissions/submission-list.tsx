@@ -106,13 +106,14 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
     }
   };
 
-  const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' => {
+  const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
      switch (status) {
       case 'shortlisted':
         return 'default'; 
+      case 'moved-to-next-round':
+        return 'purple';
       case 'in-review':
       case 'evaluated':
-      case 'moved-to-next-round':
         return 'secondary';
       case 'pending':
       case 'resubmitted':

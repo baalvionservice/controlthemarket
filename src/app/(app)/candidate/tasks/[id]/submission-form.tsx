@@ -17,24 +17,48 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Github, Link as LinkIcon, UploadCloud, File, X, Loader2 } from 'lucide-react';
+import { Github, UploadCloud, File, X, Loader2 } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 const formSchema = z.object({
   submissionType: z.enum(['link', 'file']),
-  link: z.string().url('Please enter a valid URL.').optional(),
-  // Mock file object
+  link: z.string().optional(),
   file: z.object({
     name: z.string(),
     size: z.number(),
   }).optional(),
 }).superRefine((data, ctx) => {
-  if (data.submissionType === 'link' && !data.link) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['link'],
-      message: 'A URL is required for link submissions.',
-    });
+  if (data.submissionType === 'link') {
+    if (!data.link) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['link'],
+        message: 'A GitHub repository URL is required.',
+      });
+    } else {
+        try {
+            const url = new URL(data.link);
+            if (url.protocol !== 'https:' || url.hostname !== 'github.com') {
+                 ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ['link'],
+                    message: 'Please enter a valid GitHub repository URL.',
+                });
+            } else if (url.pathname.split('/').filter(Boolean).length < 2) {
+                 ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ['link'],
+                    message: 'Please include both a username and repository in the URL (e.g., https://github.com/user/repo).',
+                });
+            }
+        } catch (e) {
+             ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['link'],
+                message: 'Please enter a valid URL format.',
+            });
+        }
+    }
   }
   if (data.submissionType === 'file' && !data.file) {
     ctx.addIssue({
@@ -106,8 +130,8 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                             <TabsList className="grid w-full grid-cols-2">
                                 <TabsTrigger value="link">
-                                    <LinkIcon className="mr-2 h-4 w-4" />
-                                    Submit Link
+                                    <Github className="mr-2 h-4 w-4" />
+                                    Submit GitHub Link
                                 </TabsTrigger>
                                 <TabsTrigger value="file">
                                     <UploadCloud className="mr-2 h-4 w-4" />
@@ -120,7 +144,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                                     name="link"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Repository or Project URL</FormLabel>
+                                            <FormLabel>GitHub Repository URL</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                      <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

@@ -27,7 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, Search, Github, FileText, Link as LinkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
@@ -110,6 +110,7 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                 <TableHead>Difficulty</TableHead>
                 <TableHead>Last Updated</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Submission</TableHead>
                 <TableHead>Score</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
@@ -140,6 +141,27 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                       </Badge>
                     </TableCell>
                     <TableCell>
+                        <Tooltip>
+                            <TooltipTrigger className="flex items-center justify-center w-full">
+                            {sub.content?.type === 'link' ? (
+                                <Github className="h-5 w-5 text-muted-foreground" />
+                            ) : sub.content?.type === 'file' ? (
+                                <FileText className="h-5 w-5 text-muted-foreground" />
+                            ) : sub.content?.type === 'externalLink' ? (
+                                <LinkIcon className="h-5 w-5 text-muted-foreground" />
+                            ) : (
+                                <span className="text-muted-foreground">-</span>
+                            )}
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {sub.content?.type === 'link' && `GitHub: ${sub.content.value}`}
+                                {sub.content?.type === 'file' && `File: ${sub.content.fileName || 'unknown'}`}
+                                {sub.content?.type === 'externalLink' && `Link: ${sub.content.value}`}
+                                {!sub.content && 'Not submitted'}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TableCell>
+                    <TableCell>
                       {sub.evaluation ? `${sub.evaluation.score}/100` : 'N/A'}
                     </TableCell>
                     <TableCell className="text-right">
@@ -153,7 +175,7 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                 ))
               ) : (
                   <TableRow>
-                      <TableCell colSpan={6} className="h-24 text-center">
+                      <TableCell colSpan={7} className="h-24 text-center">
                           No tasks found.
                       </TableCell>
                   </TableRow>

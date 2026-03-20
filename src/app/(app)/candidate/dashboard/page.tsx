@@ -1,5 +1,9 @@
-import { getSubmissionsByUser, getTask, getEvaluationBySubmission } from '@/lib/api';
-import { mockUsers } from '@/lib/mock-data';
+'use client';
+
+import { useAuth } from '@/contexts/auth-context';
+import { useSubmissions } from '@/contexts/submissions-context';
+import { useMemo } from 'react';
+import { mockTasks, mockEvaluations } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,92 +21,101 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRight, Trophy, FileText, CheckCircle, Star } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { ArrowRight, FileText, CheckCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
 
-// For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
-const CURRENT_USER_ID = 'user-1';
+export default function CandidateDashboard() {
+  const { user } = useAuth();
+  const { submissions: allSubmissions } = useSubmissions();
+  
+  const submissions = useMemo(() => {
+    if (!user) return [];
+    // Ensure this filters submissions for the current user
+    return allSubmissions.filter(sub => sub.userId === user.id);
+  }, [allSubmissions, user]);
 
-export default async function CandidateDashboard() {
-  const user = mockUsers.find((u) => u.id === CURRENT_USER_ID);
-  const submissions = await getSubmissionsByUser(CURRENT_USER_ID);
+  const stats = useMemo(() => {
+    const total = submissions.length;
+    if (total === 0) return { total: 0, submitted: 0, pending: 0, completionPercentage: 0 };
+    
+    const submitted = submissions.filter(s => ['pending', 'in-review', 'evaluated', 'shortlisted', 'rejected', 'resubmitted'].includes(s.status)).length;
+    const pending = total - submitted;
+    const completionPercentage = total > 0 ? Math.round((submitted / total) * 100) : 0;
 
-  const submissionsWithDetails = await Promise.all(
-    submissions.map(async (submission) => {
-      const task = await getTask(submission.taskId);
-      const evaluation = await getEvaluationBySubmission(submission.id);
+    return { total, submitted, pending, completionPercentage };
+  }, [submissions]);
+
+  const submissionsWithDetails = useMemo(() => {
+    return submissions.map((submission) => {
+      const task = mockTasks.find(t => t.id === submission.taskId);
+      const evaluation = mockEvaluations.find(e => e.submissionId === submission.id);
       return { ...submission, task, evaluation };
-    })
-  );
+    }).sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
+  },[submissions]);
+
+  if (!user) {
+    return null; // Or a loading state
+  }
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
-          Welcome back, {user?.name.split(' ')[0]}!
+          Welcome back, {user.name.split(' ')[0]}!
         </h2>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card>
+        <CardHeader>
+            <CardTitle>Overall Progress</CardTitle>
+            <CardDescription>You've submitted {stats.submitted} of {stats.total} assigned tasks.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Progress value={stats.completionPercentage} className="mb-2"/>
+            <p className="text-right text-sm text-muted-foreground">{stats.completionPercentage}% complete</p>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Submissions
+              Total Assigned Tasks
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{submissions.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Across all tasks
-            </p>
+            <div className="text-2xl font-bold">{stats.total}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Evaluated</CardTitle>
+            <CardTitle className="text-sm font-medium">Tasks Submitted</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {submissions.filter((s) => s.status === 'evaluated').length}
+              {stats.submitted}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Submissions reviewed
-            </p>
-          </CardContent>
-        </Card>
-         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{user?.candidatePerformance?.averageScore || 'N/A'}</div>
-            <p className="text-xs text-muted-foreground">
-              Across all evaluated tasks
-            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overall Rank</CardTitle>
-            <Trophy className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Tasks Pending</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">#{user?.candidatePerformance?.ranking || 'N/A'}</div>
-            <p className="text-xs text-muted-foreground">
-              On the platform
-            </p>
+            <div className="text-2xl font-bold">{stats.pending}</div>
           </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Submissions</CardTitle>
+          <CardTitle>Recent Activity</CardTitle>
           <CardDescription>
-            Here's a look at your recent activity.
+            Here's a look at your most recently updated tasks.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,18 +135,19 @@ export default async function CandidateDashboard() {
                   <TableCell>
                     <Badge variant={
                       sub.status === 'evaluated' || sub.status === 'shortlisted' ? 'default' :
-                      sub.status === 'in-review' ? 'secondary' : 'outline'
+                      sub.status === 'in-review' || sub.status === 'pending' || sub.status === 'resubmitted' ? 'secondary' : 
+                      sub.status === 'rejected' ? 'destructive' : 'outline'
                     }>
-                      {sub.status}
+                      {sub.status.replace('-', ' ')}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     {sub.evaluation ? `${sub.evaluation.score}/100` : 'N/A'}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button asChild variant="outline" size="sm" disabled={!sub.evaluation}>
+                    <Button asChild variant="outline" size="sm">
                       <Link href={`/candidate/submissions/${sub.id}`}>
-                        View Feedback <ArrowRight className="ml-2 h-4 w-4" />
+                        View Details <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
                   </TableCell>

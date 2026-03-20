@@ -124,6 +124,7 @@ export const mockTasks: Task[] = [
     description:
       'Create a fully responsive navigation bar using React and Tailwind CSS. The component should be reusable and include a mobile-friendly hamburger menu.',
     roleCategory: 'Engineering',
+    taskTypes: ['Coding', 'Design'],
     difficulty: 'Intermediate',
     deadline: '2024-08-15T23:59:59Z',
     companyId: 'company-1',
@@ -136,6 +137,7 @@ export const mockTasks: Task[] = [
     description:
       'Design a normalized PostgreSQL schema for a blogging platform. The schema should support users, posts, comments, and tags. Provide the SQL script to create the tables.',
     roleCategory: 'Data',
+    taskTypes: ['Documentation'],
     difficulty: 'Beginner',
     deadline: '2024-08-20T23:59:59Z',
     companyId: 'company-1',
@@ -148,6 +150,7 @@ export const mockTasks: Task[] = [
     description:
       'Develop a serverless function (e.g., AWS Lambda, Vercel Functions) that fetches data from a third-party API and returns a transformed JSON response. The function should include error handling and caching.',
     roleCategory: 'Engineering',
+    taskTypes: ['Coding'],
     difficulty: 'Advanced',
     deadline: '2024-08-25T23:59:59Z',
     companyId: 'company-2',

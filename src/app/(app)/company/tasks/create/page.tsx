@@ -19,7 +19,7 @@ export default function CreateTaskPage() {
         <CardHeader>
           <CardTitle>Task Details</CardTitle>
           <CardDescription>
-            Fill out the form below to create a new task for candidates.
+            Fill out the form below to design a new skill assessment for candidates.
           </CardDescription>
         </CardHeader>
         <CardContent>

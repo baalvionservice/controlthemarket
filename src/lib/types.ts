@@ -44,6 +44,7 @@ export interface Company {
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 export type TaskStatus = 'draft' | 'open' | 'closed' | 'archived';
 export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
+export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project';
 
 
 export interface Task {
@@ -51,6 +52,7 @@ export interface Task {
   title: string;
   description: string;
   roleCategory: RoleCategory;
+  taskTypes?: TaskType[];
   difficulty: TaskDifficulty;
   deadline: string; // ISO 8601 date string
   companyId: string;

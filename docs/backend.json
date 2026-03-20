@@ -182,6 +182,14 @@
           "enum": ["Engineering", "Design", "Marketing", "Business", "Data"],
           "description": "The professional vertical the task belongs to."
         },
+        "taskTypes": {
+          "type": "array",
+          "description": "The types of the task (e.g., Coding, MCQ).",
+          "items": {
+            "type": "string",
+            "enum": ["Coding", "MCQ", "Design", "Documentation", "Project"]
+          }
+        },
         "difficulty": {
           "type": "string",
           "enum": ["Beginner", "Intermediate", "Advanced", "Expert"],

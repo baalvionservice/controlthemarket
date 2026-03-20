@@ -46,6 +46,12 @@ export type TaskStatus = 'draft' | 'published' | 'closed' | 'archived';
 export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
 export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project';
 
+export interface TaskRound {
+  roundNumber: number;
+  instructions: string;
+  expectedOutputs: string;
+  timeLimitMinutes?: number;
+}
 
 export interface Task {
   id: string;
@@ -64,6 +70,8 @@ export interface Task {
   createdAt: string; // ISO 8601 date string
   updatedAt: string; // ISO 8601 date string
   assignedCandidateIds?: string[];
+  multiRound?: boolean;
+  rounds?: TaskRound[];
 }
 
 export interface TaskTemplate {
@@ -79,6 +87,8 @@ export interface TaskTemplate {
   createdBy: string; // companyId
   createdAt: string;
   updatedAt: string;
+  multiRound?: boolean;
+  rounds?: TaskRound[];
 }
 
 export type SubmissionStatus =

@@ -135,6 +135,7 @@ export const mockTasks: Task[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 9)).toISOString(),
     assignedCandidateIds: ['user-1'],
+    multiRound: false,
   },
   {
     id: 'task-2',
@@ -151,6 +152,7 @@ export const mockTasks: Task[] = [
     status: 'published',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
+    multiRound: false,
   },
   {
     id: 'task-3',
@@ -167,6 +169,38 @@ export const mockTasks: Task[] = [
     status: 'closed',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 15)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 14)).toISOString(),
+    multiRound: false,
+  },
+  {
+    id: 'task-4',
+    title: 'Fullstack Project Challenge',
+    description: 'A comprehensive challenge involving both frontend and backend development to build a mini-application.',
+    instructions: '', // Empty for multi-round
+    expectedOutputs: '', // Empty for multi-round
+    roleCategory: 'Engineering',
+    taskTypes: ['Coding', 'Project', 'Documentation'],
+    difficulty: 'Expert',
+    deadline: '2024-09-30T23:59:59Z',
+    companyId: 'company-2',
+    createdBy: 'user-5',
+    status: 'published',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    updatedAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    multiRound: true,
+    rounds: [
+      {
+        roundNumber: 1,
+        instructions: 'Design and build the backend API. It should have endpoints for creating and retrieving user data. Use Node.js and Express.',
+        expectedOutputs: 'A set of functional REST API endpoints deployed on a test server.',
+        timeLimitMinutes: 180,
+      },
+      {
+        roundNumber: 2,
+        instructions: 'Build the frontend interface that consumes the API from Round 1. It should have a form to create a user and a table to display users.',
+        expectedOutputs: 'A responsive single-page application built with React.',
+        timeLimitMinutes: 240,
+      },
+    ],
   },
 ];
 
@@ -184,6 +218,7 @@ export const mockTemplates: TaskTemplate[] = [
     createdBy: 'company-1',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 40)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 40)).toISOString(),
+    multiRound: false,
   },
   {
     templateId: 'TPL-DATA-001',
@@ -198,6 +233,25 @@ export const mockTemplates: TaskTemplate[] = [
     createdBy: 'company-1',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 35)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 35)).toISOString(),
+    multiRound: false,
+  },
+  {
+    templateId: 'TPL-ENG-002',
+    title: 'Fullstack Mini-App (2 Rounds)',
+    description: 'A comprehensive challenge involving both frontend and backend development to build a mini-application.',
+    instructions: '',
+    expectedOutputs: '',
+    roleCategory: 'Engineering',
+    taskTypes: ['Coding', 'Project'],
+    difficulty: 'Expert',
+    createdBy: 'company-2',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+    updatedAt: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+    multiRound: true,
+    rounds: [
+      { roundNumber: 1, instructions: 'Build the REST API for CRUD operations on a "notes" resource.', expectedOutputs: 'A GitHub repo with the backend code and a Postman collection.', timeLimitMinutes: 120 },
+      { roundNumber: 2, instructions: 'Build a React frontend to consume the "notes" API.', expectedOutputs: 'A deployed frontend application link.', timeLimitMinutes: 180 },
+    ],
   }
 ];
 

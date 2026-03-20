@@ -179,11 +179,11 @@
         },
         "instructions": {
           "type": "string",
-          "description": "Detailed steps or guidelines for the candidate to follow."
+          "description": "Detailed steps or guidelines for the candidate to follow. Used for single-round tasks."
         },
         "expectedOutputs": {
           "type": "string",
-          "description": "A description of what the candidate should deliver as a result."
+          "description": "A description of what the candidate should deliver as a result. Used for single-round tasks."
         },
         "roleCategory": {
           "type": "string",
@@ -211,7 +211,7 @@
         },
         "timeLimitMinutes": {
           "type": "number",
-          "description": "An optional time limit for the task in minutes."
+          "description": "An optional time limit for a single-round task in minutes."
         },
         "deadline": {
           "type": "string",
@@ -240,14 +240,42 @@
           "type": "string",
           "format": "date-time",
           "description": "The timestamp when the task was last updated."
+        },
+        "multiRound": {
+          "type": "boolean",
+          "description": "Whether the task has multiple rounds. Defaults to false."
+        },
+        "rounds": {
+          "type": "array",
+          "description": "An array of rounds for multi-round tasks.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "roundNumber": {
+                "type": "number",
+                "description": "The sequential number of the round."
+              },
+              "instructions": {
+                "type": "string",
+                "description": "Detailed instructions for this specific round."
+              },
+              "expectedOutputs": {
+                "type": "string",
+                "description": "Expected deliverables for this specific round."
+              },
+              "timeLimitMinutes": {
+                "type": "number",
+                "description": "An optional time limit for this round in minutes."
+              }
+            },
+            "required": ["roundNumber", "instructions", "expectedOutputs"]
+          }
         }
       },
       "required": [
         "id",
         "title",
         "description",
-        "instructions",
-        "expectedOutputs",
         "roleCategory",
         "difficulty",
         "deadline",

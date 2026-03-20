@@ -7,6 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -19,6 +25,7 @@ import {
   BookOpen,
   Target,
   ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,6 +36,54 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
   }
 
   const company = await getCompany(task.companyId);
+
+  const renderTaskContent = () => {
+    if (task.multiRound && task.rounds) {
+      return (
+         <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+          {task.rounds.map((round, index) => (
+            <AccordionItem value={`item-${index}`} key={index}>
+              <AccordionTrigger className="text-lg">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">{round.roundNumber}</span>
+                  <span>Round {round.roundNumber}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pl-12 space-y-8 pt-4">
+                <div className="space-y-4">
+                     <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
+                     <p className="text-muted-foreground whitespace-pre-wrap">{round.instructions}</p>
+                </div>
+                 <div className="space-y-4">
+                     <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
+                     <p className="text-muted-foreground whitespace-pre-wrap">{round.expectedOutputs}</p>
+                </div>
+                {round.timeLimitMinutes && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" /> 
+                    <span>Time Limit: {round.timeLimitMinutes} minutes</span>
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      );
+    }
+    
+    return (
+        <div className="space-y-8">
+            <div className="space-y-4">
+                    <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
+                    <p className="text-muted-foreground whitespace-pre-wrap">{task.instructions}</p>
+            </div>
+                <div className="space-y-4">
+                    <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
+                    <p className="text-muted-foreground whitespace-pre-wrap">{task.expectedOutputs}</p>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -59,15 +114,8 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
             <CardHeader>
                 <CardTitle>Task Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-8">
-                <div className="space-y-4">
-                     <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
-                     <p className="text-muted-foreground whitespace-pre-wrap">{task.instructions}</p>
-                </div>
-                 <div className="space-y-4">
-                     <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
-                     <p className="text-muted-foreground whitespace-pre-wrap">{task.expectedOutputs}</p>
-                </div>
+            <CardContent>
+                {renderTaskContent()}
             </CardContent>
         </Card>
 
@@ -89,17 +137,23 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
                         <span className="font-medium text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4" /> Deadline</span>
                         <span className="font-semibold">{format(new Date(task.deadline), 'PPP')}</span>
                     </div>
-                     {task.timeLimitMinutes && (
+                     {task.timeLimitMinutes && !task.multiRound && (
                          <div className="flex items-start justify-between">
                             <span className="font-medium text-muted-foreground flex items-center gap-2"><Clock className="h-4 w-4" /> Time Limit</span>
                             <span className="font-semibold">{task.timeLimitMinutes} minutes</span>
+                        </div>
+                    )}
+                    {task.multiRound && (
+                         <div className="flex items-start justify-between">
+                            <span className="font-medium text-muted-foreground flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Task Type</span>
+                            <span className="font-semibold">Multi-Round ({task.rounds?.length || 0} rounds)</span>
                         </div>
                     )}
                  </CardContent>
             </Card>
              <Card>
                 <CardHeader>
-                    <CardTitle>Task Types</CardTitle>
+                    <CardTitle>Task Categories</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
                     {task.taskTypes?.map(type => (

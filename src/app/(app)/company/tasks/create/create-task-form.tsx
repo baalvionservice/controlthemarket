@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -23,11 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
-import { CalendarIcon, Sparkles } from 'lucide-react';
+import { CalendarIcon, Sparkles, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -46,20 +47,53 @@ const roleTaskTypesMap: Record<RoleCategory, TaskType[]> = {
   Data: ["Coding", "Project", "MCQ", "Documentation"],
 };
 
-
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
   description: z.string().min(20, 'Description must be at least 20 characters.'),
-  instructions: z.string().min(20, 'Instructions must be at least 20 characters.'),
-  expectedOutputs: z.string().min(20, 'Expected Outputs must be at least 20 characters.'),
   roleCategory: z.enum(roleCategories, {required_error: "Please select a role category."}),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced', 'Expert'], {required_error: "Please select a difficulty."}),
   taskTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: 'You have to select at least one task type.',
   }),
   deadline: z.date({ required_error: 'A deadline is required.' }),
+  multiRound: z.boolean().default(false),
+  // Fields for single-round tasks
+  instructions: z.string(),
+  expectedOutputs: z.string(),
   timeLimitMinutes: z.coerce.number().positive().int().optional(),
+  // Fields for multi-round tasks
+  rounds: z.array(z.object({
+    instructions: z.string().min(20, 'Instructions must be at least 20 characters.'),
+    expectedOutputs: z.string().min(20, 'Expected Outputs must be at least 20 characters.'),
+    timeLimitMinutes: z.coerce.number().positive().int().optional(),
+  })).optional(),
+}).superRefine((data, ctx) => {
+  if (data.multiRound) {
+    if (!data.rounds || data.rounds.length === 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['rounds'],
+        message: 'Multi-round tasks must have at least one round.',
+      });
+    }
+  } else {
+    if (data.instructions.length < 20) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['instructions'],
+        message: 'Instructions must be at least 20 characters for a single-round task.',
+      });
+    }
+    if (data.expectedOutputs.length < 20) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['expectedOutputs'],
+          message: 'Expected outputs must be at least 20 characters for a single-round task.',
+        });
+      }
+  }
 });
+
 
 export function CreateTaskForm() {
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
@@ -74,10 +108,18 @@ export function CreateTaskForm() {
       expectedOutputs: '',
       taskTypes: [],
       timeLimitMinutes: undefined,
+      multiRound: false,
+      rounds: [],
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'rounds',
+  });
+
   const watchedRoleCategory = form.watch('roleCategory');
+  const watchedMultiRound = form.watch('multiRound');
   
   const availableTaskTypes = useMemo(() => {
     if (!watchedRoleCategory) return [];
@@ -97,17 +139,20 @@ export function CreateTaskForm() {
     const template = templates.find(t => t.templateId === templateId);
     if (!template) return;
 
+    form.reset();
     form.setValue('title', template.title, { shouldValidate: true });
     form.setValue('description', template.description, { shouldValidate: true });
-    form.setValue('instructions', template.instructions, { shouldValidate: true });
-    form.setValue('expectedOutputs', template.expectedOutputs, { shouldValidate: true });
     form.setValue('roleCategory', template.roleCategory, { shouldValidate: true });
     form.setValue('difficulty', template.difficulty, { shouldValidate: true });
     form.setValue('taskTypes', template.taskTypes || [], { shouldValidate: true });
-    if (template.timeLimitMinutes) {
-        form.setValue('timeLimitMinutes', template.timeLimitMinutes, { shouldValidate: true });
+    form.setValue('multiRound', template.multiRound || false, { shouldValidate: true });
+    
+    if (template.multiRound && template.rounds) {
+      form.setValue('rounds', template.rounds.map(r => ({...r, timeLimitMinutes: r.timeLimitMinutes || undefined })), { shouldValidate: true });
     } else {
-        form.setValue('timeLimitMinutes', undefined, { shouldValidate: true });
+      form.setValue('instructions', template.instructions, { shouldValidate: true });
+      form.setValue('expectedOutputs', template.expectedOutputs, { shouldValidate: true });
+      form.setValue('timeLimitMinutes', template.timeLimitMinutes || undefined, { shouldValidate: true });
     }
     
     toast({
@@ -175,42 +220,6 @@ export function CreateTaskForm() {
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="instructions"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Instructions</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Provide detailed, step-by-step instructions for the candidate."
-                      className="min-h-[150px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="expectedOutputs"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Expected Outputs</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe the final deliverables (e.g., 'A link to a GitHub repository', 'A PDF document')."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <FormField
                 control={form.control}
@@ -218,7 +227,7 @@ export function CreateTaskForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role/Position</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role category" />
@@ -241,7 +250,7 @@ export function CreateTaskForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Difficulty</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a difficulty level" />
@@ -261,6 +270,131 @@ export function CreateTaskForm() {
             </div>
           </div>
           
+          {/* Instructions and Outputs */}
+           <div className="space-y-6 rounded-md border p-6">
+                <FormField
+                    control={form.control}
+                    name="multiRound"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                            <FormLabel className="text-base">Multi-Round Task</FormLabel>
+                            <FormDescription>
+                            Enable this to create a task with multiple sequential rounds.
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                        </FormItem>
+                    )}
+                />
+               
+               {!watchedMultiRound ? (
+                 <>
+                    <FormField
+                        control={form.control}
+                        name="instructions"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Instructions</FormLabel>
+                            <FormControl>
+                                <Textarea
+                                placeholder="Provide detailed, step-by-step instructions for the candidate."
+                                className="min-h-[150px]"
+                                {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+
+                        <FormField
+                        control={form.control}
+                        name="expectedOutputs"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Expected Outputs</FormLabel>
+                            <FormControl>
+                                <Textarea
+                                placeholder="Describe the final deliverables (e.g., 'A link to a GitHub repository', 'A PDF document')."
+                                className="min-h-[100px]"
+                                {...field}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                 </>
+               ) : (
+                <div className="space-y-6">
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="rounded-md border bg-muted/50 p-4 space-y-4 relative">
+                            <div className="flex justify-between items-center">
+                                <h4 className="font-medium">Round {index + 1}</h4>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </div>
+                           
+                            <FormField
+                                control={form.control}
+                                name={`rounds.${index}.instructions`}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Instructions</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder={`Instructions for round ${index + 1}`} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name={`rounds.${index}.expectedOutputs`}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Expected Outputs</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder={`Expected outputs for round ${index + 1}`} {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                             <FormField
+                                control={form.control}
+                                name={`rounds.${index}.timeLimitMinutes`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Time Limit (minutes)</FormLabel>
+                                    <FormControl>
+                                      <Input type="number" placeholder="e.g., 60" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                        </div>
+                    ))}
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => append({ instructions: '', expectedOutputs: '', timeLimitMinutes: undefined })}
+                    >
+                        Add Round
+                    </Button>
+                    <FormMessage>{form.formState.errors.rounds?.message}</FormMessage>
+                </div>
+               )}
+            </div>
+
           {/* Task Type */}
           <div className="space-y-6 rounded-md border p-6">
              <h3 className="text-lg font-medium">Task Type</h3>
@@ -331,12 +465,12 @@ export function CreateTaskForm() {
                 name="timeLimitMinutes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Time Limit (in minutes)</FormLabel>
+                    <FormLabel>Overall Time Limit (in minutes)</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="e.g., 120" {...field} />
+                      <Input type="number" placeholder="e.g., 120" {...field} disabled={watchedMultiRound} />
                     </FormControl>
                     <FormDescription>
-                      Leave blank for no time limit.
+                      For single-round tasks. Leave blank for no time limit.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

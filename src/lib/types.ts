@@ -44,7 +44,8 @@ export interface Company {
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 export type TaskStatus = 'draft' | 'published' | 'closed' | 'archived';
 export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
-export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project';
+export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project' | 'UI' | 'Component' | 'Styling' | 'Feature Implementation';
+export type TaskPriority = 'High' | 'Medium' | 'Low';
 
 export interface TaskRound {
   roundNumber: number;
@@ -62,6 +63,7 @@ export interface Task {
   roleCategory: RoleCategory;
   taskTypes?: TaskType[];
   difficulty: TaskDifficulty;
+  priority?: TaskPriority;
   timeLimitMinutes?: number;
   deadline: string; // ISO 8601 date string
   companyId: string;
@@ -71,6 +73,8 @@ export interface Task {
   updatedAt: string; // ISO 8601 date string
   multiRound?: boolean;
   rounds?: TaskRound[];
+  imageUrl?: string;
+  imageHint?: string;
 }
 
 export interface TaskTemplate {

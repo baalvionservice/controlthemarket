@@ -37,11 +37,11 @@ import type { RoleCategory, TaskDifficulty, TaskType, TaskTemplate } from '@/lib
 import { mockTemplates } from '@/lib/mock-data';
 
 const roleCategories: RoleCategory[] = ["Engineering", "Design", "Marketing", "Business", "Data"];
-const allTaskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project"];
+const allTaskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation"];
 
 const roleTaskTypesMap: Record<RoleCategory, TaskType[]> = {
-  Engineering: ["Coding", "Project", "Documentation"],
-  Design: ["Design", "Project", "Documentation"],
+  Engineering: ["Coding", "Project", "Documentation", "UI", "Component", "Styling", "Feature Implementation"],
+  Design: ["Design", "Project", "Documentation", "UI", "Styling"],
   Marketing: ["Documentation", "Project", "MCQ"],
   Business: ["Documentation", "Project"],
   Data: ["Coding", "Project", "MCQ", "Documentation"],

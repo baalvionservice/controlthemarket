@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { TaskCard } from './task-card';
-import type { Task, RoleCategory, TaskDifficulty, TaskType } from '@/lib/types';
+import type { Task, RoleCategory, TaskDifficulty, TaskType, TaskPriority } from '@/lib/types';
 import { Search } from 'lucide-react';
 
 export type TaskWithCompany = Task & {
@@ -20,61 +20,77 @@ export type TaskWithCompany = Task & {
 
 const roleCategories: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
-const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project"];
+const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation"];
+const priorities: (TaskPriority | 'All')[] = ["All", "High", "Medium", "Low"];
 
 
 export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('All');
+  const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('Engineering');
   const [difficultyFilter, setDifficultyFilter] = useState<TaskDifficulty | 'All'>('All');
   const [taskTypeFilter, setTaskTypeFilter] = useState<TaskType | 'All'>('All');
+  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'All'>('All');
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
+      if (task.status !== 'published') return false;
       const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) || task.companyName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = roleFilter === 'All' || task.roleCategory === roleFilter;
       const matchesDifficulty = difficultyFilter === 'All' || task.difficulty === difficultyFilter;
       const matchesTaskType = taskTypeFilter === 'All' || (task.taskTypes || []).includes(taskTypeFilter);
-      return matchesSearch && matchesRole && matchesDifficulty && matchesTaskType;
+      const matchesPriority = priorityFilter === 'All' || task.priority === priorityFilter;
+      return matchesSearch && matchesRole && matchesDifficulty && matchesTaskType && matchesPriority;
     });
-  }, [tasks, searchTerm, roleFilter, difficultyFilter, taskTypeFilter]);
+  }, [tasks, searchTerm, roleFilter, difficultyFilter, taskTypeFilter, priorityFilter]);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search by title or company..."
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 md:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search by title or company..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleCategory | 'All')}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by role" />
+              </SelectTrigger>
+              <SelectContent>
+                {roleCategories.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={difficultyFilter} onValueChange={(value) => setDifficultyFilter(value as TaskDifficulty | 'All')}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                {difficulties.map(diff => <SelectItem key={diff} value={diff}>{diff}</SelectItem>)}
+              </SelectContent>
+            </Select>
         </div>
-        <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleCategory | 'All')}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Filter by role" />
-          </SelectTrigger>
-          <SelectContent>
-            {roleCategories.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={difficultyFilter} onValueChange={(value) => setDifficultyFilter(value as TaskDifficulty | 'All')}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Filter by difficulty" />
-          </SelectTrigger>
-          <SelectContent>
-            {difficulties.map(diff => <SelectItem key={diff} value={diff}>{diff}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={taskTypeFilter} onValueChange={(value) => setTaskTypeFilter(value as TaskType | 'All')}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Filter by type" />
-          </SelectTrigger>
-          <SelectContent>
-            {taskTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col gap-4 md:flex-row">
+            <Select value={taskTypeFilter} onValueChange={(value) => setTaskTypeFilter(value as TaskType | 'All')}>
+              <SelectTrigger className="w-full md:w-[240px]">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                {taskTypes.map(type => <SelectItem key={type} value={type} className="capitalize">{type}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={priorityFilter} onValueChange={(value) => setPriorityFilter(value as TaskPriority | 'All')}>
+                <SelectTrigger className="w-full md:w-[240px]">
+                    <SelectValue placeholder="Filter by priority" />
+                </SelectTrigger>
+                <SelectContent>
+                    {priorities.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                </SelectContent>
+            </Select>
+        </div>
       </div>
 
       {filteredTasks.length > 0 ? (

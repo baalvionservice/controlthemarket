@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getTask, getCompany } from '@/lib/api';
 import { notFound, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   Card,
   CardContent,
@@ -29,11 +30,12 @@ import {
   Target,
   ArrowRight,
   Sparkles,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import Link from 'next/link';
 import { SubmissionForm } from './submission-form';
-import type { Task, Company, Submission } from '@/lib/types';
+import type { Task, Company, Submission, TaskPriority } from '@/lib/types';
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { cn } from '@/lib/utils';
@@ -90,6 +92,17 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
       </div>
     );
   }
+
+  const getPriorityVariant = (priority?: TaskPriority) => {
+    switch (priority) {
+      case 'High':
+        return 'destructive';
+      case 'Medium':
+        return 'warning';
+      default:
+        return 'outline';
+    }
+  };
 
   const renderTaskContent = () => {
     if (task.multiRound && task.rounds) {
@@ -183,7 +196,12 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
             <CardHeader>
                 <CardTitle>Task Details</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
+                {task.imageUrl && (
+                    <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+                        <Image src={task.imageUrl} alt={task.title} fill className="object-cover" data-ai-hint={task.imageHint}/>
+                    </div>
+                )}
                 {renderTaskContent()}
             </CardContent>
         </Card>
@@ -202,6 +220,12 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                         <span className="font-medium text-muted-foreground flex items-center gap-2"><Award className="h-4 w-4" /> Difficulty</span>
                         <Badge variant="outline">{task.difficulty}</Badge>
                     </div>
+                    {task.priority && (
+                         <div className="flex items-start justify-between">
+                            <span className="font-medium text-muted-foreground flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Priority</span>
+                            <Badge variant={getPriorityVariant(task.priority)}>{task.priority}</Badge>
+                        </div>
+                    )}
                      <div className="flex items-start justify-between">
                         <span className="font-medium text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4" /> Deadline</span>
                         <span className="font-semibold">{format(new Date(task.deadline), 'PPP')}</span>

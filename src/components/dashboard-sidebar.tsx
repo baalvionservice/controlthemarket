@@ -43,7 +43,7 @@ import {
 
 const candidateNav = [
   { name: 'Dashboard', href: '/candidate/dashboard', icon: LayoutDashboard },
-  { name: 'Browse Tasks', href: '/candidate/tasks', icon: Briefcase },
+  { name: 'Role Tasks', href: '/candidate/tasks', icon: Briefcase },
   { name: 'My Tasks', href: '/candidate/submissions', icon: FileText },
   { name: 'Rankings', href: '/candidate/rankings', icon: Trophy },
 ];

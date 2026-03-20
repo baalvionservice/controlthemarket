@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -34,7 +34,16 @@ import { AiAssistantDialog } from './ai-assistant-dialog';
 import type { RoleCategory, TaskDifficulty, TaskType } from '@/lib/types';
 
 const roleCategories: RoleCategory[] = ["Engineering", "Design", "Marketing", "Business", "Data"];
-const taskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project"];
+const allTaskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project"];
+
+const roleTaskTypesMap: Record<RoleCategory, TaskType[]> = {
+  Engineering: ["Coding", "Project", "Documentation"],
+  Design: ["Design", "Project", "Documentation"],
+  Marketing: ["Documentation", "Project", "MCQ"],
+  Business: ["Documentation", "Project"],
+  Data: ["Coding", "Project", "MCQ", "Documentation"],
+};
+
 
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
@@ -64,6 +73,23 @@ export function CreateTaskForm() {
       timeLimitMinutes: undefined,
     },
   });
+
+  const watchedRoleCategory = form.watch('roleCategory');
+  
+  const availableTaskTypes = useMemo(() => {
+    if (!watchedRoleCategory) return [];
+    return roleTaskTypesMap[watchedRoleCategory] || [];
+  }, [watchedRoleCategory]);
+
+  useEffect(() => {
+    const currentSelectedTypes = form.getValues('taskTypes') || [];
+    const validSelectedTypes = currentSelectedTypes.filter(type => availableTaskTypes.includes(type as TaskType));
+    
+    if (currentSelectedTypes.length !== validSelectedTypes.length) {
+      form.setValue('taskTypes', validSelectedTypes, { shouldValidate: true });
+    }
+  }, [watchedRoleCategory, availableTaskTypes, form]);
+
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // In a real app, you would differentiate between "Save Draft" and "Publish"
@@ -221,43 +247,49 @@ export function CreateTaskForm() {
                   <div className="mb-4">
                     <FormLabel className="text-base">Select Task Types</FormLabel>
                     <FormDescription>
-                      Choose one or more types that apply to this task.
+                      {watchedRoleCategory
+                        ? 'Choose one or more types that apply to this task.'
+                        : 'Please select a Role/Position to see available task types.'}
                     </FormDescription>
                   </div>
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                  {taskTypes.map((item) => (
-                    <FormField
-                      key={item}
-                      control={form.control}
-                      name="taskTypes"
-                      render={({ field }) => {
-                        return (
-                          <FormItem
-                            key={item}
-                            className="flex flex-row items-start space-x-3 space-y-0"
-                          >
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(item)}
-                                onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...(field.value || []), item])
-                                    : field.onChange(
-                                        field.value?.filter(
-                                          (value) => value !== item
+                  {allTaskTypes.map((item) => {
+                    const isEnabled = availableTaskTypes.includes(item);
+                    return (
+                      <FormField
+                        key={item}
+                        control={form.control}
+                        name="taskTypes"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item)}
+                                  disabled={!isEnabled}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...(field.value || []), item])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== item
+                                          )
                                         )
-                                      )
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {item}
-                            </FormLabel>
-                          </FormItem>
-                        )
-                      }}
-                    />
-                  ))}
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className={cn("font-normal", !isEnabled && "text-muted-foreground/50")}>
+                                {item}
+                              </FormLabel>
+                            </FormItem>
+                          )
+                        }}
+                      />
+                    );
+                  })}
                   </div>
                   <FormMessage />
                 </FormItem>

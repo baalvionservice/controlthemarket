@@ -24,6 +24,7 @@ export type EvaluationData = {
     id: string;
     title: string;
     roleCategory: RoleCategory;
+    multiRound?: boolean;
   };
   status: Submission['status'];
   score?: number;
@@ -63,6 +64,7 @@ export default async function CompanySubmissionsPage() {
                 id: task.id,
                 title: task.title,
                 roleCategory: task.roleCategory,
+                multiRound: task.multiRound,
             },
             status: submission.status,
             score: evaluation?.score,

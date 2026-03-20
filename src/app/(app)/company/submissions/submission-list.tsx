@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2 } from 'lucide-react';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight } from 'lucide-react';
 import type { SubmissionStatus, RoleCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
@@ -43,7 +43,7 @@ import { cn } from '@/lib/utils';
 type SortKey = 'candidate.name' | 'score' | 'applicationDate';
 type SortDirection = 'asc' | 'desc';
 
-const statuses: (SubmissionStatus | 'All')[] = ["All", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted"];
+const statuses: (SubmissionStatus | 'All')[] = ["All", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round"];
 const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 
 export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
@@ -112,6 +112,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
         return 'default'; 
       case 'in-review':
       case 'evaluated':
+      case 'moved-to-next-round':
         return 'secondary';
       case 'pending':
       case 'resubmitted':
@@ -127,19 +128,33 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
     setTableData(prev => prev.map(item => ids.includes(item.id) ? {...item, status} : item));
   };
   
-  const handleBulkAction = (action: 'shortlist' | 'reject') => {
+  const handleBulkAction = (action: 'shortlist' | 'reject' | 'move-to-next-round') => {
     if (selectedRows.size === 0) return;
-    const newStatus = action === 'shortlist' ? 'shortlisted' : 'rejected';
+    
+    let newStatus: SubmissionStatus;
+    let actionVerb: string;
+
+    if (action === 'shortlist') {
+        newStatus = 'shortlisted';
+        actionVerb = 'shortlisted';
+    } else if (action === 'reject') {
+        newStatus = 'rejected';
+        actionVerb = 'rejected';
+    } else {
+        newStatus = 'moved-to-next-round';
+        actionVerb = 'moved to the next round';
+    }
+    
     handleStatusChange(Array.from(selectedRows), newStatus);
     
     toast({
         title: 'Bulk Action Successful',
-        description: `${selectedRows.size} candidate(s) have been ${newStatus}.`
+        description: `${selectedRows.size} candidate(s) have been ${actionVerb}.`
     });
     setSelectedRows(new Set());
   }
 
-  const handleRowAction = (action: 'shortlist' | 'reject' | 'undo', id: string) => {
+  const handleRowAction = (action: 'shortlist' | 'reject' | 'undo' | 'move-to-next-round', id: string) => {
     const candidateName = tableData.find(d => d.id === id)?.candidate.name;
     let newStatus: SubmissionStatus;
     let toastTitle: string;
@@ -149,6 +164,10 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
         newStatus = 'pending';
         toastTitle = 'Action Undone';
         toastDescription = `${candidateName}'s status has been reset to Pending.`;
+    } else if (action === 'move-to-next-round') {
+        newStatus = 'moved-to-next-round';
+        toastTitle = 'Candidate Advanced';
+        toastDescription = `${candidateName} has been moved to the next round.`;
     } else {
         newStatus = action === 'shortlist' ? 'shortlisted' : 'rejected';
         toastTitle = `Candidate ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`;
@@ -253,6 +272,9 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                 <Button variant="destructive" onClick={() => handleBulkAction('reject')}>
                     <XCircle className="mr-2 h-4 w-4" /> Reject ({selectedRows.size})
                 </Button>
+                <Button variant="outline" onClick={() => handleBulkAction('move-to-next-round')}>
+                    <ChevronRight className="mr-2 h-4 w-4" /> Move to Next Round ({selectedRows.size})
+                </Button>
              </div>
           )}
       </div>
@@ -333,6 +355,12 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                         </DropdownMenuItem>
                         <DropdownMenuItem>View History</DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        {item.task.multiRound && (
+                            <DropdownMenuItem onClick={() => handleRowAction('move-to-next-round', item.id)}>
+                                <ChevronRight className="mr-2 h-4 w-4"/>
+                                Move to Next Round
+                            </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={() => handleRowAction('shortlist', item.id)}>
                             <Star className="mr-2 h-4 w-4"/>
                             Shortlist

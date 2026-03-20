@@ -11,6 +11,7 @@ export interface User {
   isActive: boolean;
   isVerified?: boolean;
   companyId?: string; // For users with the 'company' role
+  companyName?: string; // For users with the 'company' role
   profile?: {
     avatarUrl: string;
     bio?: string;

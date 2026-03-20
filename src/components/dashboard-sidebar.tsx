@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -121,7 +122,7 @@ export function DashboardSidebar({ children }: { children: React.ReactNode }) {
                   <div className="flex-1 truncate">
                     <p className="font-semibold text-sidebar-foreground">{user.name}</p>
                     <p className="text-xs text-sidebar-foreground/70">
-                      {user.email}
+                      {user.role === 'company' && user.companyName ? user.companyName : user.email}
                     </p>
                   </div>
                   <ChevronDown className="h-4 w-4 text-sidebar-foreground/70" />

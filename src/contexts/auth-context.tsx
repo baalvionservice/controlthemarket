@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { User, UserRole, Company } from '@/lib/types';
@@ -66,6 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
     // Password is not checked in this mock implementation
     if (foundUser) {
+      if (foundUser.role === 'company' && foundUser.companyId) {
+        const company = sessionCompanies.find(c => c.id === foundUser.companyId);
+        if (company) {
+            foundUser.companyName = company.name;
+        }
+      }
       setUser(foundUser);
       localStorage.setItem('skillmatch-user', JSON.stringify(foundUser));
       return { success: true };
@@ -113,6 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
       setSessionCompanies(prev => [...prev, newCompany]);
       newUser.companyId = companyId;
+      newUser.companyName = newCompany.name;
     }
 
     setSessionUsers(prev => [...prev, newUser]);

@@ -1,5 +1,6 @@
+
 import { getTasksByCompany, getSubmissions, getEvaluations, getTask, getUser } from '@/lib/api';
-import { mockUsers } from '@/lib/mock-data';
+import { mockUsers, mockCompanies } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +27,8 @@ const CURRENT_USER_ID = 'user-2';
 export default async function CompanyDashboard() {
   const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
   if (!user || !user.companyId) return <div>Company not found</div>;
+
+  const company = mockCompanies.find(c => c.id === user.companyId);
 
   const [tasks, allSubmissions, allEvaluations] = await Promise.all([
       getTasksByCompany(user.companyId),
@@ -63,7 +66,7 @@ export default async function CompanyDashboard() {
     <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
-          Company Dashboard
+          {company?.name || 'Company'} Dashboard
         </h2>
         <div className="flex items-center space-x-2">
           <Button asChild>

@@ -114,6 +114,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: details.name,
       email: details.email,
       role: details.role,
+      createdAt: new Date().toISOString(),
+      isActive: true,
       profile: {
         avatarUrl: `https://picsum.photos/seed/${userId}/100/100`,
       },

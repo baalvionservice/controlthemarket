@@ -1,16 +1,30 @@
 export type UserRole = 'candidate' | 'company' | 'admin';
+export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
+  createdAt: string; // ISO 8601 date string
+  isActive: boolean;
+  isVerified?: boolean;
+  companyId?: string; // For users with the 'company' role
   profile?: {
     avatarUrl: string;
     bio?: string;
+    location?: string;
+    experienceLevel?: ExperienceLevel;
     skills?: string[];
+    githubUrl?: string;
+    linkedinUrl?: string;
+    portfolioLinks?: string[];
   };
-  companyId?: string; // For users with the 'company' role
+  candidatePerformance?: {
+    completedTasks?: number;
+    averageScore?: number;
+    ranking?: number;
+  };
 }
 
 export interface Company {

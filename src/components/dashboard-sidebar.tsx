@@ -60,6 +60,7 @@ const adminNav = [
   { name: 'Manage Users', href: '/admin/users', icon: Users },
   { name: 'Manage Companies', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
+  { name: 'Manage Submissions', href: '/admin/submissions', icon: FileCheck },
 ];
 
 export function DashboardSidebar({ children }: { children: React.ReactNode }) {

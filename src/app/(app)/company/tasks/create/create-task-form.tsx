@@ -39,12 +39,15 @@ const taskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Proj
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
   description: z.string().min(20, 'Description must be at least 20 characters.'),
+  instructions: z.string().min(20, 'Instructions must be at least 20 characters.'),
+  expectedOutputs: z.string().min(20, 'Expected Outputs must be at least 20 characters.'),
   roleCategory: z.enum(roleCategories, {required_error: "Please select a role category."}),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced', 'Expert'], {required_error: "Please select a difficulty."}),
   taskTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: 'You have to select at least one task type.',
   }),
   deadline: z.date({ required_error: 'A deadline is required.' }),
+  timeLimitMinutes: z.coerce.number().positive().int().optional(),
 });
 
 export function CreateTaskForm() {
@@ -55,7 +58,10 @@ export function CreateTaskForm() {
     defaultValues: {
       title: '',
       description: '',
+      instructions: '',
+      expectedOutputs: '',
       taskTypes: [],
+      timeLimitMinutes: undefined,
     },
   });
 
@@ -108,8 +114,44 @@ export function CreateTaskForm() {
                   </FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the task in detail, including instructions and expected outputs."
-                      className="min-h-[200px]"
+                      placeholder="Provide a general overview of the task and its objectives."
+                      className="min-h-[120px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="instructions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Instructions</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Provide detailed, step-by-step instructions for the candidate."
+                      className="min-h-[150px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="expectedOutputs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expected Outputs</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe the final deliverables (e.g., 'A link to a GitHub repository', 'A PDF document')."
+                      className="min-h-[100px]"
                       {...field}
                     />
                   </FormControl>
@@ -226,45 +268,66 @@ export function CreateTaskForm() {
           {/* Timing */}
           <div className="space-y-6 rounded-md border p-6">
             <h3 className="text-lg font-medium">Timing</h3>
-            <FormField
-              control={form.control}
-              name="deadline"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Submission Deadline</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-full pl-3 text-left font-normal md:w-1/2',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date() || date < new Date('1900-01-01')}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+               <FormField
+                control={form.control}
+                name="timeLimitMinutes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Time Limit (in minutes)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="e.g., 120" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Leave blank for no time limit.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="deadline"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Submission Deadline</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < new Date() || date < new Date('1900-01-01')}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                     <FormDescription>
+                       The final date candidates can submit their work.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
           {/* Templates */}

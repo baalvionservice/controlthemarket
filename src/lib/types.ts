@@ -42,7 +42,7 @@ export interface Company {
 }
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
-export type TaskStatus = 'draft' | 'open' | 'closed' | 'archived';
+export type TaskStatus = 'draft' | 'published' | 'closed' | 'archived';
 export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
 export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project';
 
@@ -51,13 +51,18 @@ export interface Task {
   id: string;
   title: string;
   description: string;
+  instructions: string;
+  expectedOutputs: string;
   roleCategory: RoleCategory;
   taskTypes?: TaskType[];
   difficulty: TaskDifficulty;
+  timeLimitMinutes?: number;
   deadline: string; // ISO 8601 date string
   companyId: string;
+  createdBy: string; // User ID of creator
   status: TaskStatus;
   createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
 }
 
 export type SubmissionStatus =

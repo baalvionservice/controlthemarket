@@ -167,7 +167,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the task."
+          "description": "Unique identifier for the task, auto-generated."
         },
         "title": {
           "type": "string",
@@ -175,25 +175,43 @@
         },
         "description": {
           "type": "string",
-          "description": "A detailed description of the task requirements."
+          "description": "A detailed overview of the task requirements."
+        },
+        "instructions": {
+          "type": "string",
+          "description": "Detailed steps or guidelines for the candidate to follow."
+        },
+        "expectedOutputs": {
+          "type": "string",
+          "description": "A description of what the candidate should deliver as a result."
         },
         "roleCategory": {
           "type": "string",
-          "enum": ["Engineering", "Design", "Marketing", "Business", "Data"],
+          "enum": [
+            "Engineering",
+            "Design",
+            "Marketing",
+            "Business",
+            "Data"
+          ],
           "description": "The professional vertical the task belongs to."
-        },
-        "taskTypes": {
-          "type": "array",
-          "description": "The types of the task (e.g., Coding, MCQ).",
-          "items": {
-            "type": "string",
-            "enum": ["Coding", "MCQ", "Design", "Documentation", "Project"]
-          }
         },
         "difficulty": {
           "type": "string",
           "enum": ["Beginner", "Intermediate", "Advanced", "Expert"],
           "description": "The difficulty level of the task."
+        },
+        "taskTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["Coding", "MCQ", "Design", "Documentation", "Project"]
+          },
+          "description": "An array of types that categorize the task (e.g., 'Coding', 'Design')."
+        },
+        "timeLimitMinutes": {
+          "type": "number",
+          "description": "An optional time limit for the task in minutes."
         },
         "deadline": {
           "type": "string",
@@ -204,18 +222,41 @@
           "type": "string",
           "description": "The ID of the company that created the task."
         },
+        "createdBy": {
+          "type": "string",
+          "description": "The ID of the user who created the task."
+        },
         "status": {
-            "type": "string",
-            "enum": ["draft", "open", "closed", "archived"],
-            "description": "The current lifecycle state of the task."
+          "type": "string",
+          "enum": ["draft", "published", "closed", "archived"],
+          "description": "The current lifecycle state of the task. 'Published' means it is open for submissions."
         },
         "createdAt": {
           "type": "string",
           "format": "date-time",
           "description": "The timestamp when the task was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the task was last updated."
         }
       },
-      "required": ["id", "title", "description", "roleCategory", "difficulty", "deadline", "companyId", "status", "createdAt"]
+      "required": [
+        "id",
+        "title",
+        "description",
+        "instructions",
+        "expectedOutputs",
+        "roleCategory",
+        "difficulty",
+        "deadline",
+        "companyId",
+        "createdBy",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
     },
     "Submission": {
       "title": "Submission",

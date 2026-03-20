@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import type { SubmissionWithDetails } from './page';
-import type { SubmissionStatus, TaskDifficulty } from '@/lib/types';
+import type { SubmissionStatus, TaskDifficulty, SubmissionContentType } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -33,11 +33,13 @@ import { format } from 'date-fns';
 
 const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
+const submissionTypes: (SubmissionContentType | 'All')[] = ["All", "link", "file", "externalLink"];
 
 export function SubmissionList({ submissions }: { submissions: SubmissionWithDetails[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'All'>('All');
   const [difficultyFilter, setDifficultyFilter] = useState<TaskDifficulty | 'All'>('All');
+  const [submissionTypeFilter, setSubmissionTypeFilter] = useState<SubmissionContentType | 'All'>('All');
 
   const filteredSubmissions = useMemo(() => {
     return submissions.filter((sub) => {
@@ -47,10 +49,11 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
         const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'All' || sub.status === statusFilter;
         const matchesDifficulty = difficultyFilter === 'All' || task.difficulty === difficultyFilter;
+        const matchesSubmissionType = submissionTypeFilter === 'All' || sub.content?.type === submissionTypeFilter;
         
-        return matchesSearch && matchesStatus && matchesDifficulty;
+        return matchesSearch && matchesStatus && matchesDifficulty && matchesSubmissionType;
     }).sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
-  }, [submissions, searchTerm, statusFilter, difficultyFilter]);
+  }, [submissions, searchTerm, statusFilter, difficultyFilter, submissionTypeFilter]);
 
    const getStatusVariant = (status: SubmissionStatus) => {
     switch (status) {
@@ -99,6 +102,17 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
             {difficulties.map(diff => <SelectItem key={diff} value={diff}>{diff}</SelectItem>)}
           </SelectContent>
         </Select>
+        <Select value={submissionTypeFilter} onValueChange={(value) => setSubmissionTypeFilter(value as SubmissionContentType | 'All')}>
+            <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by submission type" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="All">All Types</SelectItem>
+                <SelectItem value="link">GitHub</SelectItem>
+                <SelectItem value="file">File</SelectItem>
+                <SelectItem value="externalLink">External Link</SelectItem>
+            </SelectContent>
+        </Select>
       </div>
 
       <div className="rounded-md border">
@@ -110,7 +124,8 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                 <TableHead>Difficulty</TableHead>
                 <TableHead>Last Updated</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Submission</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Content</TableHead>
                 <TableHead>Score</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
@@ -148,25 +163,31 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                       </div>
                     </TableCell>
                     <TableCell>
-                        <Tooltip>
-                            <TooltipTrigger className="flex items-center justify-center w-full">
-                            {sub.content?.type === 'link' ? (
-                                <Github className="h-5 w-5 text-muted-foreground" />
-                            ) : sub.content?.type === 'file' ? (
-                                <FileText className="h-5 w-5 text-muted-foreground" />
-                            ) : sub.content?.type === 'externalLink' ? (
-                                <LinkIcon className="h-5 w-5 text-muted-foreground" />
+                        {sub.content?.type ? (
+                            <div className="flex items-center gap-2 capitalize">
+                                {sub.content?.type === 'link' && <Github className="h-4 w-4 text-muted-foreground" />}
+                                {sub.content?.type === 'file' && <FileText className="h-4 w-4 text-muted-foreground" />}
+                                {sub.content?.type === 'externalLink' && <LinkIcon className="h-4 w-4 text-muted-foreground" />}
+                                <span>{sub.content.type === 'link' ? 'GitHub' : sub.content.type === 'externalLink' ? 'Link' : 'File'}</span>
+                            </div>
+                        ) : (
+                            <span className="text-muted-foreground">-</span>
+                        )}
+                    </TableCell>
+                    <TableCell>
+                        {sub.content?.value ? (
+                            sub.content.type === 'file' ? (
+                                <span className="text-sm">{sub.content.fileName || 'View file'}</span>
                             ) : (
-                                <span className="text-muted-foreground">-</span>
-                            )}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                {sub.content?.type === 'link' && `GitHub: ${sub.content.value}`}
-                                {sub.content?.type === 'file' && `File: ${sub.content.fileName || 'unknown'}`}
-                                {sub.content?.type === 'externalLink' && `Link: ${sub.content.value}`}
-                                {!sub.content && 'Not submitted'}
-                            </TooltipContent>
-                        </Tooltip>
+                                <Button asChild variant="link" size="sm" className="p-0 h-auto">
+                                    <Link href={sub.content.value} target="_blank" rel="noopener noreferrer" className="truncate max-w-[150px]">
+                                        {sub.content.value}
+                                    </Link>
+                                </Button>
+                            )
+                        ) : (
+                            <span className="text-muted-foreground">-</span>
+                        )}
                     </TableCell>
                     <TableCell>
                       {sub.evaluation ? `${sub.evaluation.score}/100` : 'N/A'}
@@ -182,7 +203,7 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                 ))
               ) : (
                   <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center">
+                      <TableCell colSpan={8} className="h-24 text-center">
                           No tasks found.
                       </TableCell>
                   </TableRow>

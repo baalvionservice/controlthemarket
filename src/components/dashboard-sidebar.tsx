@@ -53,7 +53,6 @@ const companyNav = [
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
   { name: 'Compare', href: '/company/compare', icon: GitCompare },
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
-  { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
 
 const adminNav = [
@@ -61,8 +60,9 @@ const adminNav = [
   { name: 'Manage Users', href: '/admin/users', icon: Users },
   { name: 'Manage Companies', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
-  { name: 'Manage Submissions', href: '/admin/submissions', icon: FileCheck },
+  { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },
+  { name: 'System Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export function DashboardSidebar({ children }: { children: React.ReactNode }) {

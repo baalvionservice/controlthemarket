@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, FileWarning, History } from 'lucide-react';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, FileWarning, History, Undo2 } from 'lucide-react';
 import type { SubmissionStatus, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { AdminSubmissionData } from './page';
@@ -130,7 +130,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
     setTableData(prev => prev.map(item => ids.includes(item.id) ? {...item, status} : item));
   };
   
-  const handleBulkAction = (action: 'approve' | 'reject' | 'flag') => {
+  const handleBulkAction = (action: 'approve' | 'reject' | 'flag' | 'reset') => {
     if (selectedRows.size === 0) return;
     
     let newStatus: SubmissionStatus;
@@ -142,9 +142,12 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
     } else if (action === 'reject') {
         newStatus = 'rejected';
         actionVerb = 'rejected';
-    } else {
+    } else if (action === 'flag') {
         newStatus = 'flagged';
         actionVerb = 'flagged for review';
+    } else { // reset
+        newStatus = 'pending';
+        actionVerb = 'reset to pending';
     }
     
     handleStatusChange(Array.from(selectedRows), newStatus);
@@ -229,7 +232,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
             </Popover>
           </div>
           {selectedRows.size > 0 && (
-             <div className="flex items-center gap-2">
+             <div className="flex flex-wrap items-center gap-2">
                 <Button variant="outline" onClick={() => handleBulkAction('approve')}>
                     <Star className="mr-2 h-4 w-4" /> Approve ({selectedRows.size})
                 </Button>
@@ -238,6 +241,9 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                 </Button>
                  <Button variant="destructive" onClick={() => handleBulkAction('flag')}>
                     <FileWarning className="mr-2 h-4 w-4" /> Flag ({selectedRows.size})
+                </Button>
+                <Button variant="outline" onClick={() => handleBulkAction('reset')}>
+                    <Undo2 className="mr-2 h-4 w-4" /> Reset ({selectedRows.size})
                 </Button>
              </div>
           )}

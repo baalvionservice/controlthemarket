@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { DateRange } from "react-day-picker";
@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon } from 'lucide-react';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2 } from 'lucide-react';
 import type { SubmissionStatus, RoleCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
@@ -48,6 +48,7 @@ const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Market
 
 export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const { toast } = useToast();
+  const [tableData, setTableData] = useState<EvaluationData[]>(data);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'All'>('All');
   const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('All');
@@ -56,8 +57,12 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
+  useEffect(() => {
+    setTableData(data);
+  }, [data]);
+
   const filteredAndSortedData = useMemo(() => {
-    const filtered = data.filter(item => {
+    const filtered = tableData.filter(item => {
       const matchesSearch = item.candidate.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
       const matchesRole = roleFilter === 'All' || item.task.roleCategory === roleFilter;
@@ -90,7 +95,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
       if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [data, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection]);
+  }, [tableData, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -103,10 +108,10 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
 
   const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' => {
      switch (status) {
-      case 'evaluated':
       case 'shortlisted':
         return 'default'; 
       case 'in-review':
+      case 'evaluated':
         return 'secondary';
       case 'pending':
       case 'resubmitted':
@@ -118,14 +123,40 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
     }
   }
 
-  const handleBulkAction = (action: 'Shortlist' | 'Reject') => {
+  const handleStatusChange = (ids: string[], status: SubmissionStatus) => {
+    setTableData(prev => prev.map(item => ids.includes(item.id) ? {...item, status} : item));
+  };
+  
+  const handleBulkAction = (action: 'shortlist' | 'reject') => {
     if (selectedRows.size === 0) return;
+    const newStatus = action === 'shortlist' ? 'shortlisted' : 'rejected';
+    handleStatusChange(Array.from(selectedRows), newStatus);
+    
     toast({
-        title: `Bulk Action: ${action}`,
-        description: `Mock action to ${action.toLowerCase()} ${selectedRows.size} candidate(s).`
+        title: 'Bulk Action Successful',
+        description: `${selectedRows.size} candidate(s) have been ${newStatus}.`
     });
     setSelectedRows(new Set());
   }
+
+  const handleRowAction = (action: 'shortlist' | 'reject' | 'undo', id: string) => {
+    const candidateName = tableData.find(d => d.id === id)?.candidate.name;
+    let newStatus: SubmissionStatus;
+    let toastTitle: string;
+    let toastDescription: string;
+
+    if (action === 'undo') {
+        newStatus = 'pending';
+        toastTitle = 'Action Undone';
+        toastDescription = `${candidateName}'s status has been reset to Pending.`;
+    } else {
+        newStatus = action === 'shortlist' ? 'shortlisted' : 'rejected';
+        toastTitle = `Candidate ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`;
+        toastDescription = `${candidateName} has been ${newStatus}.`;
+    }
+    handleStatusChange([id], newStatus);
+    toast({ title: toastTitle, description: toastDescription });
+  };
   
   const toggleRow = (id: string) => {
     setSelectedRows(prev => {
@@ -216,8 +247,12 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
           </div>
           {selectedRows.size > 0 && (
              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => handleBulkAction('Shortlist')}>Shortlist ({selectedRows.size})</Button>
-                <Button variant="destructive" onClick={() => handleBulkAction('Reject')}>Reject ({selectedRows.size})</Button>
+                <Button variant="outline" onClick={() => handleBulkAction('shortlist')}>
+                    <Star className="mr-2 h-4 w-4" /> Shortlist ({selectedRows.size})
+                </Button>
+                <Button variant="destructive" onClick={() => handleBulkAction('reject')}>
+                    <XCircle className="mr-2 h-4 w-4" /> Reject ({selectedRows.size})
+                </Button>
              </div>
           )}
       </div>
@@ -294,9 +329,22 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem asChild>
-                           <Link href={`/company/submissions/${item.id}`}>Start Evaluation</Link>
+                           <Link href={`/company/submissions/${item.id}`}>Review Submission</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>View History</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleRowAction('shortlist', item.id)}>
+                            <Star className="mr-2 h-4 w-4"/>
+                            Shortlist
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleRowAction('reject', item.id)} className="text-destructive focus:text-destructive">
+                            <XCircle className="mr-2 h-4 w-4"/>
+                            Reject
+                        </DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => handleRowAction('undo', item.id)}>
+                            <Undo2 className="mr-2 h-4 w-4"/>
+                            Undo Action
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>Send Feedback</DropdownMenuItem>
                       </DropdownMenuContent>

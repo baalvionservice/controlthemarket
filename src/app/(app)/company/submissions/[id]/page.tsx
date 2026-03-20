@@ -1,0 +1,165 @@
+'use client';
+
+import React, { useState, useMemo, useEffect } from 'react';
+import { notFound, useRouter } from 'next/navigation';
+import { getSubmission, getTask, getUser, getEvaluationBySubmission } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { ExternalLink, Github, FileText, User, Briefcase, MessageSquare, Star, Sparkles, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { EvaluationForm } from './evaluation-form';
+import type { Submission, Task, User as Candidate, Evaluation, SubmissionContentType } from '@/lib/types';
+
+type SubmissionWithRelations = Submission & {
+  task?: Task;
+  candidate?: Candidate;
+  evaluation?: Evaluation;
+};
+
+export default function SubmissionReviewPage({ params }: { params: { id: string } }) {
+  const [submission, setSubmission] = useState<SubmissionWithRelations | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchData() {
+      const subData = await getSubmission(params.id);
+      if (!subData) {
+        notFound();
+        return;
+      }
+      const taskData = await getTask(subData.taskId);
+      const candidateData = await getUser(subData.userId);
+      const evalData = await getEvaluationBySubmission(subData.id);
+
+      setSubmission({
+        ...subData,
+        task: taskData,
+        candidate: candidateData,
+        evaluation: evalData,
+      });
+      setLoading(false);
+    }
+    fetchData();
+  }, [params.id]);
+  
+  if (loading || !submission) {
+    return (
+        <div className="flex h-full w-full items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+    );
+  }
+
+  const { task, candidate, evaluation } = submission;
+  
+  const getSubmissionIcon = (type: SubmissionContentType | undefined) => {
+    switch(type) {
+        case 'link': return <Github className="h-4 w-4 text-muted-foreground" />;
+        case 'file': return <FileText className="h-4 w-4 text-muted-foreground" />;
+        case 'externalLink': return <ExternalLink className="h-4 w-4 text-muted-foreground" />;
+        default: return null;
+    }
+  }
+
+  return (
+    <div className="flex-1 space-y-6 p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+            <h2 className="font-headline text-3xl font-bold tracking-tight">
+                Review Submission
+            </h2>
+            <p className="text-muted-foreground">
+                Task: {task?.title}
+            </p>
+        </div>
+        <Badge variant="outline" className="text-base py-1 px-3 capitalize">
+          {submission.status.replace('-', ' ')}
+        </Badge>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="md:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Evaluation</CardTitle>
+                <CardDescription>Provide feedback and a score for this submission.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EvaluationForm submission={submission} />
+              </CardContent>
+            </Card>
+
+            {evaluation && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Existing Evaluation</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-1">
+                            <h4 className="font-semibold flex items-center gap-2"><Star className="h-4 w-4 text-yellow-500" /> Score</h4>
+                            <p className="text-2xl font-bold">{evaluation.score}/100</p>
+                        </div>
+                        <div className="space-y-1">
+                            <h4 className="font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4" /> Feedback</h4>
+                            <p className="text-muted-foreground italic">"{evaluation.feedback}"</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={candidate?.profile?.avatarUrl} />
+                            <AvatarFallback>{candidate?.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span>{candidate?.name}</span>
+                    </CardTitle>
+                     <CardDescription>
+                        Submitted on {submission.submittedAt ? format(new Date(submission.submittedAt), 'PPp') : 'N/A'}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button asChild variant="outline" className="w-full">
+                        <Link href="#">View Candidate Profile</Link>
+                    </Button>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Submission Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 text-sm">
+                   <div className="font-medium flex items-center gap-2 capitalize">
+                        {getSubmissionIcon(submission.content?.type)}
+                        <span>{submission.content?.type === 'link' ? 'GitHub Repo' : (submission.content?.type === 'externalLink' ? 'External Link' : 'File Upload')}</span>
+                    </div>
+                    {submission.content?.value && (
+                        <Button asChild variant="secondary" className="w-full">
+                             <Link href={submission.content.value} target="_blank" rel="noopener noreferrer">
+                                View Submission <ExternalLink className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+      </div>
+    </div>
+  );
+}

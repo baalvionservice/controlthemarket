@@ -1,4 +1,4 @@
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -294,7 +294,7 @@ export const mockSubmissions: Submission[] = [
     submittedAt: '2024-08-12T09:00:00Z',
     lastUpdated: '2024-08-12T09:00:00Z',
     content: {
-        type: 'link',
+        type: 'externalLink',
         value: 'https://gist.github.com/alice-candidate/schema.sql',
     },
   },
@@ -318,6 +318,22 @@ export const mockSubmissions: Submission[] = [
     assignedAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
     lastUpdated: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
     attemptsCount: 0,
+  },
+  {
+    id: 'sub-6',
+    taskId: 'task-2',
+    userId: 'user-4',
+    companyId: 'company-1',
+    content: {
+      type: 'file',
+      value: '/mock-uploads/diana-schema.sql',
+      fileName: 'diana-schema.sql',
+      fileSize: 1536, // 1.5 KB
+    },
+    status: 'pending',
+    assignedAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(),
+    submittedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+    lastUpdated: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
   },
 ];
 

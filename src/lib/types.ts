@@ -91,6 +91,8 @@ export interface TaskTemplate {
   rounds?: TaskRound[];
 }
 
+export type SubmissionContentType = 'link' | 'file' | 'externalLink';
+
 export type SubmissionStatus =
   | 'assigned'
   | 'in-progress'
@@ -106,8 +108,10 @@ export interface Submission {
   userId: string; // candidateId
   companyId: string; // Denormalized for easier querying
   content?: {
-    type: 'link' | 'file';
+    type: SubmissionContentType;
     value: string; // URL or file path
+    fileName?: string; // For file uploads
+    fileSize?: number; // for file uploads
   };
   status: SubmissionStatus;
   assignedAt: string; // ISO 8601 date string

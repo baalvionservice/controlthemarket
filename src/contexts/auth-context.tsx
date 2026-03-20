@@ -126,12 +126,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     
     if (details.role === 'company' && details.companyName) {
+      const companyId = `company-${Date.now()}`;
       const newCompany: Company = {
-        id: `company-${Date.now()}`,
+        id: companyId,
         name: details.companyName,
         description: details.companyDescription || 'No description provided.',
         ownerId: newUser.id,
         website: details.companyWebsite,
+        logoUrl: `https://picsum.photos/seed/${companyId}/100/100`,
+        isActive: true,
+        isVerified: false, // Companies start as unverified
       };
       setCompanies((prevCompanies) => [...prevCompanies, newCompany]);
       newUser.companyId = newCompany.id;

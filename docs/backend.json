@@ -130,9 +130,30 @@
           "type": "string",
           "format": "uri",
           "description": "The company's official website."
+        },
+        "logoUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for the company's logo."
+        },
+        "industry": {
+          "type": "string",
+          "description": "The industry the company operates in (e.g., 'Technology', 'Finance')."
+        },
+        "location": {
+            "type": "string",
+            "description": "The company's primary location (e.g., 'San Francisco, CA')."
+        },
+        "isActive": {
+            "type": "boolean",
+            "description": "Whether the company account is active. Defaults to true."
+        },
+        "isVerified": {
+            "type": "boolean",
+            "description": "Whether the company has been verified by an admin. Defaults to false."
         }
       },
-      "required": ["id", "name", "ownerId"]
+      "required": ["id", "name", "ownerId", "isActive"]
     },
     "Task": {
       "title": "Task",

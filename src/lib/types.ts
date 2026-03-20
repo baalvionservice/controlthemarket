@@ -33,6 +33,11 @@ export interface Company {
   description?: string;
   ownerId: string; // The ID of the user who owns the company
   website?: string;
+  logoUrl?: string;
+  industry?: string;
+  location?: string;
+  isActive?: boolean;
+  isVerified?: boolean;
 }
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';

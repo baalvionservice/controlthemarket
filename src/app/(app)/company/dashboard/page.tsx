@@ -1,4 +1,4 @@
-import { getTasksByCompany, getSubmissions, getTask, getUser } from '@/lib/api';
+import { getTasksByCompany, getSubmissions, getEvaluations, getTask, getUser } from '@/lib/api';
 import { mockUsers } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRight, Briefcase, FileText, PlusCircle } from 'lucide-react';
+import { ArrowRight, Briefcase, PlusCircle, Clock, Star } from 'lucide-react';
 import Link from 'next/link';
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
@@ -27,22 +27,40 @@ export default async function CompanyDashboard() {
   const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
   if (!user || !user.companyId) return <div>Company not found</div>;
 
-  const tasks = await getTasksByCompany(user.companyId);
-  const allSubmissions = await getSubmissions();
+  const [tasks, allSubmissions, allEvaluations] = await Promise.all([
+      getTasksByCompany(user.companyId),
+      getSubmissions(),
+      getEvaluations()
+  ]);
   
   const companyTaskIds = new Set(tasks.map(task => task.id));
   const companySubmissions = allSubmissions.filter(sub => companyTaskIds.has(sub.taskId));
+  const companySubmissionIds = new Set(companySubmissions.map(sub => sub.id));
+  const companyEvaluations = allEvaluations.filter(evals => companySubmissionIds.has(evals.submissionId));
+
+  // Metrics calculation
+  const activeTasksCount = tasks.filter(t => t.status === 'published').length;
+  const pendingReviewCount = companySubmissions.filter(s => ['pending', 'in-review', 'resubmitted'].includes(s.status)).length;
+  const shortlistedCount = companySubmissions.filter(s => s.status === 'shortlisted').length;
+  const averageScore = companyEvaluations.length > 0
+    ? Math.round(companyEvaluations.reduce((acc, curr) => acc + curr.score, 0) / companyEvaluations.length)
+    : 0;
+
 
   const submissionsWithDetails = await Promise.all(
-    companySubmissions.map(async (submission) => {
-      const task = await getTask(submission.taskId);
-      const candidate = await getUser(submission.userId);
-      return { ...submission, task, candidate };
-    })
+    companySubmissions
+      .filter(s => ['pending', 'in-review', 'resubmitted'].includes(s.status))
+      .sort((a,b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
+      .slice(0, 5)
+      .map(async (submission) => {
+        const task = await getTask(submission.taskId);
+        const candidate = await getUser(submission.userId);
+        return { ...submission, task, candidate };
+      })
   );
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
           Company Dashboard
@@ -63,69 +81,100 @@ export default async function CompanyDashboard() {
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">{tasks.length}</div>
+            <div className="text-2xl font-bold">{activeTasksCount}</div>
             <p className="text-xs text-muted-foreground">
-              Tasks currently open for submissions
+              Tasks open for submissions
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">{companySubmissions.length}</div>
+            <div className="text-2xl font-bold">{pendingReviewCount}</div>
             <p className="text-xs text-muted-foreground">
-              Received for all your tasks
+              Submissions awaiting evaluation
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Shortlisted Candidates</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{shortlistedCount}</div>
+            <p className="text-xs text-muted-foreground">
+              Top performers from your tasks
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{averageScore > 0 ? `${averageScore}%` : 'N/A'}</div>
+            <p className="text-xs text-muted-foreground">
+              Across all evaluations
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Submissions</CardTitle>
-          <CardDescription>
-            New submissions awaiting your review.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Candidate</TableHead>
-                <TableHead>Task</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {submissionsWithDetails.slice(0, 5).map((sub) => (
-                <TableRow key={sub.id}>
-                  <TableCell className="font-medium">{sub.candidate?.name}</TableCell>
-                  <TableCell>{sub.task?.title}</TableCell>
-                  <TableCell>
-                    <Badge variant={
-                      sub.status === 'evaluated' ? 'default' :
-                      sub.status === 'in-review' ? 'secondary' : 'outline'
-                    }>
-                      {sub.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/company/submissions/${sub.id}`}>
-                        Review <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 md:grid-cols-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Action Required: Pending Reviews</CardTitle>
+              <CardDescription>
+                The newest submissions awaiting your evaluation.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+               <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Candidate</TableHead>
+                    <TableHead>Task</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {submissionsWithDetails.length > 0 ? submissionsWithDetails.map((sub) => (
+                    <TableRow key={sub.id}>
+                      <TableCell className="font-medium">{sub.candidate?.name}</TableCell>
+                      <TableCell>{sub.task?.title}</TableCell>
+                      <TableCell>
+                        <Badge variant={
+                          sub.status === 'resubmitted' ? 'warning' : 'secondary'
+                        } className="capitalize">
+                          {sub.status.replace('-', ' ')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                         <Button asChild variant="outline" size="sm">
+                          <Link href={`/company/submissions/${sub.id}`}>
+                            Review <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center">
+                        No submissions are currently awaiting review.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
     </div>
   );
 }

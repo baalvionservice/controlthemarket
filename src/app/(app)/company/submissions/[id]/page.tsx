@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { EvaluationForm } from './evaluation-form';
 import type { Submission, Task, User as Candidate, Evaluation, SubmissionContentType } from '@/lib/types';
+import { ActivityLog } from '@/components/activity-log';
 
 type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -158,6 +159,7 @@ export default function SubmissionReviewPage({ params }: { params: { id: string 
                     )}
                 </CardContent>
             </Card>
+            <ActivityLog submission={submission} evaluation={evaluation} />
         </div>
       </div>
     </div>

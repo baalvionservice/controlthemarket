@@ -141,12 +141,14 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                     <TableCell>
                       <Tooltip>
                         <TooltipTrigger>{format(new Date(sub.lastUpdated), 'PPP')}</TooltipTrigger>
-                        <TooltipContent>
-                           <div className="flex flex-col gap-1 text-xs">
-                              {sub.submittedAt && <p>Submitted: {format(new Date(sub.submittedAt), 'PPp')}</p>}
-                              {sub.resubmittedAt && <p>Resubmitted: {format(new Date(sub.resubmittedAt), 'PPp')}</p>}
-                              <p>Assigned: {format(new Date(sub.assignedAt), 'PPp')}</p>
-                           </div>
+                        <TooltipContent className="p-0">
+                            <div className="flex flex-col gap-1 p-2 text-xs">
+                                <p className="font-bold mb-1">Activity Highlights</p>
+                                <p><span className="font-semibold w-20 inline-block">Assigned:</span> {format(new Date(sub.assignedAt), 'PP')}</p>
+                                {sub.submittedAt && <p><span className="font-semibold w-20 inline-block">Submitted:</span> {format(new Date(sub.submittedAt), 'PP')}</p>}
+                                {sub.resubmittedAt && <p><span className="font-semibold w-20 inline-block">Resubmitted:</span> {format(new Date(sub.resubmittedAt), 'PP')}</p>}
+                                {sub.evaluation && sub.evaluation.evaluatedAt && <p><span className="font-semibold w-20 inline-block">Evaluated:</span> {format(new Date(sub.evaluation.evaluatedAt), 'PP')}</p>}
+                            </div>
                         </TooltipContent>
                       </Tooltip>
                     </TableCell>

@@ -52,7 +52,8 @@ const candidateNav = [
 
 const companyNav = [
   { name: 'Dashboard', href: '/company/dashboard', icon: LayoutDashboard },
-  { name: 'Evaluations', href: '/company/submissions', icon: FileCheck },
+  { name: 'Tasks', href: '/company/tasks', icon: Briefcase },
+  { name: 'Submissions', href: '/company/submissions', icon: FileCheck },
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
   { name: 'Compare', href: '/company/compare', icon: GitCompare },
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },

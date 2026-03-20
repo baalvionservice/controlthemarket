@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth, type LoginCredentials } from '@/contexts/auth-context';
+import { useAuth } from '@/contexts/auth-context';
 import {
   Card,
   CardContent,
@@ -20,29 +20,29 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null);
 
-  const handleLogin = async (userId: string) => {
-    setIsSubmitting(userId);
-    const user = mockUsers.find((u) => u.id === userId);
+  const handleLogin = async (role: 'candidate' | 'company' | 'admin') => {
+    setIsSubmitting(role);
+    const userToLogin = mockUsers.find((u) => u.role === role);
 
-    if (user) {
-      const result = await login({ email: user.email, password: 'password' }); // Password is not checked in mock auth
+    if (userToLogin) {
+      // In a real app, you'd send email/password. Here we just find the first user of that role.
+      const result = await login({ email: userToLogin.email, password: 'password' }); 
       if (!result.success) {
         toast({
           title: 'Login Failed',
           description: result.message,
           variant: 'destructive',
         });
-        setIsSubmitting(null);
       }
       // On success, auth context handles redirection
     } else {
        toast({
         title: 'Login Failed',
-        description: 'Mock user not found.',
+        description: `No mock user found for role: ${role}.`,
         variant: 'destructive',
       });
-      setIsSubmitting(null);
     }
+    setIsSubmitting(null);
   };
 
   return (
@@ -51,16 +51,16 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-headline">Log In As</CardTitle>
           <CardDescription>
-            Select a mock role to log in instantly.
+            Select a mock role to log in and test the platform.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
            <Button
             className="w-full"
-            onClick={() => handleLogin('user-1')}
+            onClick={() => handleLogin('candidate')}
             disabled={!!isSubmitting}
           >
-            {isSubmitting === 'user-1' ? (
+            {isSubmitting === 'candidate' ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <User className="mr-2 h-4 w-4" />
@@ -70,10 +70,10 @@ export default function LoginPage() {
            <Button
             variant="secondary"
             className="w-full"
-            onClick={() => handleLogin('user-2')}
+            onClick={() => handleLogin('company')}
             disabled={!!isSubmitting}
           >
-            {isSubmitting === 'user-2' ? (
+            {isSubmitting === 'company' ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Briefcase className="mr-2 h-4 w-4" />
@@ -83,10 +83,10 @@ export default function LoginPage() {
            <Button
             variant="secondary"
             className="w-full"
-            onClick={() => handleLogin('user-3')}
+            onClick={() => handleLogin('admin')}
             disabled={!!isSubmitting}
           >
-            {isSubmitting === 'user-3' ? (
+            {isSubmitting === 'admin' ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Shield className="mr-2 h-4 w-4" />

@@ -36,15 +36,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// In-memory store for session-specific mock data
-let sessionUsers: User[] = [...mockUsers];
-let sessionCompanies: Company[] = [...mockCompanies];
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+
+  // In-memory store for session-specific mock data
+  const [sessionUsers, setSessionUsers] = useState<User[]>(mockUsers);
+  const [sessionCompanies, setSessionCompanies] = useState<Company[]>(mockCompanies);
+
 
   useEffect(() => {
     try {
@@ -104,13 +105,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ownerId: newUserId,
         website: details.companyWebsite,
         logoUrl: `https://picsum.photos/seed/${companyId}/100/100`,
+        industry: 'Not specified',
+        location: 'Not specified',
         createdAt: new Date().toISOString(),
+        isActive: true,
+        isVerified: true, // Auto-verify
       };
-      sessionCompanies.push(newCompany);
+      setSessionCompanies(prev => [...prev, newCompany]);
       newUser.companyId = companyId;
     }
 
-    sessionUsers.push(newUser);
+    setSessionUsers(prev => [...prev, newUser]);
     setUser(newUser);
     localStorage.setItem('skillmatch-user', JSON.stringify(newUser));
 
@@ -125,12 +130,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (loading) return;
 
-    const isAuthPath = pathname.startsWith('/login') || pathname.startsWith('/signup');
-    if (!user && !isAuthPath) {
+    const isPublicPath = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/';
+    
+    if (!user && !isPublicPath) {
       router.push('/login');
-    }
-    if (user && isAuthPath) {
-      router.push('/dashboard');
+    } else if (user && (isPublicPath || pathname === '/dashboard')) {
+      router.push(`/${user.role}/dashboard`);
     }
   }, [user, loading, pathname, router]);
 

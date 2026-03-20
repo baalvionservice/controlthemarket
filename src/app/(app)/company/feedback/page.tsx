@@ -1,31 +1,96 @@
+import { getSubmissions, getUsers, getTasksByCompany, getEvaluations } from "@/lib/api";
+import { mockUsers } from "@/lib/mock-data";
+import { FeedbackList } from "./feedback-list";
+import type { Submission, Task, User, Evaluation } from '@/lib/types';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+// For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
+const CURRENT_USER_ID = 'user-2';
+
+export type FeedbackData = {
+  submissionId: string;
+  candidate: User;
+  task: {
+    id: string;
+    title: string;
+  };
+  score?: number;
+  feedbackStatus: 'Pending' | 'Draft' | 'Completed';
+  evaluationDate: string;
+};
+
+export default async function FeedbackDashboardPage() {
+  const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
+  if (!user || !user.companyId) return <div>Company not found</div>;
   
-  export default function FeedbackPage() {
-    return (
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="font-headline text-3xl font-bold tracking-tight">
-            Feedback
-          </h2>
+  const tasks = await getTasksByCompany(user.companyId);
+  const allSubmissions = await getSubmissions();
+  const allUsers = await getUsers();
+  const allEvaluations = await getEvaluations();
+
+  const companyTaskIds = new Set(tasks.map(task => task.id));
+  
+  const evaluatedSubmissions = allSubmissions.filter(sub => 
+    companyTaskIds.has(sub.taskId) && 
+    ['evaluated', 'shortlisted', 'rejected'].includes(sub.status)
+  );
+
+  const feedbackData: FeedbackData[] = evaluatedSubmissions
+    .map(submission => {
+        const candidate = allUsers.find(u => u.id === submission.userId);
+        const task = tasks.find(t => t.id === submission.taskId);
+        const evaluation = allEvaluations.find(e => e.submissionId === submission.id);
+
+        if (!candidate || !task || !evaluation) return null;
+
+        let feedbackStatus: 'Pending' | 'Draft' | 'Completed' = 'Pending';
+        if (evaluation.criteriaComments && Object.keys(evaluation.criteriaComments).length > 0) {
+            feedbackStatus = 'Completed'; // Simple mock logic: if comments exist, it's completed
+        }
+
+        return {
+            submissionId: submission.id,
+            candidate: candidate,
+            task: {
+                id: task.id,
+                title: task.title,
+            },
+            score: evaluation?.score,
+            feedbackStatus,
+            evaluationDate: evaluation.evaluatedAt,
+        };
+    })
+    .filter((item): item is FeedbackData => item !== null);
+
+  return (
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+            <h2 className="font-headline text-3xl font-bold tracking-tight">
+            Candidate Feedback
+            </h2>
+            <p className="text-muted-foreground">
+                Provide detailed, criteria-based feedback to your candidates.
+            </p>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Feedback Management</CardTitle>
-            <CardDescription>
-              This is where you would manage feedback templates and history.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">This feature is coming soon.</p>
-          </CardContent>
-        </Card>
       </div>
-    );
-  }
-  
+      <Card>
+        <CardHeader>
+            <CardTitle>Evaluated Candidates</CardTitle>
+            <CardDescription>
+                Select a candidate to provide or edit their detailed feedback.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <FeedbackList data={feedbackData} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

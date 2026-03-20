@@ -129,7 +129,10 @@ export interface Evaluation {
   score: number; // 0-100 overall score
   criteriaScores?: {
     [key: string]: number;
-  },
+  };
+  criteriaComments?: {
+    [key: string]: string;
+  };
   feedback: string;
   evaluatedBy: string; // userId of company member
   evaluatedAt: string; // ISO 8601 date string

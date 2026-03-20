@@ -65,6 +65,21 @@ export interface Task {
   updatedAt: string; // ISO 8601 date string
 }
 
+export interface TaskTemplate {
+  templateId: string;
+  title: string;
+  description: string;
+  roleCategory: RoleCategory;
+  difficulty: TaskDifficulty;
+  taskTypes: TaskType[];
+  instructions: string;
+  expectedOutputs: string;
+  timeLimitMinutes?: number;
+  createdBy: string; // companyId
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type SubmissionStatus =
   | 'pending'
   | 'in-review'

@@ -1,4 +1,4 @@
-import type { User, Company, Task, Submission, Evaluation } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -167,6 +167,37 @@ export const mockTasks: Task[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 15)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 14)).toISOString(),
   },
+];
+
+export const mockTemplates: TaskTemplate[] = [
+  {
+    templateId: 'TPL-ENG-001',
+    title: 'Frontend Responsive Component',
+    description: 'A standard task to create a reusable and responsive component for a modern web application.',
+    instructions: '1. Use React and Tailwind CSS.\n2. Component should have standard elements like a header, content, and footer.\n3. It must be responsive across mobile, tablet, and desktop breakpoints.\n4. Manage state internally without external libraries.',
+    expectedOutputs: 'A single React component file (.tsx) that is self-contained and ready for use.',
+    roleCategory: 'Engineering',
+    taskTypes: ['Coding', 'Design'],
+    difficulty: 'Intermediate',
+    timeLimitMinutes: 120,
+    createdBy: 'company-1',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 40)).toISOString(),
+    updatedAt: new Date(new Date().setDate(new Date().getDate() - 40)).toISOString(),
+  },
+  {
+    templateId: 'TPL-DATA-001',
+    title: 'Blog Database Schema Design',
+    description: 'This task requires designing a normalized database schema for a typical blogging platform.',
+    instructions: '1. Identify the core entities: Users, Posts, Comments, and Tags.\n2. Define attributes for each entity.\n3. Establish relationships (one-to-many, many-to-many).\n4. Provide the schema as a SQL CREATE TABLE script.',
+    expectedOutputs: 'A single .sql file with SQL statements for tables, columns, PKs, and FKs.',
+    roleCategory: 'Data',
+    taskTypes: ['Documentation'],
+    difficulty: 'Beginner',
+    timeLimitMinutes: 60,
+    createdBy: 'company-1',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 35)).toISOString(),
+    updatedAt: new Date(new Date().setDate(new Date().getDate() - 35)).toISOString(),
+  }
 ];
 
 export const mockSubmissions: Submission[] = [

@@ -26,12 +26,14 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Label } from '@/components/ui/label';
 import { CalendarIcon, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { AiAssistantDialog } from './ai-assistant-dialog';
-import type { RoleCategory, TaskDifficulty, TaskType } from '@/lib/types';
+import type { RoleCategory, TaskDifficulty, TaskType, TaskTemplate } from '@/lib/types';
+import { mockTemplates } from '@/lib/mock-data';
 
 const roleCategories: RoleCategory[] = ["Engineering", "Design", "Marketing", "Business", "Data"];
 const allTaskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project"];
@@ -61,6 +63,7 @@ const formSchema = z.object({
 
 export function CreateTaskForm() {
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [templates] = useState<TaskTemplate[]>(mockTemplates);
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -90,6 +93,28 @@ export function CreateTaskForm() {
     }
   }, [watchedRoleCategory, availableTaskTypes, form]);
 
+  function handleLoadTemplate(templateId: string) {
+    const template = templates.find(t => t.templateId === templateId);
+    if (!template) return;
+
+    form.setValue('title', template.title, { shouldValidate: true });
+    form.setValue('description', template.description, { shouldValidate: true });
+    form.setValue('instructions', template.instructions, { shouldValidate: true });
+    form.setValue('expectedOutputs', template.expectedOutputs, { shouldValidate: true });
+    form.setValue('roleCategory', template.roleCategory, { shouldValidate: true });
+    form.setValue('difficulty', template.difficulty, { shouldValidate: true });
+    form.setValue('taskTypes', template.taskTypes || [], { shouldValidate: true });
+    if (template.timeLimitMinutes) {
+        form.setValue('timeLimitMinutes', template.timeLimitMinutes, { shouldValidate: true });
+    } else {
+        form.setValue('timeLimitMinutes', undefined, { shouldValidate: true });
+    }
+    
+    toast({
+      title: "Template Loaded",
+      description: `The form has been populated with the "${template.title}" template.`,
+    });
+  }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // In a real app, you would differentiate between "Save Draft" and "Publish"
@@ -363,14 +388,31 @@ export function CreateTaskForm() {
           </div>
 
           {/* Templates */}
-          <div className="space-y-4 rounded-md border p-6">
+          <div className="space-y-6 rounded-md border p-6">
             <h3 className="text-lg font-medium">Templates</h3>
-             <FormDescription>
-                Save your task configuration as a template for future use.
-            </FormDescription>
-            <div className="flex gap-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Load from Template</Label>
+                <Select onValueChange={handleLoadTemplate}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a template to pre-fill the form" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {templates.map(template => (
+                      <SelectItem key={template.templateId} value={template.templateId}>{template.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">
+                  Selecting a template will overwrite existing content in the form.
+                </p>
+              </div>
+              <div className="pt-4">
                 <Button type="button" variant="outline" disabled>Save as Template</Button>
-                <Button type="button" variant="outline" disabled>Load from Template</Button>
+                 <p className="text-sm text-muted-foreground pt-2">
+                    Save the current task configuration as a template for future use.
+                 </p>
+              </div>
             </div>
           </div>
           

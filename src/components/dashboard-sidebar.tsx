@@ -27,6 +27,7 @@ import {
   MessageSquare,
   Settings,
   GitCompare,
+  History,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -61,6 +62,7 @@ const adminNav = [
   { name: 'Manage Companies', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Manage Submissions', href: '/admin/submissions', icon: FileCheck },
+  { name: 'Activity Logs', href: '/admin/activity', icon: History },
 ];
 
 export function DashboardSidebar({ children }: { children: React.ReactNode }) {

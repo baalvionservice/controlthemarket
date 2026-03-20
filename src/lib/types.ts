@@ -153,3 +153,20 @@ export interface EvaluationSchema {
   criteria: EvaluationCriterion[];
   isActive: boolean;
 }
+
+export type ActivityActionType = 'submission' | 'task_update' | 'status_change' | 'login' | 'override' | 'user_created' | 'company_created';
+export type ActivityStatus = 'Success' | 'Failed' | 'Pending';
+
+export interface Activity {
+  id: string;
+  performerId: string; // userId
+  actionType: ActivityActionType;
+  timestamp: string; // ISO 8601
+  targetEntity: {
+    type: 'Task' | 'User' | 'Company' | 'Submission';
+    id: string;
+    name?: string;
+  };
+  status: ActivityStatus;
+  description: string;
+}

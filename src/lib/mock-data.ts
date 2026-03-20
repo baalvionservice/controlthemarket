@@ -1,4 +1,4 @@
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -464,4 +464,79 @@ export const mockEvaluationSchemas: EvaluationSchema[] = [
             { id: 'crit-3-3', name: 'Presentation', description: 'The overall quality and polish of the submission.', maxPoints: 10 },
         ],
     },
+];
+
+export const mockActivityLogs: Activity[] = [
+  {
+    id: 'log-1',
+    performerId: 'user-1',
+    actionType: 'submission',
+    timestamp: '2024-08-10T10:00:00Z',
+    targetEntity: { type: 'Submission', id: 'sub-1', name: 'Responsive Navbar' },
+    status: 'Success',
+    description: 'Alice Candidate submitted work for "Build a Responsive Navbar Component".'
+  },
+  {
+    id: 'log-2',
+    performerId: 'user-2',
+    actionType: 'status_change',
+    timestamp: '2024-08-12T09:00:00Z',
+    targetEntity: { type: 'Submission', id: 'sub-1', name: 'Responsive Navbar' },
+    status: 'Success',
+    description: 'Bob Company changed status to Shortlisted for submission sub-1.'
+  },
+  {
+    id: 'log-3',
+    performerId: 'user-3',
+    actionType: 'override',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString(),
+    targetEntity: { type: 'Submission', id: 'sub-2', name: 'Navbar Project' },
+    status: 'Success',
+    description: 'Charlie Admin overrode the score for submission sub-2.'
+  },
+  {
+    id: 'log-4',
+    performerId: 'user-5',
+    actionType: 'task_update',
+    timestamp: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    targetEntity: { type: 'Task', id: 'task-4', name: 'Fullstack Project Challenge' },
+    status: 'Success',
+    description: 'Ethan Employer created a new task "Fullstack Project Challenge".'
+  },
+  {
+    id: 'log-5',
+    performerId: 'user-4',
+    actionType: 'login',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
+    targetEntity: { type: 'User', id: 'user-4', name: 'Diana Developer' },
+    status: 'Success',
+    description: 'Diana Developer logged in.'
+  },
+  {
+    id: 'log-6',
+    performerId: 'user-2',
+    actionType: 'login',
+    timestamp: new Date().toISOString(),
+    targetEntity: { type: 'User', id: 'user-2', name: 'Bob Company' },
+    status: 'Failed',
+    description: 'Bob Company failed to log in (invalid password).'
+  },
+    {
+    id: 'log-7',
+    performerId: 'user-3',
+    actionType: 'user_created',
+    timestamp: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
+    targetEntity: { type: 'User', id: 'user-4', name: 'Diana Developer' },
+    status: 'Success',
+    description: 'Admin created a new candidate user: Diana Developer.'
+  },
+  {
+    id: 'log-8',
+    performerId: 'user-3',
+    actionType: 'company_created',
+    timestamp: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
+    targetEntity: { type: 'Company', id: 'company-2', name: 'Innovate Inc.' },
+    status: 'Success',
+    description: 'Admin created a new company profile: Innovate Inc.'
+  },
 ];

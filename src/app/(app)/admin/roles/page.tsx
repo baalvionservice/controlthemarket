@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { RoleCategory } from "@/lib/types";
 import { Code, Palette, Megaphone, Briefcase, Database, ArrowRight } from 'lucide-react';
+import Link from "next/link";
 
 const ROLE_ICONS: Record<RoleCategory, React.ElementType> = {
     Engineering: Code,
@@ -91,8 +92,10 @@ export default async function RoleDashboardsPage() {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button className="w-full" variant="outline" disabled>
-                                    View Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                                <Button className="w-full" variant="outline" asChild>
+                                  <Link href={`/admin/analytics/roles/${role.name.toLowerCase()}`}>
+                                    View Analytics <ArrowRight className="ml-2 h-4 w-4" />
+                                  </Link>
                                 </Button>
                             </CardFooter>
                         </Card>

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { mockTasks, mockEvaluations } from '@/lib/mock-data';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import {
   Card,
@@ -15,23 +15,24 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { Star, MessageSquare, Briefcase, ExternalLink, FileText, CheckCircle, Clock } from 'lucide-react';
+import { Star, MessageSquare, Briefcase, ExternalLink, FileText, CheckCircle, Clock, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAuth } from '@/contexts';
 
 const statusSteps = ['assigned', 'in-progress', 'pending', 'in-review', 'evaluated'];
 
 export default function SubmissionDetailPage({ params }: { params: { id: string } }) {
-  const { submissions } = useSubmissions();
+  const { submissions, updateSubmission } = useSubmissions();
+  const router = useRouter();
   
   const submission = useMemo(() => submissions.find(s => s.id === params.id), [submissions, params.id]);
 
   const task = useMemo(() => submission ? mockTasks.find(t => t.id === submission.taskId) : undefined, [submission]);
   const evaluation = useMemo(() => submission ? mockEvaluations.find(e => e.submissionId === submission.id) : undefined, [submission]);
 
-  if (!submission) {
-    // In a real app, handle not found case. For this mock, we can show a message or redirect.
+  if (!submission || !task) {
      return (
       <div className="flex-1 space-y-6 p-8 pt-6">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
@@ -45,18 +46,32 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
      )
   }
 
+  const currentRoundNumber = submission.currentRound || 1;
+  const isFinalRound = task.multiRound ? currentRoundNumber === task.rounds?.length : true;
+
+  const handleProceedToNextRound = () => {
+    if (task.multiRound && !isFinalRound) {
+        updateSubmission(submission.id, {
+            currentRound: currentRoundNumber + 1,
+            status: 'assigned',
+        });
+        router.push(`/candidate/tasks/${task.id}`);
+    }
+  }
+
   let currentStepIndex = statusSteps.indexOf(submission.status);
   if (['shortlisted', 'rejected', 'resubmitted'].includes(submission.status)) {
-    // 'resubmitted' should be visually at the 'pending' stage
     if (submission.status === 'resubmitted') {
         currentStepIndex = statusSteps.indexOf('pending');
-    } else { // 'shortlisted' and 'rejected' are post-evaluation
+    } else {
         currentStepIndex = statusSteps.indexOf('evaluated');
     }
   }
   const currentStep = currentStepIndex;
 
   const isFinalState = submission.status === 'evaluated' || submission.status === 'shortlisted' || submission.status === 'rejected';
+  
+  const canProceed = isFinalState && task.multiRound && !isFinalRound;
 
   const getTimestampForStep = (step: string) => {
     switch(step) {
@@ -90,13 +105,18 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
                 Review your submission and the feedback provided.
             </p>
         </div>
+        {canProceed && (
+             <Button onClick={handleProceedToNextRound}>
+                Proceed to Round {currentRoundNumber + 1} <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+        )}
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Your Progress</CardTitle>
            <CardDescription>
-            {task?.multiRound && submission.currentRound
+            {task.multiRound && submission.currentRound
                 ? `Currently on Round ${submission.currentRound} of ${task?.rounds?.length || 1}.`
                 : `Follow the status of your submission.`}
             </CardDescription>
@@ -158,7 +178,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
                 <span>Task Details</span>
-                <Badge variant="secondary">{task?.difficulty}</Badge>
+                <Badge variant="secondary">{task.difficulty}</Badge>
             </CardTitle>
             <CardDescription>
                 Assigned on {format(new Date(submission.assignedAt), 'PPP')}
@@ -167,14 +187,14 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
           <CardContent className="space-y-4">
             <div className="space-y-1">
                 <h4 className="font-semibold flex items-center gap-2"><Briefcase className="h-4 w-4" /> Role</h4>
-                <p className="text-muted-foreground">{task?.roleCategory}</p>
+                <p className="text-muted-foreground">{task.roleCategory}</p>
             </div>
              <div className="space-y-1">
                 <h4 className="font-semibold flex items-center gap-2"><FileText className="h-4 w-4" /> Your Submission</h4>
                 {submission.content ? (
                      <Button asChild variant="outline" size="sm">
                         <Link href={submission.content.value} target="_blank" rel="noopener noreferrer">
-                            View Submission <ExternalLink className="ml-2 h-4 w-4" />
+                            View Submission for Round {currentRoundNumber} <ExternalLink className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
                 ) : (

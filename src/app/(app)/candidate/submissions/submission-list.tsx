@@ -136,9 +136,16 @@ export function SubmissionList({ submissions }: { submissions: SubmissionWithDet
                       </Tooltip>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(sub.status)} className="capitalize">
-                        {sub.status.replace('-', ' ')}
-                      </Badge>
+                      <div className="flex flex-col gap-1">
+                        <Badge variant={getStatusVariant(sub.status)} className="capitalize w-fit">
+                            {sub.status.replace('-', ' ')}
+                        </Badge>
+                        {sub.task?.multiRound && (
+                            <span className="text-xs text-muted-foreground">
+                                Round {sub.currentRound}/{sub.task.rounds?.length}
+                            </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                         <Tooltip>

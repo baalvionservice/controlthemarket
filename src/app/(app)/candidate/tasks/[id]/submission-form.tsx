@@ -118,6 +118,8 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         return findSubmissionByTask(task.id, user.id);
     }, [task, user, findSubmissionByTask]);
 
+    const currentRoundNumber = useMemo(() => submission?.currentRound || 1, [submission]);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -195,7 +197,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         });
         
         setIsLoading(false);
-        router.push('/candidate/submissions');
+        router.push(`/candidate/submissions/${submission.id}`);
     }
 
     if (!submission) {
@@ -209,112 +211,122 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         )
     }
 
+    const submissionDisabled = ['pending', 'in-review', 'evaluated', 'shortlisted'].includes(submission.status);
+
     return (
          <Card>
             <CardHeader>
-                <CardTitle>Submit Your Work</CardTitle>
-                <CardDescription>Once you have completed the task, submit your work here.</CardDescription>
+                <CardTitle>
+                    {task.multiRound ? `Submit Your Work for Round ${currentRoundNumber}` : 'Submit Your Work'}
+                </CardTitle>
+                <CardDescription>
+                    {submissionDisabled
+                        ? 'Your submission is currently under review. You can resubmit if requested.'
+                        : 'Once you have completed the task, submit your work here.'}
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                            <TabsList className="grid w-full grid-cols-3">
-                                <TabsTrigger value="link">
-                                    <Github className="mr-2 h-4 w-4" />
-                                    GitHub Repo
-                                </TabsTrigger>
-                                <TabsTrigger value="file">
-                                    <UploadCloud className="mr-2 h-4 w-4" />
-                                    Upload File
-                                </TabsTrigger>
-                                <TabsTrigger value="externalLink">
-                                    <LinkIcon className="mr-2 h-4 w-4" />
-                                    External Link
-                                </TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="link" className="pt-4">
-                                <FormField
-                                    control={form.control}
-                                    name="link"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>GitHub Repository URL</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                     <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                    <Input placeholder="https://github.com/your-username/your-repo" className="pl-10" {...field} />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </TabsContent>
-                            <TabsContent value="file" className="pt-4">
-                                <FormField
-                                    control={form.control}
-                                    name="file"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Project File</FormLabel>
-                                            {field.value ? (
-                                                <div className="flex items-center justify-between rounded-md border p-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <File className="h-6 w-6 text-primary" />
-                                                        <div>
-                                                            <p className="text-sm font-medium">{field.value.name}</p>
-                                                            <p className="text-xs text-muted-foreground">{(field.value.size / (1024 * 1024)).toFixed(2)} MB</p>
-                                                        </div>
-                                                    </div>
-                                                    <Button variant="ghost" size="icon" onClick={clearFile} type="button">
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            ) : (
+                        <fieldset disabled={submissionDisabled}>
+                            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+                                <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="link">
+                                        <Github className="mr-2 h-4 w-4" />
+                                        GitHub Repo
+                                    </TabsTrigger>
+                                    <TabsTrigger value="file">
+                                        <UploadCloud className="mr-2 h-4 w-4" />
+                                        Upload File
+                                    </TabsTrigger>
+                                    <TabsTrigger value="externalLink">
+                                        <LinkIcon className="mr-2 h-4 w-4" />
+                                        External Link
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="link" className="pt-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="link"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>GitHub Repository URL</FormLabel>
                                                 <FormControl>
-                                                    <div 
-                                                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
-                                                        onClick={handleFileSelect}
-                                                    >
-                                                        <UploadCloud className="h-8 w-8 text-muted-foreground" />
-                                                        <p className="text-sm text-muted-foreground mt-2">
-                                                            <span className="font-semibold text-primary">Click to select a file</span> (mock)
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground">PDF, ZIP, DOCX up to 10MB</p>
+                                                    <div className="relative">
+                                                        <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                        <Input placeholder="https://github.com/your-username/your-repo" className="pl-10" {...field} />
                                                     </div>
                                                 </FormControl>
-                                            )}
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </TabsContent>
-                            <TabsContent value="externalLink" className="pt-4">
-                                <FormField
-                                    control={form.control}
-                                    name="externalLink"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>External Link</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                     <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                    <Input placeholder="https://example.com/your-project" className="pl-10" {...field} />
-                                                </div>
-                                            </FormControl>
-                                            <FormDescription>
-                                                Provide a shareable link to your work (e.g., Google Drive, portfolio).
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </TabsContent>
-                        </Tabs>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="file" className="pt-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="file"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Project File</FormLabel>
+                                                {field.value ? (
+                                                    <div className="flex items-center justify-between rounded-md border p-3">
+                                                        <div className="flex items-center gap-3">
+                                                            <File className="h-6 w-6 text-primary" />
+                                                            <div>
+                                                                <p className="text-sm font-medium">{field.value.name}</p>
+                                                                <p className="text-xs text-muted-foreground">{(field.value.size / (1024 * 1024)).toFixed(2)} MB</p>
+                                                            </div>
+                                                        </div>
+                                                        <Button variant="ghost" size="icon" onClick={clearFile} type="button">
+                                                            <X className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <FormControl>
+                                                        <div 
+                                                            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
+                                                            onClick={handleFileSelect}
+                                                        >
+                                                            <UploadCloud className="h-8 w-8 text-muted-foreground" />
+                                                            <p className="text-sm text-muted-foreground mt-2">
+                                                                <span className="font-semibold text-primary">Click to select a file</span> (mock)
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">PDF, ZIP, DOCX up to 10MB</p>
+                                                        </div>
+                                                    </FormControl>
+                                                )}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="externalLink" className="pt-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="externalLink"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>External Link</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                        <Input placeholder="https://example.com/your-project" className="pl-10" {...field} />
+                                                    </div>
+                                                </FormControl>
+                                                <FormDescription>
+                                                    Provide a shareable link to your work (e.g., Google Drive, portfolio).
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TabsContent>
+                            </Tabs>
+                        </fieldset>
                         <div className="flex justify-end gap-4">
-                            <Button type="button" variant="ghost" onClick={() => form.reset()}>Clear</Button>
-                            <Button type="submit" disabled={isLoading}>
+                            <Button type="button" variant="ghost" onClick={() => form.reset()} disabled={submissionDisabled}>Clear</Button>
+                            <Button type="submit" disabled={isLoading || submissionDisabled}>
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

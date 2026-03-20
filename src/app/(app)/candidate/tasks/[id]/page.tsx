@@ -1,5 +1,8 @@
+'use client';
+
+import { useState, useEffect, useMemo } from 'react';
 import { getTask, getCompany } from '@/lib/api';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -25,49 +28,109 @@ import {
   BookOpen,
   Target,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { SubmissionForm } from './submission-form';
+import type { Task, Company, Submission } from '@/lib/types';
+import { useAuth } from '@/contexts/auth-context';
+import { useSubmissions } from '@/contexts/submissions-context';
+import { cn } from '@/lib/utils';
 
-export default async function TaskDetailPage({ params }: { params: { id: string } }) {
-  const task = await getTask(params.id);
-  if (!task) {
-    notFound();
+export default function TaskDetailPage({ params }: { params: { id: string } }) {
+  const [task, setTask] = useState<Task | null>(null);
+  const [company, setCompany] = useState<Company | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { findSubmissionByTask, updateSubmission } = useSubmissions();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      const taskData = await getTask(params.id);
+      if (taskData) {
+        setTask(taskData);
+        const companyData = await getCompany(taskData.companyId);
+        setCompany(companyData || null);
+      } else {
+        notFound();
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, [params.id]);
+
+  const submission = useMemo(() => {
+    if (!user || !task) return undefined;
+    return findSubmissionByTask(task.id, user.id);
+  }, [task, user, findSubmissionByTask]);
+
+  const handleStartTask = () => {
+    if (submission && submission.status === 'assigned') {
+      updateSubmission(submission.id, { status: 'in-progress' });
+    }
+    // In a real app this might start a timer, etc.
+    // For now, it just changes status.
+    // The button will be disabled if the task is already started.
+  };
+
+  const isTaskStarted = useMemo(() => {
+    if (!submission) return false;
+    return submission.status !== 'assigned';
+  }, [submission]);
+
+  const currentRoundNumber = useMemo(() => submission?.currentRound || 1, [submission]);
+
+  if (loading || !task) {
+    return (
+      <div className="flex h-full w-full items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
-
-  const company = await getCompany(task.companyId);
 
   const renderTaskContent = () => {
     if (task.multiRound && task.rounds) {
       return (
-         <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
-          {task.rounds.map((round, index) => (
-            <AccordionItem value={`item-${index}`} key={index}>
-              <AccordionTrigger className="text-lg">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">{round.roundNumber}</span>
-                  <span>Round {round.roundNumber}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pl-12 space-y-8 pt-4">
-                <div className="space-y-4">
-                     <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
-                     <p className="text-muted-foreground whitespace-pre-wrap">{round.instructions}</p>
-                </div>
-                 <div className="space-y-4">
-                     <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
-                     <p className="text-muted-foreground whitespace-pre-wrap">{round.expectedOutputs}</p>
-                </div>
-                {round.timeLimitMinutes && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" /> 
-                    <span>Time Limit: {round.timeLimitMinutes} minutes</span>
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+         <Accordion type="single" collapsible className="w-full" defaultValue={`item-${currentRoundNumber - 1}`}>
+          {task.rounds.map((round, index) => {
+            const isCurrentRound = round.roundNumber === currentRoundNumber;
+            const isCompletedRound = round.roundNumber < currentRoundNumber;
+
+            return (
+                <AccordionItem value={`item-${index}`} key={index}>
+                <AccordionTrigger className="text-lg" disabled={!isCurrentRound && !isCompletedRound}>
+                    <div className="flex items-center gap-4">
+                    <span className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-full font-bold",
+                        isCurrentRound && "bg-primary text-primary-foreground animate-pulse",
+                        isCompletedRound && "bg-primary/50 text-primary-foreground",
+                        !isCurrentRound && !isCompletedRound && "bg-muted text-muted-foreground",
+                    )}>{round.roundNumber}</span>
+                    <span>Round {round.roundNumber}</span>
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent className="pl-12 space-y-8 pt-4">
+                    <div className="space-y-4">
+                        <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
+                        <p className="text-muted-foreground whitespace-pre-wrap">{round.instructions}</p>
+                    </div>
+                    <div className="space-y-4">
+                        <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
+                        <p className="text-muted-foreground whitespace-pre-wrap">{round.expectedOutputs}</p>
+                    </div>
+                    {round.timeLimitMinutes && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" /> 
+                        <span>Time Limit: {round.timeLimitMinutes} minutes</span>
+                    </div>
+                    )}
+                </AccordionContent>
+                </AccordionItem>
+            );
+        })}
         </Accordion>
       );
     }
@@ -75,12 +138,12 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
     return (
         <div className="space-y-8">
             <div className="space-y-4">
-                    <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
-                    <p className="text-muted-foreground whitespace-pre-wrap">{task.instructions}</p>
+                <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
+                <p className="text-muted-foreground whitespace-pre-wrap">{task.instructions}</p>
             </div>
-                <div className="space-y-4">
-                    <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
-                    <p className="text-muted-foreground whitespace-pre-wrap">{task.expectedOutputs}</p>
+            <div className="space-y-4">
+                <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
+                <p className="text-muted-foreground whitespace-pre-wrap">{task.expectedOutputs}</p>
             </div>
         </div>
     );
@@ -106,7 +169,12 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
           </div>
         </div>
         <div className="flex gap-2">
-            <Button size="lg">Start Task <ArrowRight className="ml-2 h-4 w-4" /></Button>
+            {submission && (
+                <Button size="lg" onClick={handleStartTask} disabled={isTaskStarted}>
+                    {isTaskStarted ? (task.multiRound ? `Begin Round ${currentRoundNumber}` : `Task in Progress`) : 'Start Task'} 
+                    {!isTaskStarted && <ArrowRight className="ml-2 h-4 w-4" />}
+                </Button>
+            )}
         </div>
       </div>
 
@@ -165,7 +233,7 @@ export default async function TaskDetailPage({ params }: { params: { id: string 
         </div>
       </div>
       
-       <SubmissionForm task={task} />
+       {isTaskStarted && <SubmissionForm task={task} />}
 
     </div>
   );

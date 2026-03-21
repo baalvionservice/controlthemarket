@@ -1,3 +1,4 @@
+
 'use client';
 
 import { DashboardSidebar } from '@/components/dashboard-sidebar';

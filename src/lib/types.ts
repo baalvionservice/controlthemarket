@@ -396,3 +396,14 @@ export interface SystemIncident {
     durationMinutes?: number;
     description: string;
 }
+
+export type InvoiceStatus = 'Paid' | 'Failed' | 'Pending' | 'Due';
+
+export interface Invoice {
+  id: string;
+  amount: number;
+  date: string; // ISO date string
+  status: InvoiceStatus;
+  planName: string;
+  pdfUrl?: string; // link to mock pdf
+}

@@ -1,6 +1,6 @@
 
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1494,4 +1494,13 @@ export const mockSystemIncidents: SystemIncident[] = [
         startTime: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString(),
         description: 'Investigating reports of slow database queries.'
     },
+];
+
+export const mockInvoices: Invoice[] = [
+  { id: 'inv-000', amount: 79.00, date: new Date().toISOString(), status: 'Due', planName: 'Pro Plan' },
+  { id: 'inv-001', amount: 79.00, date: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(), status: 'Paid', planName: 'Pro Plan' },
+  { id: 'inv-002', amount: 79.00, date: new Date(new Date().setMonth(new Date().getMonth() - 2)).toISOString(), status: 'Paid', planName: 'Pro Plan' },
+  { id: 'inv-003', amount: 79.00, date: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(), status: 'Paid', planName: 'Pro Plan' },
+  { id: 'inv-004', amount: 29.00, date: new Date(new Date().setMonth(new Date().getMonth() - 4)).toISOString(), status: 'Failed', planName: 'Basic Plan' },
+  { id: 'inv-005', amount: 29.00, date: new Date(new Date().setMonth(new Date().getMonth() - 5)).toISOString(), status: 'Paid', planName: 'Basic Plan' },
 ];

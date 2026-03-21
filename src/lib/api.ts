@@ -25,8 +25,9 @@ import {
   mockSystemIncidents,
   mockServiceLoad,
   mockScalingEvents,
+  mockInvoices,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, SystemError, SystemIncident, ServiceLoad, ScalingEvent } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, SystemError, SystemIncident, ServiceLoad, ScalingEvent, Invoice, InvoiceStatus } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -192,4 +193,10 @@ export async function getSystemErrors(): Promise<SystemError[]> {
 export async function getSystemIncidents(): Promise<SystemIncident[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
   return mockSystemIncidents;
+}
+
+// --- Billing API ---
+export async function getInvoices(): Promise<Invoice[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockInvoices;
 }

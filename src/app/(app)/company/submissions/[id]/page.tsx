@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -22,6 +21,7 @@ import { EvaluationForm } from './evaluation-form';
 import type { Submission, Task, User as Candidate, Evaluation, SubmissionContentType } from '@/lib/types';
 import { ActivityLog } from '@/components/activity-log';
 import { Progress } from '@/components/ui/progress';
+import { AiEvaluationPanel } from './ai-evaluation-panel';
 
 
 type SubmissionWithRelations = Submission & {
@@ -203,6 +203,7 @@ export default function SubmissionReviewPage({ params }: { params: { id: string 
                     </Button>
                 </CardContent>
             </Card>
+            <AiEvaluationPanel submission={submission} />
             <Card>
                 <CardHeader>
                     <CardTitle>Submission Details</CardTitle>

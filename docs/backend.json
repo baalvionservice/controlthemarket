@@ -172,7 +172,7 @@
     },
     "Membership": {
       "title": "Company Membership",
-      "description": "Links a user to a company with a specific role, enabling multi-tenancy. This acts as a join table.",
+      "description": "Links a user to a company with a specific role, enabling multi-tenancy. This acts as a join table, allowing a single user to be a member of multiple companies with different roles.",
       "type": "object",
       "properties": {
         "userId": {
@@ -198,7 +198,7 @@
     },
     "Task": {
       "title": "Task",
-      "description": "Represents a skill-based task created by a company.",
+      "description": "Represents a skill-based task created by a company. A task can be a single challenge or have multiple sequential rounds.",
       "type": "object",
       "properties": {
         "id": {
@@ -324,7 +324,7 @@
     },
     "Submission": {
       "title": "Submission",
-      "description": "Represents a candidate's submission for a specific task.",
+      "description": "Represents a candidate's submission for a specific task. The system uses an 'update-in-place' model, where only the latest attempt for a given task/user combination is stored, tracked via `resubmittedAt` and `attemptsCount` fields.",
       "type": "object",
       "properties": {
         "id": {
@@ -341,7 +341,7 @@
         },
         "companyId": {
             "type": "string",
-            "description": "The ID of the company that owns the task (denormalized)."
+            "description": "The ID of the company that owns the task (denormalized for security rules and querying)."
         },
         "content": {
           "type": "object",
@@ -371,7 +371,7 @@
         "submittedAt": {
           "type": "string",
           "format": "date-time",
-          "description": "The timestamp when the submission was made."
+          "description": "The timestamp when the submission was first made."
         },
         "lastUpdated": {
           "type": "string",
@@ -391,7 +391,7 @@
     },
     "Evaluation": {
       "title": "Evaluation",
-      "description": "Represents a company's evaluation of a candidate's submission.",
+      "description": "Represents a company's evaluation of a candidate's submission. This is stored in a separate collection to allow for a detailed and potentially evolving evaluation process without modifying the core submission document.",
       "type": "object",
       "properties": {
         "id": {
@@ -404,18 +404,18 @@
         },
         "score": {
           "type": "number",
-          "description": "The score (0-100) given to the submission."
+          "description": "The final overall score (0-100) given to the submission."
         },
         "criteriaScores": {
           "type": "object",
-          "description": "A map of scores for predefined criteria.",
+          "description": "A flexible map of scores for predefined criteria (e.g., {'Code Quality': 8, 'Problem Solving': 9}).",
           "additionalProperties": {
             "type": "number"
           }
         },
         "feedback": {
           "type": "string",
-          "description": "Constructive feedback provided by the evaluator."
+          "description": "Constructive, high-level feedback provided by the evaluator."
         },
         "evaluatedBy": {
           "type": "string",
@@ -450,7 +450,7 @@
       "schema": {
         "$ref": "#/backend/entities/Membership"
       },
-      "description": "Stores the many-to-many relationship between users and companies."
+      "description": "Stores the many-to-many relationship between users and companies, defining roles within a company."
     },
     "/tasks/{taskId}": {
       "schema": {

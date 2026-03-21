@@ -78,7 +78,7 @@ const adminNav = [
   { name: 'Live Coding', href: '/admin/live-coding', icon: Code },
   { name: 'Backend/API Testing', href: '/admin/testing', icon: FlaskConical },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
-  { name: 'Activity Logs', href: '/admin/activity', icon: History },
+  { name: 'Real-Time Monitoring', href: '/admin/activity', icon: History },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },
   { name: 'Platform Settings', href: '/admin/settings', icon: Settings },

@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
 import { DateRange } from "react-day-picker";
 import {
@@ -50,7 +51,7 @@ const getStatusVariant = (status: ActivityStatus) => {
     switch(status) {
         case 'Success': return 'default';
         case 'Failed': return 'destructive';
-        case 'Pending': return 'secondary';
+        case 'Pending': return 'warning';
         default: return 'outline';
     }
 }
@@ -61,6 +62,19 @@ export function ActivityList({ data }: { data: ActivityWithDetails[] }) {
   const [statusFilter, setStatusFilter] = useState<ActivityStatus | 'All'>('All');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'All'>('All');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // update every minute
+    return () => clearInterval(timer);
+  }, []);
+
+  const isRecent = (timestamp: string) => {
+    const fiveMinutes = 5 * 60 * 1000;
+    return currentTime.getTime() - new Date(timestamp).getTime() < fiveMinutes;
+  }
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
@@ -190,7 +204,14 @@ export function ActivityList({ data }: { data: ActivityWithDetails[] }) {
                   <TableCell>
                     <Badge variant={getStatusVariant(item.status)}>{item.status}</Badge>
                   </TableCell>
-                  <TableCell>{format(new Date(item.timestamp), 'PPp')}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                        <span>{format(new Date(item.timestamp), 'PPp')}</span>
+                        {isRecent(item.timestamp) && (
+                            <Badge className="bg-green-500 text-primary-foreground hover:bg-green-500/90 animate-pulse">LIVE</Badge>
+                        )}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm">View</Button>
                   </TableCell>

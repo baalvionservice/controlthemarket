@@ -1,3 +1,4 @@
+
 import { getActivityLogs, getUsers, getTasks, getCompanies } from "@/lib/api";
 import { ActivityList } from "./activity-list";
 import type { Activity, User, Task, Company } from '@/lib/types';
@@ -11,7 +12,7 @@ import {
 
 export type ActivityWithDetails = Activity & {
   performer?: User;
-  target?: Task | User | Company;
+  targetEntityData?: Task | User | Company;
 };
 
 export default async function ActivityLogsPage() {
@@ -27,7 +28,7 @@ export default async function ActivityLogsPage() {
     getCompanies(),
   ]);
 
-  const entityMap = {
+  const entityMaps = {
     User: new Map(allUsers.map(u => [u.id, u])),
     Company: new Map(allCompanies.map(c => [c.id, c])),
     Task: new Map(allTasks.map(t => [t.id, t])),
@@ -36,15 +37,22 @@ export default async function ActivityLogsPage() {
 
   const activityData: ActivityWithDetails[] = allActivities.map(activity => {
     const performer = allUsers.find(u => u.id === activity.performerId);
-    let targetEntity;
+    let targetEntityData;
     if (activity.targetEntity.type !== 'Submission') {
-      targetEntity = entityMap[activity.targetEntity.type].get(activity.targetEntity.id);
+      targetEntityData = entityMaps[activity.targetEntity.type].get(activity.targetEntity.id);
     }
     
+    // Enrich targetEntity with name if available
+    const finalTargetEntity = {
+      ...activity.targetEntity,
+      name: targetEntityData?.name || activity.targetEntity.name,
+    };
+
     return {
       ...activity,
       performer,
-      target: targetEntity
+      targetEntity: finalTargetEntity,
+      targetEntityData
     };
   });
 
@@ -53,18 +61,18 @@ export default async function ActivityLogsPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Platform Activity Logs
+                Real-Time Monitoring
             </h2>
             <p className="text-muted-foreground">
-                A real-time stream of all actions occurring on the platform.
+                Monitor a live feed of all significant actions occurring across the platform.
             </p>
         </div>
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>Global Event Stream</CardTitle>
+            <CardTitle>Live Activity Stream</CardTitle>
             <CardDescription>
-                Monitor user actions, system events, and administrative changes.
+                A real-time feed of user actions, system events, and administrative changes.
             </CardDescription>
         </CardHeader>
         <CardContent>

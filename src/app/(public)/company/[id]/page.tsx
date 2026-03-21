@@ -18,10 +18,12 @@ import {
     Users,
     CheckCircle,
     BarChart2,
-    Star
+    Star,
+    ArrowRight
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { TaskCard } from '@/app/(app)/candidate/tasks/task-card';
 
 
 export default async function CompanyProfilePage({ params }: { params: { id: string } }) {
@@ -33,7 +35,7 @@ export default async function CompanyProfilePage({ params }: { params: { id: str
     
     // Mock data for this profile page
     const tasks = await getTasksByCompany(company.id);
-    const activeTasks = tasks.filter(t => t.status === 'published').length;
+    const activeTasks = tasks.filter(t => t.status === 'published');
     const candidatesEvaluated = 128; // mock
     const hiringSuccessRate = 15; // mock percentage
     
@@ -65,7 +67,6 @@ export default async function CompanyProfilePage({ params }: { params: { id: str
                         </div>
                         <div className="flex gap-2">
                              <Button variant="outline">Follow (Mock)</Button>
-                             <Button>View Jobs</Button>
                         </div>
                     </CardHeader>
                 </Card>
@@ -80,7 +81,7 @@ export default async function CompanyProfilePage({ params }: { params: { id: str
                             </CardHeader>
                              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <Card className="text-center">
-                                    <CardHeader><CardTitle>{activeTasks}</CardTitle></CardHeader>
+                                    <CardHeader><CardTitle>{activeTasks.length}</CardTitle></CardHeader>
                                     <CardContent><p className="text-sm text-muted-foreground">Open Roles</p></CardContent>
                                 </Card>
                                  <Card className="text-center">
@@ -94,10 +95,53 @@ export default async function CompanyProfilePage({ params }: { params: { id: str
                             </CardContent>
                         </Card>
                         
-                         {/* Top Candidates Hired Section */}
+                        {/* Active Challenges Section */}
                         <Card>
-                            <CardHeader>
-                                <CardTitle>Top Candidates Hired (Mock)</CardTitle>
+                             <CardHeader>
+                                <CardTitle>Active Challenges</CardTitle>
+                                <CardDescription>Explore open roles and prove your skills by completing one of these tasks.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {activeTasks.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {activeTasks.map(task => (
+                                            <Card key={task.id} className="flex flex-col">
+                                                <CardHeader>
+                                                    <CardTitle className="text-lg">{task.title}</CardTitle>
+                                                    <CardDescription>{task.roleCategory}</CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="flex-grow">
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge variant="outline">{task.difficulty}</Badge>
+                                                        {task.taskTypes?.slice(0, 2).map(type => (
+                                                            <Badge key={type} variant="secondary">{type}</Badge>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                                <CardFooter>
+                                                    <Button asChild className="w-full">
+                                                        <Link href={`/candidate/tasks/${task.id}`}>
+                                                            View Task <ArrowRight className="ml-2 h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                </CardFooter>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-center text-muted-foreground py-8">
+                                        {company.name} has no active tasks at the moment. Check back soon!
+                                    </p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Side Panel: Top Hires */}
+                    <div className="space-y-8">
+                        <Card>
+                             <CardHeader>
+                                <CardTitle>Top Hires (Mock)</CardTitle>
                                 <CardDescription>A showcase of talent hired through SkillMatch Pro.</CardDescription>
                             </CardHeader>
                              <CardContent className="space-y-4">
@@ -113,33 +157,11 @@ export default async function CompanyProfilePage({ params }: { params: { id: str
                                                 <p className="text-sm text-muted-foreground">Frontend Developer</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2 font-bold text-lg">
-                                            <Star className="h-5 w-5 text-yellow-500" />
-                                            <span>92</span>
-                                        </div>
                                          <Button asChild variant="ghost" size="sm">
-                                            <Link href={`/candidate/${user.id}`}>View Profile</Link>
+                                            <Link href={`/candidate/${user.id}`}>Profile</Link>
                                         </Button>
                                     </div>
                                 ))}
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* Side Panel */}
-                    <div className="space-y-8">
-                        <Card>
-                             <CardHeader>
-                                <CardTitle>Active Tasks</CardTitle>
-                            </CardHeader>
-                             <CardContent className="space-y-3">
-                                {tasks.filter(t => t.status === 'published').slice(0,5).map(task => (
-                                    <div key={task.id}>
-                                        <p className="font-medium">{task.title}</p>
-                                        <p className="text-sm text-muted-foreground">{task.roleCategory}</p>
-                                    </div>
-                                ))}
-                                {tasks.length === 0 && <p className="text-sm text-muted-foreground">No active tasks.</p>}
                             </CardContent>
                         </Card>
                     </div>

@@ -1,6 +1,6 @@
 
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, ApiIntegrationCategory } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1256,6 +1256,39 @@ export const mockApiIntegrations: ApiIntegration[] = [
     apiKey: 'vercel_token_******************',
     endpointUrl: 'https://api.vercel.com/v1/deployments',
     subscribedEvents: [],
+  },
+  {
+    id: 'api-7',
+    name: 'Stripe',
+    category: 'Payments',
+    description: 'Connect your Stripe account to process payments for subscriptions.',
+    status: 'Active',
+    lastSync: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString(),
+    apiKey: 'sk_test_******************',
+    endpointUrl: 'https://api.stripe.com/v1',
+    subscribedEvents: ['submission.evaluated'],
+  },
+  {
+    id: 'api-8',
+    name: 'PayPal',
+    category: 'Payments',
+    description: 'Allow candidates and companies to pay via PayPal.',
+    status: 'Inactive',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+    apiKey: 'paypal_secret_******************',
+    endpointUrl: 'https://api.paypal.com/v1',
+    subscribedEvents: [],
+  },
+  {
+    id: 'api-9',
+    name: 'Razorpay',
+    category: 'Payments',
+    description: 'Integrate with Razorpay for local payment methods.',
+    status: 'Error',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+    apiKey: 'rzp_test_******************',
+    endpointUrl: 'https://api.razorpay.com/v1',
+    subscribedEvents: ['submission.created'],
   }
 ];
 

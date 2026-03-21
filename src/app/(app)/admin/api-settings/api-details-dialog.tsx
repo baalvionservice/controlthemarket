@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { TestTube2, Save } from 'lucide-react';
+import { TestTube2, Save, Banknote, Loader2 } from 'lucide-react';
 import type { ApiIntegration } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -27,6 +27,8 @@ export function ApiDetailsDialog({ isOpen, onOpenChange, apiIntegration }: ApiDe
   const { toast } = useToast();
   const [apiKey, setApiKey] = useState('');
   const [endpointUrl, setEndpointUrl] = useState('');
+  const [simAmount, setSimAmount] = useState('29.99');
+  const [isSimulating, setIsSimulating] = useState(false);
 
   useEffect(() => {
     if (apiIntegration) {
@@ -45,6 +47,23 @@ export function ApiDetailsDialog({ isOpen, onOpenChange, apiIntegration }: ApiDe
     }, 1500)
   }
 
+  const handleSimulatePayment = () => {
+    setIsSimulating(true);
+    toast({
+        title: "Payment Simulation",
+        description: `Processing a mock payment of $${simAmount}...`
+    });
+    setTimeout(() => {
+        const success = Math.random() > 0.2; // 80% success rate
+        toast({
+            title: success ? 'Payment Successful' : 'Payment Failed',
+            description: success ? `Successfully processed payment.` : `The payment was declined.`,
+            variant: success ? 'default' : 'destructive',
+        });
+        setIsSimulating(false);
+    }, 2000);
+  }
+
   if (!apiIntegration) return null;
   
   const mockActivities = [
@@ -52,6 +71,8 @@ export function ApiDetailsDialog({ isOpen, onOpenChange, apiIntegration }: ApiDe
     { id: 2, message: 'Triggered by event: submission.evaluated', time: '3 hours ago' },
     { id: 3, message: 'Connection test successful', time: '5 hours ago' },
   ];
+
+  const isPaymentGateway = apiIntegration.category === 'Payments';
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -81,6 +102,24 @@ export function ApiDetailsDialog({ isOpen, onOpenChange, apiIntegration }: ApiDe
                      {apiIntegration.subscribedEvents.length > 0 ? apiIntegration.subscribedEvents.map(event => <Badge key={event} variant="secondary">{event}</Badge>) : <span className="text-sm text-muted-foreground">No events subscribed.</span>}
                 </div>
             </div>
+            {isPaymentGateway && (
+              <div>
+                  <h4 className="font-medium mb-2">Payment Simulation (Mock)</h4>
+                  <div className="rounded-md border p-4 space-y-4">
+                    <div className="flex items-end gap-2">
+                        <div className="flex-1 space-y-1">
+                            <Label htmlFor="sim-amount">Amount</Label>
+                            <Input id="sim-amount" type="number" value={simAmount} onChange={e => setSimAmount(e.target.value)} placeholder="29.99" />
+                        </div>
+                        <Button onClick={handleSimulatePayment} disabled={isSimulating}>
+                           {isSimulating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Banknote className="mr-2 h-4 w-4" />}
+                            Pay Now
+                        </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">This is a mock panel to simulate making a payment through this gateway.</p>
+                  </div>
+              </div>
+            )}
              <div>
                  <h4 className="font-medium mb-2">Recent Activity (Mock)</h4>
                 <div className="rounded-md border p-4 text-sm text-muted-foreground space-y-2">

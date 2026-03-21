@@ -27,7 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ApiDetailsDialog } from './api-details-dialog';
 
 const apiStatuses: (ApiIntegrationStatus | 'All')[] = ["All", "Active", "Inactive", "Error"];
-const apiCategories: (ApiIntegrationCategory | 'All')[] = ["All", "Analytics", "Chat", "Cloud Storage", "DevOps", "Monitoring", "Other"];
+const apiCategories: (ApiIntegrationCategory | 'All')[] = ["All", "Analytics", "Chat", "Cloud Storage", "DevOps", "Monitoring", "Payments", "Other"];
 
 
 const getStatusVariant = (status: ApiIntegrationStatus): 'default' | 'destructive' | 'outline' => {

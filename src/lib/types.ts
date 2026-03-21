@@ -287,7 +287,7 @@ export interface Team {
 }
 
 export type ApiIntegrationStatus = 'Active' | 'Inactive' | 'Error';
-export type ApiIntegrationCategory = 'Analytics' | 'Chat' | 'Cloud Storage' | 'DevOps' | 'Monitoring' | 'Other';
+export type ApiIntegrationCategory = 'Analytics' | 'Chat' | 'Cloud Storage' | 'DevOps' | 'Monitoring' | 'Payments' | 'Other';
 
 export interface ApiIntegration {
   id: string;

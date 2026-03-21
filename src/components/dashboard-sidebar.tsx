@@ -46,6 +46,7 @@ import {
   Plug,
   ArrowLeftRight,
   Monitor,
+  Server,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -88,6 +89,7 @@ const adminNav = [
   { name: 'Execution Environment', href: '/admin/execution', icon: Terminal },
   { name: 'Live Coding', href: '/admin/live-coding', icon: Code },
   { name: 'System Monitoring', href: '/admin/monitoring', icon: Monitor },
+  { name: 'Load Handling', href: '/admin/load-handling', icon: Server },
   { name: 'Error Tracking', href: '/admin/errors', icon: AlertTriangle },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Real-Time Monitoring', href: '/admin/activity', icon: History },

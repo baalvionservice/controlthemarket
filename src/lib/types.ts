@@ -329,16 +329,35 @@ export interface ServiceStatus {
     lastDowntime?: string;
 }
 
+export type AutoScalingStatus = 'Stable' | 'Scaling Up' | 'Scaling Down';
+
 export interface SystemMetric {
     id: string;
     activeUsers: number;
     activeSessions: number;
     systemLoad: number; // percentage
     apiRequestsPerMinute: number;
+    requestsPerSecond: number;
+    autoScalingStatus: AutoScalingStatus;
     errorRate: number; // percentage
     timestamp: string;
     avgApiResponseTime: number;
     dbQueryTime: number;
+}
+
+export interface ServiceLoad {
+    id: string;
+    name: ServiceStatusName;
+    loadPercentage: number;
+    requestsHandled: number;
+}
+
+export interface ScalingEvent {
+    id: string;
+    timestamp: string;
+    change: 'up' | 'down';
+    instanceCount: number;
+    reason: string;
 }
 
 export type LogSeverity = 'Info' | 'Warning' | 'Error';

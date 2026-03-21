@@ -1,6 +1,6 @@
 
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1319,18 +1319,36 @@ export const mockIntegrationLogs: IntegrationLog[] = [
 // Mock system metrics for the last minute (30 data points, 2 seconds apart)
 export const mockSystemMetrics: SystemMetric[] = Array.from({ length: 30 }, (_, i) => {
     const timestamp = new Date(Date.now() - (30 - i) * 2000).toISOString();
+    const scalingStatuses: AutoScalingStatus[] = ['Stable', 'Stable', 'Stable', 'Scaling Up', 'Stable', 'Scaling Down'];
     return {
         id: `metric-${i}`,
         activeUsers: 120 + Math.floor(Math.random() * 20) - 10,
         activeSessions: 150 + Math.floor(Math.random() * 30) - 15,
         systemLoad: 40 + Math.floor(Math.random() * 20) * (Math.sin(i / 5) + 1.5),
         apiRequestsPerMinute: 2500 + Math.floor(Math.random() * 500) - 250,
+        requestsPerSecond: 40 + Math.floor(Math.random() * 20) - 10,
+        autoScalingStatus: scalingStatuses[i % scalingStatuses.length],
         errorRate: 1.5 + Math.random() * (i % 10 === 0 ? 3 : 1) - 0.5,
         timestamp,
         avgApiResponseTime: 80 + Math.floor(Math.random() * 40) * (Math.cos(i / 4) + 1), // ms
         dbQueryTime: 20 + Math.floor(Math.random() * 15) * (Math.sin(i / 3) + 1), // ms
     };
 });
+
+export const mockServiceLoad: ServiceLoad[] = [
+    { id: 'sl-1', name: 'Authentication', loadPercentage: 25, requestsHandled: 5000 },
+    { id: 'sl-2', name: 'Database', loadPercentage: 65, requestsHandled: 12000 },
+    { id: 'sl-3', name: 'API Gateway', loadPercentage: 85, requestsHandled: 25000 },
+    { id: 'sl-4', name: 'Task Queue', loadPercentage: 40, requestsHandled: 8000 },
+    { id: 'sl-5', name: 'AI Assistant', loadPercentage: 95, requestsHandled: 3000 },
+    { id: 'sl-6', name: 'Notifications', loadPercentage: 15, requestsHandled: 15000 },
+];
+
+export const mockScalingEvents: ScalingEvent[] = [
+  { id: 'se-1', timestamp: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(), change: 'up', instanceCount: 4, reason: 'High CPU Usage' },
+  { id: 'se-2', timestamp: new Date(new Date().setHours(new Date().getHours() - 3)).toISOString(), change: 'down', instanceCount: 3, reason: 'Low traffic period' },
+  { id: 'se-3', timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), change: 'up', instanceCount: 3, reason: 'Increased API requests' },
+];
 
 export const mockServiceStatus: ServiceStatus[] = [
     { id: 'service-1', name: 'Authentication', status: 'Running', lastChecked: new Date().toISOString(), uptimePercentage: 99.98, lastDowntime: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString() },

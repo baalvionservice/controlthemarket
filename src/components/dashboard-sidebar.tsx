@@ -98,7 +98,7 @@ const adminNav = [
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Execution Environment', href: '/admin/execution', icon: Terminal },
-  { name: 'Live Coding', href: '/admin/live-coding', icon: Code },
+  { name: 'Live Session Monitoring', href: '/admin/live-session', icon: Monitor },
   { name: 'System Health', href: '/admin/health', icon: HeartPulse },
   { name: 'System Monitoring', href: '/admin/monitoring', icon: Monitor },
   { name: 'Load Handling', href: '/admin/load-handling', icon: Server },

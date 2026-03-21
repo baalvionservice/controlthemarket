@@ -10,18 +10,17 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
-import type { LiveSessionStatus, Submission } from '@/lib/types';
+import type { LiveSessionStatus } from '@/lib/types';
 import { SkillMatchResultPanel } from '../submissions/[id]/skill-match-result-panel';
 
-const getStatusVariant = (status?: LiveSessionStatus) => {
+const getStatusVariant = (status?: LiveSessionStatus): 'default' | 'destructive' | 'warning' | 'outline' | 'secondary' => {
     switch (status) {
       case 'Active': return 'default';
-      case 'Stopped':
       case 'Cancelled': 
-        return 'destructive';
+      case 'Completed':
+        return 'secondary';
       case 'Paused': return 'warning';
       case 'Scheduled': return 'warning';
-      case 'Completed': return 'secondary';
       default: return 'outline';
     }
   };
@@ -32,6 +31,7 @@ export default function CandidateLiveSessionPage() {
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [hasPermission, setHasPermission] = useState(true);
 
   // Find the active or scheduled session for the current user
   const submission = useMemo(() => {
@@ -50,6 +50,7 @@ export default function CandidateLiveSessionPage() {
     try {
       const mediaStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
       setStream(mediaStream);
+      setHasPermission(true);
 
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -67,6 +68,7 @@ export default function CandidateLiveSessionPage() {
       });
     } catch (error) {
       console.error('Error accessing screen:', error);
+      setHasPermission(false);
       toast({
         variant: 'destructive',
         title: 'Screen Share Failed',
@@ -150,6 +152,15 @@ export default function CandidateLiveSessionPage() {
                     </div>
                     <p className="text-sm text-muted-foreground">Session ID: {submission.id}</p>
                 </div>
+                
+                {!hasPermission && (
+                  <Alert variant="destructive">
+                      <AlertTitle>Screen Share Permission Denied</AlertTitle>
+                      <AlertDescription>
+                        Please enable screen sharing permissions in your browser settings to continue.
+                      </AlertDescription>
+                  </Alert>
+                )}
 
                 <div className="aspect-video w-full rounded-lg bg-muted flex items-center justify-center relative overflow-hidden">
                     <video ref={videoRef} className="h-full w-full object-contain" autoPlay muted playsInline />

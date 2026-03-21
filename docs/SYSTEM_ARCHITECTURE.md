@@ -84,6 +84,12 @@ The following table shows how traditional REST API endpoints map to this modern,
 | `POST /tasks/:taskId/resources`           | A `createTaskResource(taskId, data)` Server Action that adds data to a `/tasks/{taskId}/resources` sub-collection.         |
 | `GET /tasks/:taskId/resources`            | A `useCollection()` hook on the `/tasks/{taskId}/resources` sub-collection.                                                 |
 | `DELETE /tasks/:taskId/resources/:resourceId`| A `deleteTaskResource(resourceId)` Server Action that deletes a resource from the sub-collection.                           |
+| `POST /tasks/:taskId/submissions`         | A `createSubmission(taskId, data)` Server Action. Checks deadlines and creates a new document in the `submissions` collection.   |
+| `GET /users/me/submissions`               | A `useCollection()` hook on the `submissions` collection, filtered by `userId`.                                             |
+| `GET /submissions/:submissionId`          | A `useDocument()` hook to fetch a single submission. Security rules restrict access to the owner and task's company.      |
+| `GET /tasks/:taskId/submissions`          | A `useCollection()` hook on the `submissions` collection, filtered by `taskId`. Security rules restrict access.             |
+| `PUT /submissions/:submissionId`          | An `updateSubmission(submissionId, data)` Server Action. Checks for ownership and permissions before updating.               |
+| `DELETE /submissions/:submissionId`       | A `deleteSubmission(submissionId)` Server Action. Checks for ownership and permissions before deleting.                      |
 
 
 This structure provides a clean, secure, and highly performant architecture that is well-suited for a modern, real-time SaaS platform.
@@ -160,3 +166,5 @@ The system uses status fields to manage the lifecycle of key entities.
 -   **DevOps:**
     -   **Containerization:** While the core is serverless, any future standalone services (e.g., a dedicated analytics processor) would be containerized using Docker and orchestrated with Kubernetes or managed services like Cloud Run.
     -   **CI/CD:** A CI/CD pipeline (e.g., GitHub Actions) is used to automate testing, linting, and deployment to staging and production environments on Vercel/Firebase.
+
+    

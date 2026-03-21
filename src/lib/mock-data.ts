@@ -269,7 +269,7 @@ export const mockTasks: Task[] = [
     title: 'Create a Serverless API Endpoint',
     description: 'Build a serverless function that acts as a proxy to a third-party API, adding caching to reduce latency.',
     instructions: '1. Choose a serverless provider (e.g., AWS Lambda, Vercel Functions).\n2. The function should accept a stock ticker symbol (e.g., "AAPL").\n3. It should fetch stock data from a free API like Alpha Vantage or Financial Modeling Prep.\n4. Cache the response for 5 minutes to avoid hitting API rate limits.\n5. Handle potential errors from the third-party API gracefully.',
-    expectedOutputs: 'A link to a public GitHub repository containing your serverless function code and a brief README explaining how to deploy and test it.',
+    expectedOutputs: 'A link to a GitHub repository containing your serverless function code and a brief README explaining how to deploy and test it.',
     roleCategory: 'Engineering',
     taskTypes: ['Coding'],
     difficulty: 'Advanced',

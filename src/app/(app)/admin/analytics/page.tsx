@@ -7,18 +7,20 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Users, Building, Briefcase, FileText } from "lucide-react";
+import { Users, Building, Briefcase, FileText, Bot, AlertTriangle, FlaskConical, Clock } from "lucide-react";
 import { 
     GlobalStatusDistributionChart, 
     GlobalTasksByCompanyChart, 
-    GlobalCriteriaRadarChart, 
     GlobalLeaderboard,
     GlobalSubmissionTrendChart,
     SkillLevelDistributionChart,
     PercentileDistributionChart,
     AverageScoreTrendChart,
+    ValidationStatusChart,
+    TestCaseStatusChart,
+    PlagiarismRiskChart,
 } from "./charts";
-import type { Evaluation, EvaluationSchema } from "@/lib/types";
+import type { Evaluation, EvaluationSchema, Submission } from "@/lib/types";
 
 // Note: This logic is duplicated from rankings page for simplicity in this mock environment.
 // In a real app, this would be a shared utility.
@@ -122,6 +124,19 @@ export default async function AdminAnalyticsPage() {
         })
         .sort((a, b) => b.score - a.score)
         .slice(0, 5);
+        
+    // Execution Analytics Metrics
+    const totalTimedSubmissions = submissions.filter(s => s.timeSpentMinutes !== undefined).length;
+    const totalTimeSpent = submissions.reduce((acc, sub) => acc + (sub.timeSpentMinutes || 0), 0);
+    const avgTimeSpent = totalTimedSubmissions > 0 ? Math.round(totalTimeSpent / totalTimedSubmissions) : 0;
+    
+    const submissionsWithTests = submissions.filter(s => s.testCaseStatus !== 'Pending' && s.testCaseStatus !== undefined);
+    const testPasses = submissionsWithTests.filter(s => s.testCaseStatus === 'Passed').length;
+    const testPassRate = submissionsWithTests.length > 0 ? Math.round((testPasses / submissionsWithTests.length) * 100) : 0;
+
+    const validationIssues = submissions.filter(s => s.validationStatus === 'Invalid' || s.validationStatus === 'Warning').length;
+    const plagiarismAlerts = submissions.filter(s => s.plagiarismRisk === 'High' || s.plagiarismRisk === 'Medium').length;
+
 
     return (
         <div className="flex-1 space-y-6 p-8 pt-6">
@@ -179,6 +194,57 @@ export default async function AdminAnalyticsPage() {
                 </Card>
             </div>
             
+            <Card>
+                <CardHeader>
+                    <CardTitle>Execution Analytics</CardTitle>
+                    <CardDescription>Metrics related to automated session execution and validation.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Avg. Time Spent</CardTitle>
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{avgTimeSpent} min</div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Test Pass Rate</CardTitle>
+                            <FlaskConical className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{testPassRate}%</div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Validation Issues</CardTitle>
+                            <Bot className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{validationIssues}</div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Plagiarism Alerts</CardTitle>
+                            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{plagiarismAlerts}</div>
+                        </CardContent>
+                    </Card>
+                </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                <ValidationStatusChart submissions={submissions} />
+                <TestCaseStatusChart submissions={submissions} />
+                <PlagiarismRiskChart submissions={submissions} />
+            </div>
+
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
                 <div className="lg:col-span-3 space-y-6">
                     <AverageScoreTrendChart evaluations={evaluations} />

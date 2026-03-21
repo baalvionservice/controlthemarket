@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Bar, BarChart, CartesianGrid, XAxis, Pie, PieChart, Cell, Line, LineChart, YAxis, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
@@ -440,3 +441,147 @@ export const AverageScoreTrendChart = ({ evaluations }: { evaluations: Evaluatio
         </Card>
     );
 };
+
+export const ValidationStatusChart = ({ submissions }: { submissions: Submission[] }) => {
+    const statusConfig = {
+        Valid: { label: 'Valid', color: 'hsl(var(--chart-1))' },
+        Invalid: { label: 'Invalid', color: 'hsl(var(--chart-2))' },
+        Warning: { label: 'Warning', color: 'hsl(var(--chart-3))' },
+        Pending: { label: 'Pending', color: 'hsl(var(--chart-4))' },
+    };
+
+    const chartData = useMemo(() => {
+        const statusCounts = submissions.reduce((acc, sub) => {
+            const status = sub.validationStatus || 'Pending';
+            acc[status] = (acc[status] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+        
+        return Object.entries(statusCounts).map(([status, count]) => ({
+            status,
+            count,
+            fill: statusConfig[status as keyof typeof statusConfig]?.color,
+        }));
+    }, [submissions]);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Validation Status</CardTitle>
+                <CardDescription>Distribution of automated validation results.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-center">
+                <ChartContainer config={statusConfig as ChartConfig} className="mx-auto aspect-square w-full max-w-[300px]">
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent nameKey="count" hideLabel />} />
+                        <Pie data={chartData} dataKey="count" nameKey="status" innerRadius={60}>
+                           {chartData.map((entry) => (
+                                <Cell key={entry.status} fill={entry.fill} />
+                            ))}
+                        </Pie>
+                        <ChartLegend
+                            content={<ChartLegendContent nameKey="status" />}
+                            className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                        />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    );
+}
+
+export const TestCaseStatusChart = ({ submissions }: { submissions: Submission[] }) => {
+    const statusConfig = {
+        Passed: { label: 'Passed', color: 'hsl(var(--chart-1))' },
+        Failed: { label: 'Failed', color: 'hsl(var(--chart-2))' },
+        Warning: { label: 'Warning', color: 'hsl(var(--chart-3))' },
+        Pending: { label: 'Pending', color: 'hsl(var(--chart-4))' },
+    };
+
+    const chartData = useMemo(() => {
+        const statusCounts = submissions.reduce((acc, sub) => {
+            const status = sub.testCaseStatus || 'Pending';
+            acc[status] = (acc[status] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+        
+        return Object.entries(statusCounts).map(([status, count]) => ({
+            status,
+            count,
+            fill: statusConfig[status as keyof typeof statusConfig]?.color,
+        }));
+    }, [submissions]);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Test Case Status</CardTitle>
+                <CardDescription>Distribution of backend test case results.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-center">
+                <ChartContainer config={statusConfig as ChartConfig} className="mx-auto aspect-square w-full max-w-[300px]">
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent nameKey="count" hideLabel />} />
+                        <Pie data={chartData} dataKey="count" nameKey="status" innerRadius={60}>
+                           {chartData.map((entry) => (
+                                <Cell key={entry.status} fill={entry.fill} />
+                            ))}
+                        </Pie>
+                        <ChartLegend
+                            content={<ChartLegendContent nameKey="status" />}
+                            className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                        />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    );
+}
+
+export const PlagiarismRiskChart = ({ submissions }: { submissions: Submission[] }) => {
+    const riskConfig = {
+        High: { label: 'High', color: 'hsl(var(--chart-2))' },
+        Medium: { label: 'Medium', color: 'hsl(var(--chart-3))' },
+        Low: { label: 'Low', color: 'hsl(var(--chart-1))' },
+        None: { label: 'None', color: 'hsl(var(--chart-5))' },
+    };
+
+    const chartData = useMemo(() => {
+        const riskCounts = submissions.reduce((acc, sub) => {
+            const risk = sub.plagiarismRisk || 'None';
+            acc[risk] = (acc[risk] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+        
+        return Object.entries(riskCounts).map(([risk, count]) => ({
+            risk,
+            count,
+            fill: riskConfig[risk as keyof typeof riskConfig]?.color,
+        }));
+    }, [submissions]);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Plagiarism Risk</CardTitle>
+                <CardDescription>Distribution of plagiarism check results.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-center">
+                <ChartContainer config={riskConfig as ChartConfig} className="mx-auto aspect-square w-full max-w-[300px]">
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent nameKey="count" hideLabel />} />
+                        <Pie data={chartData} dataKey="count" nameKey="risk" innerRadius={60}>
+                           {chartData.map((entry) => (
+                                <Cell key={entry.risk} fill={entry.fill} />
+                            ))}
+                        </Pie>
+                        <ChartLegend
+                            content={<ChartLegendContent nameKey="risk" />}
+                            className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                        />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    );
+}

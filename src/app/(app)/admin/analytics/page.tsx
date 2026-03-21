@@ -1,5 +1,5 @@
 
-import { getCompanies, getSubmissions, getTasks, getUsers, getEvaluations } from "@/lib/api";
+import { getCompanies, getSubmissions, getTasks, getUsers, getEvaluations, getEvaluationSchemas } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -13,18 +13,102 @@ import {
     GlobalTasksByCompanyChart, 
     GlobalCriteriaRadarChart, 
     GlobalLeaderboard,
-    GlobalSubmissionTrendChart
+    GlobalSubmissionTrendChart,
+    SkillLevelDistributionChart,
+    PercentileDistributionChart,
+    AverageScoreTrendChart,
 } from "./charts";
+import type { Evaluation, EvaluationSchema } from "@/lib/types";
+
+// Note: This logic is duplicated from rankings page for simplicity in this mock environment.
+// In a real app, this would be a shared utility.
+const calculateAggregatedScore = (
+  evaluations: Evaluation[],
+  schemas: EvaluationSchema[]
+): { score: number; criteria: Record<string, number> } => {
+  if (evaluations.length === 0) return { score: 0, criteria: {} };
+
+  let totalWeightedScore = 0;
+  let totalWeight = 0;
+  const allCriteriaScores: Record<string, { total: number; count: number }> = {};
+
+  evaluations.forEach((ev) => {
+    const schema = schemas[0];
+    let evaluationWeightedScore = 0;
+    let evaluationTotalWeight = 0;
+
+    if (ev.criteriaScores && schema) {
+      for (const criterion of schema.criteria) {
+        const score = ev.criteriaScores[criterion.name];
+        const weight = criterion.weight || 1;
+        if (score !== undefined) {
+          evaluationWeightedScore += (score / criterion.maxPoints) * weight;
+          evaluationTotalWeight += weight;
+
+          if (!allCriteriaScores[criterion.name]) {
+            allCriteriaScores[criterion.name] = { total: 0, count: 0 };
+          }
+          allCriteriaScores[criterion.name].total += score;
+          allCriteriaScores[criterion.name].count += 1;
+        }
+      }
+    }
+    
+    if (evaluationTotalWeight === 0) {
+        totalWeightedScore += ev.score;
+        totalWeight += 100;
+    } else {
+        totalWeightedScore += (evaluationWeightedScore / evaluationTotalWeight) * 100;
+        totalWeight += 100;
+    }
+  });
+
+  const finalScore = Math.round(totalWeightedScore / evaluations.length);
+  const finalCriteriaScores: Record<string, number> = {};
+  for(const key in allCriteriaScores) {
+      finalCriteriaScores[key] = Math.round(allCriteriaScores[key].total / allCriteriaScores[key].count);
+  }
+
+  return { score: finalScore, criteria: finalCriteriaScores };
+};
 
 
 export default async function AdminAnalyticsPage() {
-    const [users, companies, tasks, submissions, evaluations] = await Promise.all([
+    const [users, companies, tasks, submissions, evaluations, schemas] = await Promise.all([
         getUsers(),
         getCompanies(),
         getTasks(),
         getSubmissions(),
-        getEvaluations()
+        getEvaluations(),
+        getEvaluationSchemas(),
     ]);
+
+    const candidates = users.filter((u) => u.role === 'candidate');
+
+    const unsortedRankingData = candidates.map((candidate) => {
+        const candidateSubmissions = submissions.filter((sub) => sub.userId === candidate.id);
+        const candidateSubmissionIds = new Set(candidateSubmissions.map((s) => s.id));
+        const candidateEvaluations = evaluations.filter((ev) => candidateSubmissionIds.has(ev.submissionId));
+        if (candidateEvaluations.length === 0) return null;
+        const { score } = calculateAggregatedScore(candidateEvaluations, schemas);
+        return { aggregatedScore: score, };
+    }).filter((r): r is { aggregatedScore: number } => r !== null);
+
+    const sortedData = unsortedRankingData.sort((a, b) => b.aggregatedScore - a.aggregatedScore);
+    const totalRankedCandidates = sortedData.length;
+    const rankingDataWithPercentile = sortedData.map((candidate, index) => ({
+        ...candidate,
+        percentileRank: totalRankedCandidates > 0 ? Math.ceil(((index + 1) / totalRankedCandidates) * 100) : 0,
+    }));
+
+    const percentileTiers = { 'Top 10%': 0, 'Top 25%': 0, 'Top 50%': 0, 'Bottom 50%': 0 };
+    rankingDataWithPercentile.forEach(c => {
+        if (c.percentileRank <= 10) percentileTiers['Top 10%']++;
+        else if (c.percentileRank <= 25) percentileTiers['Top 25%']++;
+        else if (c.percentileRank <= 50) percentileTiers['Top 50%']++;
+        else percentileTiers['Bottom 50%']++;
+    });
+    const percentileData = Object.entries(percentileTiers).map(([tier, count]) => ({ tier, count }));
 
     const leaderboardData = evaluations
         .map(ev => {
@@ -97,13 +181,14 @@ export default async function AdminAnalyticsPage() {
             
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
                 <div className="lg:col-span-3 space-y-6">
+                    <AverageScoreTrendChart evaluations={evaluations} />
                     <GlobalSubmissionTrendChart submissions={submissions} />
                     <GlobalTasksByCompanyChart tasks={tasks} companies={companies} />
                 </div>
                 <div className="lg:col-span-2 space-y-6">
-                    <GlobalCriteriaRadarChart evaluations={evaluations} />
-                    <GlobalStatusDistributionChart submissions={submissions} />
                     <GlobalLeaderboard data={leaderboardData} />
+                    <PercentileDistributionChart data={percentileData} />
+                    <SkillLevelDistributionChart users={users.filter(u => u.role === 'candidate')} />
                 </div>
             </div>
         </div>

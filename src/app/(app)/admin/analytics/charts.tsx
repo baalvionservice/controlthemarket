@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Bar, BarChart, CartesianGrid, XAxis, Pie, PieChart, Cell, Line, LineChart, YAxis, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
@@ -18,7 +17,7 @@ import {
 } from '@/components/ui/chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { useMemo } from 'react';
-import type { Submission, Evaluation, Task, Company } from '@/lib/types';
+import type { Submission, Evaluation, Task, Company, User } from '@/lib/types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format, subDays, startOfDay } from 'date-fns';
@@ -31,6 +30,14 @@ interface LeaderboardProps {
         avatarUrl?: string;
     }[];
 }
+
+interface PercentileDistributionProps {
+    data: {
+        tier: string;
+        count: number;
+    }[];
+}
+
 
 // --- Chart Components ---
 export const GlobalStatusDistributionChart = ({ submissions }: { submissions: Submission[] }) => {
@@ -282,3 +289,154 @@ export function GlobalLeaderboard({ data }: LeaderboardProps) {
         </Card>
     );
 }
+
+
+export const SkillLevelDistributionChart = ({ users }: { users: User[] }) => {
+    const experienceLevelConfig = {
+        Beginner: { label: 'Beginner', color: 'hsl(var(--chart-1))' },
+        Intermediate: { label: 'Intermediate', color: 'hsl(var(--chart-2))' },
+        Advanced: { label: 'Advanced', color: 'hsl(var(--chart-3))' },
+        Expert: { label: 'Expert', color: 'hsl(var(--chart-4))' },
+    };
+
+    const chartData = useMemo(() => {
+        const levelCounts = users.reduce((acc, user) => {
+            const level = user.profile?.experienceLevel;
+            if (level) {
+                acc[level] = (acc[level] || 0) + 1;
+            }
+            return acc;
+        }, {} as Record<string, number>);
+        
+        return Object.entries(levelCounts).map(([level, count]) => ({
+            level,
+            count,
+            fill: `var(--color-${level.toLowerCase()})`,
+        }));
+    }, [users]);
+
+    const chartConfig = Object.fromEntries(
+        Object.entries(experienceLevelConfig).map(([key, value]) => [key, value])
+    ) as ChartConfig;
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Candidate Skill Level Distribution</CardTitle>
+                <CardDescription>Distribution of self-assessed skill levels.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-center">
+                 <ChartContainer config={chartConfig} className="mx-auto aspect-square w-full max-w-[300px]">
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent nameKey="count" hideLabel />} />
+                        <Pie data={chartData} dataKey="count" nameKey="level" innerRadius={60}>
+                            {chartData.map((entry) => (
+                                <Cell key={entry.level} fill={chartConfig[entry.level as keyof typeof chartConfig]?.color} />
+                            ))}
+                        </Pie>
+                         <ChartLegend
+                            content={<ChartLegendContent nameKey="level" />}
+                            className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                        />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    )
+}
+
+export const PercentileDistributionChart = ({ data }: PercentileDistributionProps) => {
+    const chartConfig = {
+        count: { label: "Candidates" },
+        'Top 10%': { color: "hsl(var(--chart-1))" },
+        'Top 25%': { color: "hsl(var(--chart-2))" },
+        'Top 50%': { color: "hsl(var(--chart-3))" },
+        'Bottom 50%': { color: "hsl(var(--chart-4))" },
+    } satisfies ChartConfig;
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Percentile Rank Distribution</CardTitle>
+                <CardDescription>How candidates are distributed across percentile tiers.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer config={chartConfig}>
+                    <BarChart accessibilityLayer data={data} layout="vertical" margin={{ left: 20 }}>
+                        <CartesianGrid horizontal={false} />
+                        <YAxis
+                            dataKey="tier"
+                            type="category"
+                            tickLine={false}
+                            tickMargin={10}
+                            axisLine={false}
+                        />
+                        <XAxis type="number" hide />
+                        <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent indicator="line" />}
+                        />
+                        <Bar dataKey="count" layout="vertical" radius={4}>
+                            {data.map((entry) => (
+                                <Cell key={entry.tier} fill={chartConfig[entry.tier as keyof typeof chartConfig]?.color} />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    );
+};
+
+export const AverageScoreTrendChart = ({ evaluations }: { evaluations: Evaluation[] }) => {
+    const chartData = useMemo(() => {
+        const last30Days = Array.from({ length: 30 }, (_, i) => {
+            const date = subDays(new Date(), i);
+            return startOfDay(date);
+        }).reverse();
+
+        const scoresByDay = last30Days.map(date => {
+            const evalsOnDay = evaluations.filter(ev => 
+                ev.evaluatedAt && startOfDay(new Date(ev.evaluatedAt)).getTime() === date.getTime()
+            );
+            const averageScore = evalsOnDay.length > 0
+                ? Math.round(evalsOnDay.reduce((acc, curr) => acc + curr.score, 0) / evalsOnDay.length)
+                : 0;
+            return {
+                date: format(date, 'MMM d'),
+                averageScore: averageScore > 0 ? averageScore : null // show gaps for days with no evaluations
+            };
+        });
+        return scoresByDay;
+    }, [evaluations]);
+
+    const chartConfig = {
+        averageScore: { label: 'Average Score', color: 'hsl(var(--primary))' },
+    } satisfies ChartConfig;
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Average Score Trend (Last 30 Days)</CardTitle>
+                <CardDescription>Average evaluation scores over the past month.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer config={chartConfig}>
+                    <LineChart accessibilityLayer data={chartData} margin={{ left: 12, right: 12 }}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                            dataKey="date"
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            tickFormatter={(value) => value.slice(0, 3)}
+                        />
+                        <YAxis domain={[0, 100]} />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                        <Line connectNulls dataKey="averageScore" type="monotone" stroke="var(--color-averageScore)" strokeWidth={2} dot={false} />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    );
+};

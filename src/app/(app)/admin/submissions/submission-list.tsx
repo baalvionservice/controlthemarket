@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -34,8 +35,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, FileWarning, History, Undo2 } from 'lucide-react';
-import type { SubmissionStatus, User, RoleCategory } from '@/lib/types';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, FileWarning, History, Undo2, RefreshCw } from 'lucide-react';
+import type { SubmissionStatus, User, RoleCategory, ValidationStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { AdminSubmissionData } from './page';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,8 @@ type SortDirection = 'asc' | 'desc';
 
 const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round", "flagged"];
 const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
+const validationStatuses: (ValidationStatus | 'All')[] = ["All", "Valid", "Invalid", "Warning", "Pending"];
+
 
 export const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
      switch (status) {
@@ -77,6 +80,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [historyCandidate, setHistoryCandidate] = useState<User | null>(null);
+  const [validationStatusFilter, setValidationStatusFilter] = useState<ValidationStatus | 'All'>('All');
 
   useEffect(() => {
     setTableData(data);
@@ -89,6 +93,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                             item.company.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
       const matchesRole = roleFilter === 'All' || item.task.roleCategory === roleFilter;
+      const matchesValidation = validationStatusFilter === 'All' || item.validationStatus === validationStatusFilter;
       const matchesDate = (() => {
         if (!dateRange?.from) return true;
         const itemDate = new Date(item.applicationDate);
@@ -98,7 +103,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
         }
         return itemDate.getTime() === dateRange.from.getTime();
       })();
-      return matchesSearch && matchesStatus && matchesRole && matchesDate;
+      return matchesSearch && matchesStatus && matchesRole && matchesDate && matchesValidation;
     });
 
     return filtered.sort((a, b) => {
@@ -118,7 +123,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
       if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [tableData, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection]);
+  }, [tableData, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection, validationStatusFilter]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -162,9 +167,17 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
     setSelectedRows(new Set());
   }
 
-  const handleRowAction = (action: 'approve' | 'reject' | 'flag', id: string) => {
+  const handleRowAction = (action: 'approve' | 'reject' | 'flag' | 'revalidate', id: string) => {
     const submission = tableData.find(d => d.id === id);
     if (!submission) return;
+
+    if (action === 'revalidate') {
+        toast({
+            title: 'Revalidation Started (Mock)',
+            description: `Submission from ${submission.candidate.name} is being revalidated.`,
+        });
+        return;
+    }
 
     let newStatus: SubmissionStatus;
     let toastDescription: string;
@@ -201,6 +214,16 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
     }
   }
 
+  const getValidationStatusVariant = (status?: ValidationStatus): 'default' | 'destructive' | 'warning' | 'outline' => {
+    switch (status) {
+        case 'Valid': return 'default';
+        case 'Invalid': return 'destructive';
+        case 'Warning': return 'warning';
+        case 'Pending': return 'outline';
+        default: return 'outline';
+    }
+    };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row justify-between">
@@ -220,6 +243,14 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                 </SelectTrigger>
                 <SelectContent>
                     {statuses.map(status => <SelectItem key={status} value={status} className="capitalize">{status.replace('-', ' ')}</SelectItem>)}
+                </SelectContent>
+            </Select>
+            <Select value={validationStatusFilter} onValueChange={(value) => setValidationStatusFilter(value as ValidationStatus | 'All')}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectValue placeholder="Filter by validation" />
+                </SelectTrigger>
+                <SelectContent>
+                    {validationStatuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
                 </SelectContent>
             </Select>
             <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleCategory | 'All')}>
@@ -272,6 +303,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
               </TableHead>
               <TableHead>Task / Company</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Validation</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('score')}>Score<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
               </TableHead>
@@ -301,6 +333,13 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                   <TableCell>
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>
+                  <TableCell>
+                    {item.validationStatus ? (
+                        <Badge variant={getValidationStatusVariant(item.validationStatus)}>{item.validationStatus}</Badge>
+                    ) : (
+                        <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
                   <TableCell>{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
@@ -313,6 +352,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                         <DropdownMenuItem asChild><Link href={`/admin/submissions/${item.id}`}>View / Override</Link></DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setHistoryCandidate(item.candidate)}><History className="mr-2 h-4 w-4"/>View History</DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleRowAction('revalidate', item.id)}><RefreshCw className="mr-2 h-4 w-4"/>Revalidate</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleRowAction('approve', item.id)}><Star className="mr-2 h-4 w-4"/>Approve</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleRowAction('reject', item.id)} className="text-destructive focus:text-destructive"><XCircle className="mr-2 h-4 w-4"/>Reject</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleRowAction('flag', item.id)} className="text-destructive focus:text-destructive"><FileWarning className="mr-2 h-4 w-4"/>Flag</DropdownMenuItem>
@@ -323,7 +363,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">No submissions found.</TableCell>
+                <TableCell colSpan={8} className="h-24 text-center">No submissions found.</TableCell>
               </TableRow>
             )}
           </TableBody>

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from "react";
@@ -12,7 +13,8 @@ import {
     Bell, 
     FileText, 
     ShieldCheck,
-    Save
+    Save,
+    FileCheck2
 } from "lucide-react";
 import {
   Card,
@@ -194,6 +196,63 @@ export default function AdminSettingsPage() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Auto-Validation Rules Card */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><FileCheck2 className="h-5 w-5" />Auto-Validation Rules</CardTitle>
+                    <CardDescription>Configure automatic checks for all new submissions.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between space-x-2 rounded-md border p-4">
+                        <Label htmlFor="check-linting" className="flex flex-col space-y-1">
+                            <span>Linting & Code Style Check</span>
+                            <span className="font-normal leading-snug text-muted-foreground">
+                                Automatically run a linter (e.g., ESLint) on code submissions.
+                            </span>
+                        </Label>
+                        <Switch id="check-linting" defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between space-x-2 rounded-md border p-4">
+                        <Label htmlFor="check-deps" className="flex flex-col space-y-1">
+                            <span>Dependency Audit</span>
+                            <span className="font-normal leading-snug text-muted-foreground">
+                                Scan for known vulnerabilities in `package.json`.
+                            </span>
+                        </Label>
+                        <Switch id="check-deps" defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between space-x-2 rounded-md border p-4">
+                        <Label htmlFor="check-plagiarism" className="flex flex-col space-y-1">
+                            <span>Plagiarism Check</span>
+                            <span className="font-normal leading-snug text-muted-foreground">
+                                Compare submission against a database of public code.
+                            </span>
+                        </Label>
+                        <Switch id="check-plagiarism" />
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline">Configure Advanced Rules</Button>
+                </CardFooter>
+            </Card>
+
+            {/* Security & Access Logs Card */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5" />Security & Access</CardTitle>
+                    <CardDescription>Monitor security settings and access logs.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="session-timeout">Session Timeout (minutes)</Label>
+                        <Input id="session-timeout" type="number" defaultValue={60} />
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline">View Access Logs</Button>
+                </CardFooter>
+            </Card>
         </div>
 
         {/* Evaluation Schemas Card */}
@@ -237,23 +296,6 @@ export default function AdminSettingsPage() {
                  <Button onClick={handleAddNewSchema}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Create New Rule Schema
                 </Button>
-            </CardFooter>
-        </Card>
-
-        {/* Security & Access Logs Card */}
-         <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5" />Security & Access</CardTitle>
-                <CardDescription>Monitor security settings and access logs.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-2">
-                    <Label htmlFor="session-timeout">Session Timeout (minutes)</Label>
-                    <Input id="session-timeout" type="number" defaultValue={60} />
-                </div>
-            </CardContent>
-            <CardFooter>
-                 <Button variant="outline">View Access Logs</Button>
             </CardFooter>
         </Card>
 

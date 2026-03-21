@@ -16,6 +16,7 @@ export type AdminSubmissionData = {
   task: Task;
   company: Company;
   status: Submission['status'];
+  validationStatus?: Submission['validationStatus'];
   score?: number;
   applicationDate: string;
 };
@@ -50,6 +51,7 @@ export default async function AdminSubmissionsPage() {
             task: task,
             company: company,
             status: submission.status,
+            validationStatus: submission.validationStatus,
             score: evaluation?.score,
             applicationDate: submission.submittedAt || submission.assignedAt,
         };

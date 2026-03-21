@@ -112,6 +112,8 @@ export type SubmissionStatus =
   | 'moved-to-next-round'
   | 'flagged';
 
+export type ValidationStatus = 'Valid' | 'Invalid' | 'Warning' | 'Pending';
+
 export interface Submission {
   id: string;
   taskId: string;
@@ -124,6 +126,7 @@ export interface Submission {
     fileSize?: number; // for file uploads
   };
   status: SubmissionStatus;
+  validationStatus?: ValidationStatus;
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string

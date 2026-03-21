@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -16,6 +17,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { ActivityLog } from '@/components/activity-log';
+import { ValidationResultPanel } from './validation-result-panel';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -79,20 +81,25 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
             </div>
         </div>
       </div>
-
-      <Card>
-        <CardHeader>
-            <CardTitle>Admin Control Panel</CardTitle>
-            <CardDescription>
-                Modify scores, feedback, and submission status. All changes are final.
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <OverrideForm submission={submission} />
-        </CardContent>
-      </Card>
-      
-      <ActivityLog submission={submission} evaluation={evaluation} isAdminOverride={true} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Admin Control Panel</CardTitle>
+                    <CardDescription>
+                        Modify scores, feedback, and submission status. All changes are final.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <OverrideForm submission={submission} />
+                </CardContent>
+            </Card>
+        </div>
+        <div className="space-y-6">
+            <ValidationResultPanel submission={submission} />
+            <ActivityLog submission={submission} evaluation={evaluation} isAdminOverride={true} />
+        </div>
+      </div>
     </div>
   );
 }

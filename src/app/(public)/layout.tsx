@@ -19,6 +19,12 @@ export default function PublicLayout({
             >
               Pricing
             </Link>
+            <Link
+              href="/leaderboard"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Leaderboard
+            </Link>
           </nav>
           <div className="ml-auto flex items-center space-x-4">
             <Button variant="ghost" asChild>

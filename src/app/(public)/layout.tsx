@@ -27,6 +27,12 @@ export default function PublicLayout({
               Leaderboard
             </Link>
             <Link
+              href="/companies"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Companies
+            </Link>
+            <Link
               href="/badges"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             >

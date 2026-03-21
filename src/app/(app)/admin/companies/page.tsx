@@ -1,7 +1,7 @@
 
-import { getCompanies, getUsers, getTasks, getSubmissions } from "@/lib/api";
+import { getCompanies, getUsers, getTasks, getSubmissions, getSubscriptions, getPlans } from "@/lib/api";
 import { AdminCompaniesList } from "./company-list";
-import type { Company } from '@/lib/types';
+import type { Company, Subscription, Plan } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -15,24 +15,37 @@ export type AdminCompanyData = Company & {
   taskCount: number;
   submissionCount: number;
   ownerName: string;
+  subscription?: {
+    planName: string;
+    status: Subscription['status'];
+  };
 };
 
 export default async function ManageCompaniesPage() {
-  const [allCompanies, allUsers, allTasks, allSubmissions] = await Promise.all([
+  const [allCompanies, allUsers, allTasks, allSubmissions, allSubscriptions, allPlans] = await Promise.all([
     getCompanies(),
     getUsers(),
     getTasks(),
     getSubmissions(),
+    getSubscriptions(),
+    getPlans(),
   ]);
 
   const companyData: AdminCompanyData[] = allCompanies.map(company => {
     const owner = allUsers.find(u => u.id === company.ownerId);
+    const subscription = allSubscriptions.find(s => s.companyId === company.id);
+    const plan = subscription ? allPlans.find(p => p.id === subscription.planId) : undefined;
+    
     return {
       ...company,
       userCount: allUsers.filter(user => user.companyId === company.id).length,
       taskCount: allTasks.filter(task => task.companyId === company.id).length,
       submissionCount: allSubmissions.filter(sub => sub.companyId === company.id).length,
       ownerName: owner?.name || 'N/A',
+      subscription: subscription && plan ? {
+        planName: plan.name,
+        status: subscription.status,
+      } : undefined,
     };
   });
 
@@ -56,7 +69,11 @@ export default async function ManageCompaniesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AdminCompaniesList initialData={companyData} />
+          <AdminCompaniesList 
+            initialData={companyData}
+            allPlans={allPlans}
+            allSubscriptions={allSubscriptions}
+          />
         </CardContent>
       </Card>
     </div>

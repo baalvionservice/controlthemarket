@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, ApiIntegrationCategory, Badge } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, Plan, Subscription, Badge } from './types';
 
 export const mockBadges: Badge[] = [
   {
@@ -1692,4 +1692,33 @@ export const mockRevenueSources: RevenueSource[] = [
     { source: 'Subscriptions', amount: 52300 },
     { source: 'Usage-based', amount: 8400 },
     { source: 'Add-ons', amount: 3200 },
+];
+
+export const mockPlans: Plan[] = [
+  { id: 'plan-free', name: 'Free', priceMonthly: 0, priceYearly: 0, limits: { tasks: 5, submissions: 50, teamMembers: 3 }, features: ['Basic Analytics'] },
+  { id: 'plan-pro', name: 'Pro', priceMonthly: 79, priceYearly: 790, limits: { tasks: 50, submissions: 1000, teamMembers: 10 }, features: ['Advanced Analytics', 'AI Task Assistant'] },
+  { id: 'plan-ent', name: 'Enterprise', priceMonthly: 0, priceYearly: 0, limits: { tasks: -1, submissions: -1, teamMembers: -1 }, features: ['Custom Integrations', 'Dedicated Support'] },
+];
+
+export const mockSubscriptions: Subscription[] = [
+  {
+    id: 'sub-comp-1',
+    companyId: 'company-1',
+    planId: 'plan-pro',
+    status: 'ACTIVE',
+    startDate: new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString(),
+    endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+    billingCycle: 'YEARLY',
+    paymentProvider: 'STRIPE',
+    externalSubscriptionId: 'sub_123abc',
+  },
+  {
+    id: 'sub-comp-2',
+    companyId: 'company-2',
+    planId: 'plan-free',
+    status: 'TRIAL',
+    startDate: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
+    endDate: new Date(new Date().setDate(new Date().getDate() + 20)).toISOString(),
+    billingCycle: 'MONTHLY',
+  },
 ];

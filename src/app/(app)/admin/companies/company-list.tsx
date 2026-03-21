@@ -22,25 +22,40 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Trash2, CreditCard } from 'lucide-react';
 import type { AdminCompanyData } from './page';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyFormDialog } from './company-form-dialog';
-import type { Company } from '@/lib/types';
+import type { Company, Subscription, Plan } from '@/lib/types';
 import { TenantDetailDialog } from './tenant-detail-dialog';
+import { SubscriptionManagementDialog } from './subscription-management-dialog';
 
 type StatusFilter = 'All' | 'Active' | 'Inactive';
 
-export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyData[] }) {
+export function AdminCompaniesList({ 
+  initialData, 
+  allPlans, 
+  allSubscriptions
+}: { 
+  initialData: AdminCompanyData[],
+  allPlans: Plan[],
+  allSubscriptions: Subscription[],
+}) {
   const [data, setData] = useState<AdminCompanyData[]>(initialData);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(allSubscriptions);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [viewingTenant, setViewingTenant] = useState<AdminCompanyData | null>(null);
+
+  const [isSubDialogOpen, setIsSubDialogOpen] = useState(false);
+  const [managingCompany, setManagingCompany] = useState<AdminCompanyData | null>(null);
 
   const { toast } = useToast();
 
@@ -101,6 +116,38 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
     setViewingTenant(company);
     setIsDetailOpen(true);
   };
+  
+  const handleManageSubscription = (company: AdminCompanyData) => {
+    setManagingCompany(company);
+    setIsSubDialogOpen(true);
+  };
+  
+  const handleSaveSubscription = (subscription: Subscription) => {
+    setSubscriptions(prev => prev.map(s => s.id === subscription.id ? subscription : s));
+    setData(prev => prev.map(c => {
+      if (c.id === subscription.companyId) {
+        const plan = allPlans.find(p => p.id === subscription.planId);
+        return {
+          ...c,
+          subscription: {
+            planName: plan?.name || 'N/A',
+            status: subscription.status,
+          }
+        };
+      }
+      return c;
+    }));
+  };
+  
+  const getSubscriptionStatusVariant = (status: Subscription['status']) => {
+    switch (status) {
+      case 'ACTIVE': return 'default';
+      case 'CANCELED': return 'destructive';
+      case 'TRIAL': return 'warning';
+      case 'EXPIRED': return 'outline';
+    }
+  }
+
 
   return (
     <div className="space-y-6">
@@ -154,10 +201,8 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
               </TableHead>
               <TableHead>Tenant</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Users</TableHead>
-              <TableHead>Tasks</TableHead>
-              <TableHead>Submissions</TableHead>
               <TableHead>Owner</TableHead>
+              <TableHead>Subscription</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -190,20 +235,33 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
                         {company.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{company.userCount}</TableCell>
-                  <TableCell>{company.taskCount}</TableCell>
-                  <TableCell>{company.submissionCount}</TableCell>
                   <TableCell>{company.ownerName}</TableCell>
+                   <TableCell>
+                    {company.subscription ? (
+                        <div>
+                        <p className="font-medium">{company.subscription.planName}</p>
+                        <Badge variant={getSubscriptionStatusVariant(company.subscription.status)} className="capitalize text-xs">
+                            {company.subscription.status.toLowerCase()}
+                        </Badge>
+                        </div>
+                    ) : (
+                        <Badge variant="outline">No Plan</Badge>
+                    )}
+                  </TableCell>
                   <TableCell>{format(new Date(company.createdAt), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                      <Button variant="ghost" size="sm" onClick={() => handleViewTenant(company)}>View</Button>
                      <Button variant="ghost" size="sm" onClick={() => handleEditCompany(company)}>Edit</Button>
+                     <Button variant="ghost" size="sm" onClick={() => handleManageSubscription(company)}>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Subscription
+                     </Button>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center">
+                <TableCell colSpan={7} className="h-24 text-center">
                   No tenants found.
                 </TableCell>
               </TableRow>
@@ -221,6 +279,14 @@ export function AdminCompaniesList({ initialData }: { initialData: AdminCompanyD
         isOpen={isDetailOpen}
         onOpenChange={setIsDetailOpen}
         tenant={viewingTenant}
+      />
+       <SubscriptionManagementDialog
+        isOpen={isSubDialogOpen}
+        onOpenChange={setIsSubDialogOpen}
+        onSave={handleSaveSubscription}
+        company={managingCompany}
+        allPlans={allPlans}
+        currentSubscription={subscriptions.find(s => s.companyId === managingCompany?.id)}
       />
     </div>
   );

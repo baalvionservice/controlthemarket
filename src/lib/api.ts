@@ -30,8 +30,10 @@ import {
   mockRevenueMetrics,
   mockPlanDistribution,
   mockRevenueSources,
+  mockPlans,
+  mockSubscriptions,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, Plan, Subscription } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -230,4 +232,15 @@ export async function getPlanDistribution(): Promise<PlanDistribution[]> {
 export async function getRevenueSources(): Promise<RevenueSource[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
   return mockRevenueSources;
+}
+
+// --- Subscription API ---
+export async function getPlans(): Promise<Plan[]> {
+  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockPlans;
+}
+
+export async function getSubscriptions(): Promise<Subscription[]> {
+  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockSubscriptions;
 }

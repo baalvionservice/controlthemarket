@@ -1,4 +1,5 @@
 
+
 import { getTasksByCompany, getSubmissions, getEvaluations, getTask, getUser } from '@/lib/api';
 import { mockUsers, mockCompanies } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRight, Briefcase, PlusCircle, Clock, Star } from 'lucide-react';
+import { ArrowRight, Briefcase, PlusCircle, Clock, Star, Monitor } from 'lucide-react';
 import Link from 'next/link';
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
@@ -45,6 +46,7 @@ export default async function CompanyDashboard() {
   const activeTasksCount = tasks.filter(t => t.status === 'published').length;
   const pendingReviewCount = companySubmissions.filter(s => ['pending', 'in-review', 'resubmitted'].includes(s.status)).length;
   const shortlistedCount = companySubmissions.filter(s => s.status === 'shortlisted').length;
+  const activeLiveSessionsCount = companySubmissions.filter(s => s.liveSessionStatus === 'Active').length;
   const averageScore = companyEvaluations.length > 0
     ? Math.round(companyEvaluations.reduce((acc, curr) => acc + curr.score, 0) / companyEvaluations.length)
     : 0;
@@ -104,6 +106,18 @@ export default async function CompanyDashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Live Sessions</CardTitle>
+            <Monitor className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{activeLiveSessionsCount}</div>
+            <p className="text-xs text-muted-foreground">
+              Candidates currently in a session
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Shortlisted Candidates</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -111,18 +125,6 @@ export default async function CompanyDashboard() {
             <div className="text-2xl font-bold">{shortlistedCount}</div>
             <p className="text-xs text-muted-foreground">
               Top performers from your tasks
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="text-2xl font-bold">{averageScore > 0 ? `${averageScore}%` : 'N/A'}</div>
-            <p className="text-xs text-muted-foreground">
-              Across all evaluations
             </p>
           </CardContent>
         </Card>

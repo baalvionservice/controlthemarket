@@ -1,8 +1,9 @@
 
+
 import { getSubmissions, getUsers, getTasksByCompany, getEvaluations } from "@/lib/api";
 import { mockUsers } from "@/lib/mock-data";
 import { CompanySubmissionsList } from "./submission-list";
-import type { Submission, Task, User, Evaluation, RoleCategory } from '@/lib/types';
+import type { Submission, Task, User, Evaluation, RoleCategory, LiveSessionStatus } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -25,6 +26,8 @@ export type EvaluationData = {
     timeLimitMinutes?: number;
   };
   status: Submission['status'];
+  liveSessionStatus?: LiveSessionStatus;
+  skillMatchResult?: Submission['skillMatchResult'];
   score?: number;
   applicationDate: string;
   timeSpentMinutes?: number;
@@ -63,6 +66,8 @@ export default async function CompanySubmissionsPage() {
                 timeLimitMinutes: task.timeLimitMinutes,
             },
             status: submission.status,
+            liveSessionStatus: submission.liveSessionStatus,
+            skillMatchResult: submission.skillMatchResult,
             score: evaluation?.score,
             applicationDate: submission.submittedAt || submission.assignedAt,
             timeSpentMinutes: submission.timeSpentMinutes,

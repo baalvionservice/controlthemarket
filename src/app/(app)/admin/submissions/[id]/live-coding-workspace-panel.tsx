@@ -82,6 +82,8 @@ export function LiveCodingWorkspacePanel({ submission }: { submission: Submissio
     setTimeout(() => setIsCandidateTyping(false), 2000); // Typing indicator lasts 2 seconds
   }
 
+  const sessionStatus = submission.liveSessionStatus || 'Not Started';
+
   return (
     <Card>
       <CardHeader>
@@ -98,10 +100,10 @@ export function LiveCodingWorkspacePanel({ submission }: { submission: Submissio
             <div className="flex flex-col">
                 <h4 className="font-semibold">Session Status</h4>
                 <div className="flex items-center gap-4">
-                  <Badge variant={getStatusVariant(submission.liveSessionStatus)} className="text-base capitalize">
-                      {submission.liveSessionStatus || 'Not Started'}
+                  <Badge variant={getStatusVariant(sessionStatus)} className="text-base capitalize">
+                      {sessionStatus}
                   </Badge>
-                  {submission.liveSessionStatus === 'Active' && (
+                  {sessionStatus === 'Active' && (
                       <div className="flex items-center gap-2 text-sm text-green-500 animate-pulse">
                           <Radio className="h-4 w-4" />
                           <span>Live</span>
@@ -110,13 +112,13 @@ export function LiveCodingWorkspacePanel({ submission }: { submission: Submissio
                 </div>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => handleSessionControl('Active')} disabled={submission.liveSessionStatus === 'Active'}>
+                <Button variant="outline" size="sm" onClick={() => handleSessionControl('Active')} disabled={sessionStatus === 'Active' || sessionStatus === 'Completed'}>
                     <Play className="mr-2 h-4 w-4"/>Resume
                 </Button>
-                 <Button variant="outline" size="sm" onClick={() => handleSessionControl('Paused')} disabled={submission.liveSessionStatus !== 'Active'}>
+                 <Button variant="outline" size="sm" onClick={() => handleSessionControl('Paused')} disabled={sessionStatus !== 'Active'}>
                     <Pause className="mr-2 h-4 w-4"/>Pause
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleSessionControl('Completed')}>
+                <Button variant="destructive" size="sm" onClick={() => handleSessionControl('Completed')} disabled={sessionStatus === 'Completed' || sessionStatus === 'Cancelled'}>
                     <Square className="mr-2 h-4 w-4"/>Stop
                 </Button>
             </div>

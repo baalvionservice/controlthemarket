@@ -36,8 +36,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight, History, GitCompare, FileWarning } from 'lucide-react';
-import type { SubmissionStatus, RoleCategory, User } from '@/lib/types';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight, History, GitCompare, FileWarning, Award } from 'lucide-react';
+import type { SubmissionStatus, RoleCategory, User, LiveSessionStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
 import { cn } from '@/lib/utils';
@@ -80,6 +80,18 @@ const getRoleCategoryVariant = (roleCategory: RoleCategory): 'default' | 'second
         default: return 'outline';
     }
 }
+
+const getLiveSessionStatusVariant = (status?: LiveSessionStatus): 'default' | 'destructive' | 'warning' | 'outline' | 'secondary' => {
+    switch (status) {
+        case 'Active': return 'default';
+        case 'Paused': return 'warning';
+        case 'Cancelled': return 'destructive';
+        case 'Scheduled': return 'warning';
+        case 'Completed': return 'secondary';
+        case 'Not Started': return 'outline';
+        default: return 'outline';
+    }
+};
 
 export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const { toast } = useToast();
@@ -219,20 +231,6 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
     }
   }
 
-  const renderTimeSpent = (timeSpent: number | undefined, timeLimit: number | undefined) => {
-    if (!timeSpent) return <span className="text-muted-foreground">N/A</span>;
-    if (!timeLimit) return <span>{timeSpent} min</span>;
-
-    const percentage = (timeSpent / timeLimit) * 100;
-    const colorClass = percentage > 100 ? 'text-destructive' : percentage > 90 ? 'text-yellow-500' : '';
-    
-    return (
-        <div className={cn("font-medium", colorClass)}>
-            {timeSpent} / <span className="text-muted-foreground">{timeLimit} min</span>
-        </div>
-    );
-};
-
   return (
     <div className="space-y-6">
       {/* Filters and Actions */}
@@ -341,17 +339,12 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                 </Button>
               </TableHead>
               <TableHead className="hidden md:table-cell">Applied Position</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Eval Status</TableHead>
+              <TableHead>Live Session</TableHead>
+              <TableHead>Badge</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('score')}>
                     Score
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </TableHead>
-              <TableHead className="hidden md:table-cell">Time Spent</TableHead>
-              <TableHead className="hidden lg:table-cell">
-                <Button variant="ghost" onClick={() => handleSort('applicationDate')}>
-                    Submitted
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
@@ -384,9 +377,20 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                   <TableCell>
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>
+                  <TableCell>
+                      <Badge variant={getLiveSessionStatusVariant(item.liveSessionStatus)} className="capitalize">
+                          {item.liveSessionStatus || 'N/A'}
+                      </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {item.skillMatchResult ? (
+                        <Badge variant="secondary" className="gap-1">
+                            <Award className="h-3 w-3"/>
+                            {item.skillMatchResult.skillBadge}
+                        </Badge>
+                    ) : '-'}
+                  </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
-                   <TableCell className="hidden md:table-cell">{renderTimeSpent(item.timeSpentMinutes, item.task.timeLimitMinutes)}</TableCell>
-                  <TableCell className="hidden lg:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

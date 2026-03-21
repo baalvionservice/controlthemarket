@@ -114,7 +114,7 @@ export function SchemaFormDialog({ isOpen, onOpenChange, onSave, schema }: Schem
             <DialogHeader>
               <DialogTitle>{schema ? 'Edit' : 'Create'} Evaluation Schema</DialogTitle>
               <DialogDescription>
-                Define the criteria used to score candidate submissions.
+                Define the criteria and weights (rules) used to score candidate submissions.
               </DialogDescription>
             </DialogHeader>
 
@@ -149,7 +149,7 @@ export function SchemaFormDialog({ isOpen, onOpenChange, onSave, schema }: Schem
                     
                     <div className="space-y-4 rounded-md border p-4">
                         <div className="flex justify-between items-center">
-                            <h3 className="font-medium">Criteria</h3>
+                            <h3 className="font-medium">Criteria (Rules)</h3>
                              <div className="flex gap-4">
                                 <div className="text-right">
                                     <p className="text-sm text-muted-foreground">Total Weight</p>

@@ -73,7 +73,7 @@ const adminNav = [
   { name: 'Activity Logs', href: '/admin/activity', icon: History },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },
-  { name: 'System Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Platform Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export function DashboardSidebar({ children }: { children: React.ReactNode }) {

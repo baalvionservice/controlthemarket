@@ -11,7 +11,8 @@ import {
     ToggleRight, 
     Bell, 
     FileText, 
-    ShieldCheck
+    ShieldCheck,
+    Save
 } from "lucide-react";
 import {
   Card,
@@ -86,7 +87,7 @@ export default function AdminSettingsPage() {
                 </p>
             </div>
              <div className="flex items-center space-x-2">
-                <Button onClick={handleSaveChanges}>Save All Changes</Button>
+                <Button onClick={handleSaveChanges}><Save className="mr-2 h-4 w-4" /> Save All Changes</Button>
             </div>
         </div>
       
@@ -198,8 +199,8 @@ export default function AdminSettingsPage() {
         {/* Evaluation Schemas Card */}
         <Card className="col-span-1 lg:col-span-2">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" />Evaluation Schemas</CardTitle>
-                <CardDescription>Manage the criteria and scoring rubrics for your candidate evaluations.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" />Evaluation Schemas (Rule Configuration)</CardTitle>
+                <CardDescription>Manage the criteria and scoring rubrics (rules) for your candidate evaluations.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                  <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
@@ -218,14 +219,14 @@ export default function AdminSettingsPage() {
                                 <div className="space-y-2">
                                     <h4 className="font-semibold text-sm">Criteria ({schema.criteria.length})</h4>
                                     <ul className="list-disc pl-5 text-sm text-muted-foreground">
-                                        {schema.criteria.slice(0, 3).map(crit => <li key={crit.id}>{crit.name}</li>)}
+                                        {schema.criteria.slice(0, 3).map(crit => <li key={crit.id}>{crit.name} (w: {crit.weight})</li>)}
                                         {schema.criteria.length > 3 && <li>...and {schema.criteria.length - 3} more</li>}
                                     </ul>
                                 </div>
                             </CardContent>
                             <CardFooter className="flex justify-end">
                                 <Button variant="outline" size="sm" onClick={() => handleEditSchema(schema)}>
-                                    <Settings className="mr-2 h-4 w-4" /> Edit
+                                    <Settings className="mr-2 h-4 w-4" /> Edit Rule
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -234,7 +235,7 @@ export default function AdminSettingsPage() {
             </CardContent>
             <CardFooter>
                  <Button onClick={handleAddNewSchema}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Create New Schema
+                    <PlusCircle className="mr-2 h-4 w-4" /> Create New Rule Schema
                 </Button>
             </CardFooter>
         </Card>

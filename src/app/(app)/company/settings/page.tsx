@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from "react";
@@ -180,57 +181,6 @@ export default function CompanySettingsPage() {
                 </CardContent>
             </Card>
         </div>
-
-        {/* Evaluation Schemas Card */}
-        <Card className="col-span-1 lg:col-span-2">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" />Evaluation Schemas</CardTitle>
-                <CardDescription>Manage the criteria and scoring rubrics for your candidate evaluations.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                    {schemas.map(schema => (
-                        <Card key={schema.id}>
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between text-base">
-                                <span>{schema.name}</span>
-                                <Badge variant={schema.isActive ? 'default' : 'outline'}>
-                                        {schema.isActive ? 'Active' : 'Inactive'}
-                                </Badge>
-                                </CardTitle>
-                                <CardDescription>{schema.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    <h4 className="font-semibold text-sm">Criteria ({schema.criteria.length})</h4>
-                                    <ul className="list-disc pl-5 text-sm text-muted-foreground">
-                                        {schema.criteria.slice(0, 3).map(crit => <li key={crit.id}>{crit.name}</li>)}
-                                        {schema.criteria.length > 3 && <li>...and {schema.criteria.length - 3} more</li>}
-                                    </ul>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex justify-end">
-                                <Button variant="outline" size="sm" onClick={() => handleEditSchema(schema)}>
-                                    <Settings className="mr-2 h-4 w-4" /> Edit
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            </CardContent>
-            <CardFooter>
-                 <Button onClick={handleAddNewSchema}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Create New Schema
-                </Button>
-            </CardFooter>
-        </Card>
-
-       <SchemaFormDialog
-            isOpen={isSchemaDialogOpen}
-            onOpenChange={setIsSchemaDialogOpen}
-            onSave={handleSaveSchema}
-            schema={selectedSchema}
-        />
     </div>
     );
 }

@@ -1,6 +1,6 @@
 
 import { getSubmissions, getUsers, getTasks } from "@/lib/api";
-import { LiveCodingList } from "./live-coding-list";
+import { LiveSessionGrid } from "./live-coding-list";
 import type { Submission, Task, User, LiveSessionStatus } from '@/lib/types';
 import {
   Card,
@@ -51,22 +51,22 @@ export default async function LiveCodingDashboardPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Live Coding Sessions
+                Live Session Monitoring
             </h2>
             <p className="text-muted-foreground">
-                Monitor and manage real-time coding sessions with candidates.
+                Monitor and manage all active, paused, and scheduled candidate sessions.
             </p>
         </div>
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>Active and Upcoming Sessions</CardTitle>
+            <CardTitle>Session Dashboard</CardTitle>
             <CardDescription>
-                An overview of all live coding sessions on the platform.
+                An overview of all live screen sharing sessions on the platform.
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <LiveCodingList initialData={sessionData} />
+            <LiveSessionGrid initialData={sessionData} />
         </CardContent>
       </Card>
     </div>

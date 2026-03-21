@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -118,7 +117,7 @@ export function LiveCodingWorkspacePanel({ submission }: { submission: Submissio
                  <Button variant="outline" size="sm" onClick={() => handleSessionControl('Paused')} disabled={sessionStatus !== 'Active'}>
                     <Pause className="mr-2 h-4 w-4"/>Pause
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleSessionControl('Completed')} disabled={sessionStatus === 'Completed' || sessionStatus === 'Cancelled'}>
+                <Button variant="destructive" size="sm" onClick={() => handleSessionControl('Completed')} disabled={!['Active', 'Paused', 'Scheduled'].includes(sessionStatus)}>
                     <Square className="mr-2 h-4 w-4"/>Stop
                 </Button>
             </div>

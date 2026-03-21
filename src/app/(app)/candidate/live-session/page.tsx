@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Share, StopCircle, Radio, MonitorOff, Loader2 } from 'lucide-react';
+import { Share, StopCircle, Radio, MonitorOff, Loader2, Pause } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/auth-context';
@@ -38,7 +38,7 @@ export default function CandidateLiveSessionPage() {
     if (!user) return null;
     return submissions.find(s => 
         s.userId === user.id && 
-        (s.liveSessionStatus === 'Active' || s.liveSessionStatus === 'Scheduled' || s.liveSessionStatus === 'Paused')
+        ['Active', 'Scheduled', 'Paused'].includes(s.liveSessionStatus || 'Not Started')
     ) || null;
   }, [submissions, user]);
 
@@ -155,10 +155,21 @@ export default function CandidateLiveSessionPage() {
                     <video ref={videoRef} className="h-full w-full object-contain" autoPlay muted playsInline />
                     {sessionStatus !== 'Active' && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 p-4">
-                            <MonitorOff className="h-16 w-16 text-muted-foreground" />
-                            <p className="mt-4 text-muted-foreground text-center">
-                                {sessionStatus === 'Completed' ? 'Your session has ended.' : 'Your screen is not being shared.'}
-                            </p>
+                           {sessionStatus === 'Paused' ? (
+                                <>
+                                    <Pause className="h-16 w-16 text-muted-foreground" />
+                                    <p className="mt-4 text-muted-foreground text-center">
+                                        Your session has been paused by the admin.
+                                    </p>
+                                </>
+                           ) : (
+                             <>
+                                <MonitorOff className="h-16 w-16 text-muted-foreground" />
+                                <p className="mt-4 text-muted-foreground text-center">
+                                    {sessionStatus === 'Completed' ? 'Your session has ended.' : 'Your screen is not being shared.'}
+                                </p>
+                             </>
+                           )}
                         </div>
                     )}
                 </div>
@@ -167,7 +178,7 @@ export default function CandidateLiveSessionPage() {
                     <Button
                     size="lg"
                     onClick={handleStartSharing}
-                    disabled={sessionStatus === 'Active'}
+                    disabled={sessionStatus === 'Active' || sessionStatus === 'Completed'}
                     >
                     <Share className="mr-2 h-5 w-5" />
                     Start Sharing
@@ -176,7 +187,7 @@ export default function CandidateLiveSessionPage() {
                     size="lg"
                     variant="destructive"
                     onClick={() => handleStopSharing(submission.id)}
-                    disabled={sessionStatus !== 'Active'}
+                    disabled={!['Active', 'Paused'].includes(sessionStatus)}
                     >
                     <StopCircle className="mr-2 h-5 w-5" />
                     Stop Sharing

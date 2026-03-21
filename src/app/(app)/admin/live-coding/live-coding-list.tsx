@@ -2,15 +2,13 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { format } from 'date-fns';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,11 +20,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Play, Square, XCircle, Monitor, Calendar, Pause } from 'lucide-react';
+import { Search, Play, Square, Monitor, Pause, Video, Radio } from 'lucide-react';
 import type { LiveSessionStatus } from '@/lib/types';
 import type { LiveCodingSessionData } from './page';
 import { useToast } from '@/hooks/use-toast';
 import { useSubmissions } from '@/contexts/submissions-context';
+import { cn } from '@/lib/utils';
 
 const sessionStatuses: (LiveSessionStatus | 'All')[] = ["All", "Active", "Scheduled", "Completed", "Cancelled", "Not Started", "Paused"];
 
@@ -42,9 +41,20 @@ const getStatusVariant = (status: LiveSessionStatus): 'default' | 'destructive' 
     }
 };
 
-export function LiveCodingList({ initialData }: { initialData: LiveCodingSessionData[] }) {
-  const { submissions: data, updateSubmission } = useSubmissions();
+const getStatusBorder = (status: LiveSessionStatus): string => {
+    switch (status) {
+        case 'Active': return 'border-green-500';
+        case 'Paused': return 'border-yellow-500';
+        case 'Cancelled':
+        case 'Completed':
+             return 'border-border';
+        case 'Scheduled': return 'border-yellow-500 border-dashed';
+        default: return 'border-border';
+    }
+}
 
+export function LiveSessionGrid({ initialData }: { initialData: LiveCodingSessionData[] }) {
+  const { submissions: data, updateSubmission } = useSubmissions();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<LiveSessionStatus | 'All'>('All');
   const { toast } = useToast();
@@ -66,18 +76,24 @@ export function LiveCodingList({ initialData }: { initialData: LiveCodingSession
                             item.task.title.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
       return matchesSearch && matchesStatus;
-    }).sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
+    }).sort((a, b) => {
+        const statusOrder = { Active: 0, Paused: 1, Scheduled: 2, 'Not Started': 3, Completed: 4, Cancelled: 5 };
+        const statusA = statusOrder[a.status] ?? 99;
+        const statusB = statusOrder[b.status] ?? 99;
+        if (statusA !== statusB) return statusA - statusB;
+        return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
+    });
   }, [liveCodingData, searchTerm, statusFilter]);
   
-  const handleSessionAction = (submissionId: string, action: LiveSessionStatus) => {
+  const handleSessionAction = (submissionId: string, action: 'Active' | 'Paused' | 'Completed') => {
     const session = filteredData.find(d => d.submissionId === submissionId);
     if (!session) return;
     
     updateSubmission(submissionId, { liveSessionStatus: action });
     
     toast({
-        title: 'Action Successful',
-        description: `Session for ${session.candidate.name} is now ${action}.`
+        title: `Session ${action}`,
+        description: `Session for ${session.candidate.name} is now ${action.toLowerCase()}.`
     });
   };
 
@@ -105,63 +121,54 @@ export function LiveCodingList({ initialData }: { initialData: LiveCodingSession
           </div>
       </div>
 
-       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Candidate</TableHead>
-              <TableHead>Task</TableHead>
-              <TableHead>Session Status</TableHead>
-              <TableHead>Last Activity</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredData.length > 0 ? (
-              filteredData.map((item) => (
-                <TableRow key={item.submissionId}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                        <Avatar><AvatarImage src={item.candidate.profile?.avatarUrl} alt={item.candidate.name} /><AvatarFallback>{item.candidate.name.charAt(0)}</AvatarFallback></Avatar>
-                        <span className="font-medium">{item.candidate.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>{item.task.title}</div>
-                    <div className="text-sm text-muted-foreground">{item.task.roleCategory}</div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusVariant(item.status)} className="capitalize">
-                        {item.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{format(new Date(item.lastActivity), 'PPp')}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'Scheduled')} disabled={item.status === 'Scheduled' || item.status === 'Active'}>
-                        <Calendar className="mr-2 h-4 w-4"/> Schedule
-                    </Button>
-                     <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'Active')} disabled={item.status === 'Active'}>
-                        <Play className="mr-2 h-4 w-4"/> Start
-                    </Button>
-                     <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'Completed')} disabled={!['Active', 'Scheduled', 'Paused'].includes(item.status)}>
-                        <Square className="mr-2 h-4 w-4"/> Terminate
-                    </Button>
-                    <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/admin/submissions/${item.submissionId}`}>
-                          <Monitor className="mr-2 h-4 w-4"/> Join Session
-                        </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">No live coding sessions found.</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+           {filteredData.length > 0 ? (
+               filteredData.map((item) => (
+                   <Card key={item.submissionId} className={cn('flex flex-col border-2', getStatusBorder(item.status))}>
+                       <CardHeader>
+                           <div className="flex items-center justify-between">
+                               <div className="flex items-center gap-3">
+                                    <Avatar><AvatarImage src={item.candidate.profile?.avatarUrl} alt={item.candidate.name} /><AvatarFallback>{item.candidate.name.charAt(0)}</AvatarFallback></Avatar>
+                                    <span className="font-medium">{item.candidate.name}</span>
+                                </div>
+                                <Badge variant={getStatusVariant(item.status)} className="capitalize">
+                                    {item.status === 'Active' && <Radio className="mr-2 h-4 w-4 animate-pulse" />}
+                                    {item.status}
+                                </Badge>
+                           </div>
+                       </CardHeader>
+                       <CardContent className="flex-grow space-y-4">
+                            <div className="aspect-video bg-black rounded-md flex items-center justify-center text-muted-foreground">
+                                <Video className="h-10 w-10" />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold truncate">{item.task.title}</h4>
+                                <p className="text-sm text-muted-foreground">{item.task.roleCategory}</p>
+                            </div>
+                       </CardContent>
+                       <CardFooter className="flex justify-between gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleSessionAction(item.submissionId, item.status === 'Paused' ? 'Active' : 'Paused')} disabled={!['Active', 'Paused'].includes(item.status)}>
+                               {item.status === 'Paused' ? <Play className="mr-2"/> : <Pause className="mr-2"/>}
+                               {item.status === 'Paused' ? 'Resume' : 'Pause'}
+                           </Button>
+                           <Button variant="destructive" size="sm" onClick={() => handleSessionAction(item.submissionId, 'Completed')} disabled={!['Active', 'Paused', 'Scheduled'].includes(item.status)}>
+                                <Square className="mr-2"/> Stop
+                           </Button>
+                           <Button variant="secondary" size="sm" asChild>
+                               <Link href={`/admin/submissions/${item.submissionId}`}>
+                                   <Monitor className="mr-2"/> Join
+                               </Link>
+                           </Button>
+                       </CardFooter>
+                   </Card>
+               ))
+           ) : (
+                <div className="col-span-full text-center py-16">
+                    <h3 className="text-xl font-semibold">No Sessions Found</h3>
+                    <p className="text-muted-foreground">Try adjusting your filters.</p>
+                </div>
+           )}
+       </div>
     </div>
   );
 }

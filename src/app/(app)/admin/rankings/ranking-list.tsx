@@ -15,13 +15,24 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Award, TrendingUp } from 'lucide-react';
 import type { CandidateRanking } from './page';
-import type { EvaluationSchema, ExperienceLevel } from '@/lib/types';
+import type { EvaluationSchema, ExperienceLevel, RoleCategory } from '@/lib/types';
 import { AggregationLogicPanel } from './aggregation-logic-panel';
 import { cn } from '@/lib/utils';
 
 interface RankingListProps {
   data: CandidateRanking[];
   schemas: EvaluationSchema[];
+}
+
+const getRoleCategoryVariant = (roleCategory: RoleCategory): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
+    switch (roleCategory) {
+        case 'Engineering': return 'secondary';
+        case 'Design': return 'purple';
+        case 'Marketing': return 'warning';
+        case 'Business': return 'default'; // primary
+        case 'Data': return 'outline';
+        default: return 'outline';
+    }
 }
 
 export function RankingList({ data, schemas }: RankingListProps) {
@@ -76,6 +87,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
             <TableRow>
               <TableHead className="w-[80px]">Rank</TableHead>
               <TableHead>Candidate</TableHead>
+              <TableHead>Primary Role</TableHead>
               <TableHead>Skill Level</TableHead>
               <TableHead>Avg. Score</TableHead>
               <TableHead>Percentile</TableHead>
@@ -104,6 +116,13 @@ export function RankingList({ data, schemas }: RankingListProps) {
                         <p className="text-sm text-muted-foreground">{item.evaluationCount} evaluation(s)</p>
                       </div>
                     </div>
+                  </TableCell>
+                   <TableCell>
+                    {item.primaryRole ? (
+                        <Badge variant={getRoleCategoryVariant(item.primaryRole)}>{item.primaryRole}</Badge>
+                    ) : (
+                        <span className="text-muted-foreground">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     {item.candidate.profile?.experienceLevel ? (
@@ -141,7 +160,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={allCriteriaNames.length + 6} className="h-24 text-center">
+                <TableCell colSpan={allCriteriaNames.length + 7} className="h-24 text-center">
                   No candidates with evaluations found.
                 </TableCell>
               </TableRow>

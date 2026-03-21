@@ -4,9 +4,10 @@ import {
   getSubmissions,
   getEvaluations,
   getEvaluationSchemas,
+  getTasks,
 } from '@/lib/api';
 import { RankingList } from './ranking-list';
-import type { User, Evaluation, Submission, EvaluationSchema } from '@/lib/types';
+import type { User, Evaluation, Submission, EvaluationSchema, RoleCategory } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -21,6 +22,7 @@ export type CandidateRanking = {
   evaluationCount: number;
   criteriaScores: Record<string, number>;
   percentileRank: number;
+  primaryRole?: RoleCategory;
 };
 
 // This is a mock aggregation logic for the front-end simulation
@@ -82,11 +84,13 @@ export default async function AdminRankingsPage() {
     allSubmissions,
     allEvaluations,
     allSchemas,
+    allTasks,
   ] = await Promise.all([
     getUsers(),
     getSubmissions(),
     getEvaluations(),
     getEvaluationSchemas(),
+    getTasks(),
   ]);
 
   const candidates = allUsers.filter((u) => u.role === 'candidate');
@@ -106,12 +110,27 @@ export default async function AdminRankingsPage() {
       }
       
       const { score, criteria } = calculateAggregatedScore(candidateEvaluations, allSchemas);
+      
+      const taskIds = new Set(candidateSubmissions.map((s) => s.taskId));
+      const candidateTasks = allTasks.filter((t) => taskIds.has(t.id));
+      let primaryRole: RoleCategory | undefined;
+      if (candidateTasks.length > 0) {
+          const roleCounts = candidateTasks.reduce((acc, task) => {
+          acc[task.roleCategory] = (acc[task.roleCategory] || 0) + 1;
+          return acc;
+          }, {} as Record<string, number>);
+          primaryRole = Object.keys(roleCounts).reduce((a, b) =>
+          roleCounts[a] > roleCounts[b] ? a : b
+          ) as RoleCategory;
+      }
+
 
       return {
         candidate,
         aggregatedScore: score,
         evaluationCount: candidateEvaluations.length,
         criteriaScores: criteria,
+        primaryRole,
       };
     })
     .filter((r): r is Omit<CandidateRanking, 'percentileRank'> => r !== null);

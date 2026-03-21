@@ -78,6 +78,7 @@ const companyNav = [
   { name: 'Tasks', href: '/company/tasks', icon: Briefcase },
   { name: 'Submissions', href: '/company/submissions', icon: FileCheck },
   { name: 'Live Session', href: '/company/live-session', icon: Monitor },
+  { name: 'Recordings', href: '/company/recordings', icon: Video },
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
   { name: 'Compare', href: '/company/compare', icon: GitCompare },
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },

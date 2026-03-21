@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Table,
@@ -60,7 +61,7 @@ export function LeaderboardTable({ data }: { data: PublicCandidateRanking[] }) {
                             <TableCell className="font-semibold">{item.aggregatedScore}</TableCell>
                             <TableCell className="text-right">
                                 <Button asChild variant="ghost" size="sm">
-                                    <Link href="#">View Profile</Link>
+                                    <Link href={`/candidate/${item.candidate.id}`}>View Profile</Link>
                                 </Button>
                             </TableCell>
                         </TableRow>

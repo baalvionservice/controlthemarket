@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -68,7 +69,7 @@ function PerformerCard({ performer, rank }: { performer: PublicCandidateRanking;
                     {performer.candidate.profile?.experienceLevel && <Badge variant="outline">{performer.candidate.profile.experienceLevel}</Badge>}
                 </div>
                 <Button variant="outline" asChild className="w-full">
-                    <Link href="#">View Profile</Link>
+                    <Link href={`/candidate/${performer.candidate.id}`}>View Profile</Link>
                 </Button>
             </CardContent>
         </Card>

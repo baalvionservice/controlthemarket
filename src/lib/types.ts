@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'candidate' | 'company' | 'admin';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 
@@ -196,5 +197,3 @@ export interface Alert {
     name?: string;
   };
 }
-
-    

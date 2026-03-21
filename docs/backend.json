@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -369,6 +370,13 @@
         "score": {
           "type": "number",
           "description": "The score (0-100) given to the submission."
+        },
+        "criteriaScores": {
+          "type": "object",
+          "description": "A map of scores for predefined criteria.",
+          "additionalProperties": {
+            "type": "number"
+          }
         },
         "feedback": {
           "type": "string",

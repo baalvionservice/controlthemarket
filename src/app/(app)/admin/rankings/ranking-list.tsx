@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Award, TrendingUp } from 'lucide-react';
 import type { CandidateRanking } from './page';
-import type { EvaluationSchema } from '@/lib/types';
+import type { EvaluationSchema, ExperienceLevel } from '@/lib/types';
 import { AggregationLogicPanel } from './aggregation-logic-panel';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +53,21 @@ export function RankingList({ data, schemas }: RankingListProps) {
     return { label: 'Bottom 50%', className: '' };
   };
 
+  const getLevelVariant = (level?: ExperienceLevel) => {
+    switch (level) {
+        case 'Expert':
+            return 'purple';
+        case 'Advanced':
+            return 'default';
+        case 'Intermediate':
+            return 'secondary';
+        case 'Beginner':
+            return 'outline';
+        default:
+            return 'outline';
+    }
+  };
+
   return (
     <>
       <div className="rounded-md border">
@@ -61,6 +76,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
             <TableRow>
               <TableHead className="w-[80px]">Rank</TableHead>
               <TableHead>Candidate</TableHead>
+              <TableHead>Skill Level</TableHead>
               <TableHead>Avg. Score</TableHead>
               <TableHead>Percentile</TableHead>
               {allCriteriaNames.map(name => <TableHead key={name}>{name}</TableHead>)}
@@ -90,6 +106,15 @@ export function RankingList({ data, schemas }: RankingListProps) {
                     </div>
                   </TableCell>
                   <TableCell>
+                    {item.candidate.profile?.experienceLevel ? (
+                      <Badge variant={getLevelVariant(item.candidate.profile.experienceLevel)}>
+                        {item.candidate.profile.experienceLevel}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <Badge className={getScoreColor(item.aggregatedScore)}>{item.aggregatedScore}</Badge>
                   </TableCell>
                   <TableCell>
@@ -116,7 +141,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={allCriteriaNames.length + 5} className="h-24 text-center">
+                <TableCell colSpan={allCriteriaNames.length + 6} className="h-24 text-center">
                   No candidates with evaluations found.
                 </TableCell>
               </TableRow>

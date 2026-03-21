@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -143,7 +142,7 @@ export function DashboardSidebar({ children }: { children: React.ReactNode }) {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-          </SidebarFooter>
+          </SidebarContent>
           <SidebarFooter>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

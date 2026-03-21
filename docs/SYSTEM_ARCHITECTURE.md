@@ -38,17 +38,46 @@ Instead of a traditional, separate backend server, SkillMatch Pro uses a more in
 
 ### 3.1. API Structure (Server Actions & Client-Side SDK)
 
--   **Data Mutations (Writes): Next.js Server Actions**
-    -   All create, update, and delete (CUD) operations are handled by **Server Actions**. These are functions defined on the server (using the `'use server';` directive) that can be called securely and directly from React components.
-    -   This provides a seamless, type-safe RPC-like mechanism for handling form submissions and data modifications without manually creating and managing a REST or GraphQL API.
-    -   **Example:** A `createTask` Server Action contains the logic to validate input and write a new document to the `tasks` collection in Firestore.
+The API follows a pattern similar to Command Query Responsibility Segregation (CQRS), where read and write operations use different paths. This optimizes for performance and scalability.
 
--   **Data Fetching (Reads): Firebase Client SDK with Security Rules**
-    -   All read operations are performed directly on the client using the **Firebase Client SDK**, primarily through custom React hooks (`useCollection`, `useDocument`) that wrap Firestore's real-time listeners (`onSnapshot`).
-    -   Security is not compromised because **Firestore Security Rules** provide robust, server-side authorization, ensuring users can only access the data they are permitted to see. This is a fundamental concept of the Firebase security model.
+#### **Data Mutations (Writes): Next.js Server Actions**
 
--   **Authentication: Firebase Authentication SDK**
-    -   User identity management (signup, login, logout, session management) is handled entirely by the Firebase Authentication client-side SDK. A React Context (`AuthContext`) makes the user's session state (including JWT for server-side validation) available throughout the application.
+All create, update, and delete (CUD) operations are handled by **Next.js Server Actions**. These are functions defined on the server (using the `'use server';` directive) that can be called securely and directly from client-side React components.
+
+-   **Type-Safe RPC:** This provides a seamless, type-safe Remote Procedure Call (RPC) experience, eliminating the need to manually create and manage REST or GraphQL API endpoints, controllers, and routes.
+-   **Security:** Server Actions run on the server, ensuring that business logic and sensitive operations are not exposed to the client. They have access to the authenticated user's session for permission checks.
+-   **Example:** A `createTask(data)` Server Action contains the logic to validate input, check user permissions, and write a new document to the `tasks` collection in Firestore.
+
+#### **Data Fetching (Reads): Firebase Client SDK with Security Rules**
+
+All read operations are performed directly on the client using the **Firebase Client SDK**, primarily through custom React hooks (`useCollection`, `useDocument`) that wrap Firestore's real-time listeners (`onSnapshot`).
+
+-   **Real-Time Data:** This approach provides live, real-time data on the frontend without needing WebSockets or polling, which is ideal for dashboards and collaborative features.
+-   **Server-Side Security:** Security is not compromised because **Firestore Security Rules** provide robust, server-side authorization. These rules ensure users can only access the data they are permitted to see, based on their role, company membership, and ownership. This is a fundamental concept of the Firebase security model.
+
+#### **Authentication: Firebase Authentication SDK**
+
+User identity management (signup, login, logout, session management) is handled entirely by the Firebase Authentication client-side SDK. A React Context (`AuthContext`) makes the user's session state (including JWT for server-side validation in Server Actions) available throughout the application.
+
+#### **Mapping Traditional REST to the SkillMatch Pro Architecture**
+
+The following table shows how traditional REST API endpoints map to this modern, integrated architecture:
+
+| **Traditional REST Endpoint**             | **SkillMatch Pro Implementation**                                                                                           |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `POST /auth/signup`                       | `signup(details)` function in `AuthContext`.                                                                                |
+| `POST /auth/login`                        | `login(credentials)` function in `AuthContext`.                                                                             |
+| `POST /auth/refresh`                      | Handled automatically by the Firebase SDK.                                                                                  |
+| `POST /auth/logout`                       | `logout()` function in `AuthContext`.                                                                                       |
+| `GET /users/me`                           | The `user` object from the `useAuth()` hook.                                                                                |
+| `PUT /users/:id`                          | An `updateUserProfile(userId, data)` Server Action.                                                                         |
+| `DELETE /users/:id`                       | A `deactivateUser(userId)` Server Action.                                                                                   |
+| `GET /companies/:companyId/members`       | A `useCollection()` hook on the `memberships` collection, filtered by `companyId`.                                          |
+| `POST /companies/:companyId/members`      | An `inviteMember(companyId, email, role)` Server Action that creates a new document in the `memberships` collection.          |
+| `PUT /companies/:companyId/members/:userId` | An `updateMemberRole(membershipId, newRole)` Server Action that updates a document in the `memberships` collection.           |
+| `DELETE /companies/:companyId/members/:userId` | A `removeMember(membershipId)` Server Action that deletes a document from the `memberships` collection.                     |
+
+This structure provides a clean, secure, and highly performant architecture that is well-suited for a modern, real-time SaaS platform.
 
 ### 3.2. Data Flow Example: Candidate Submission
 

@@ -1,3 +1,4 @@
+
 import { getSubmissions, getUsers, getTasksByCompany, getEvaluations } from "@/lib/api";
 import { mockUsers } from "@/lib/mock-data";
 import { CompanySubmissionsList } from "./submission-list";
@@ -21,10 +22,12 @@ export type EvaluationData = {
     title: string;
     roleCategory: RoleCategory;
     multiRound?: boolean;
+    timeLimitMinutes?: number;
   };
   status: Submission['status'];
   score?: number;
   applicationDate: string;
+  timeSpentMinutes?: number;
 };
 
 export default async function CompanySubmissionsPage() {
@@ -57,10 +60,12 @@ export default async function CompanySubmissionsPage() {
                 title: task.title,
                 roleCategory: task.roleCategory,
                 multiRound: task.multiRound,
+                timeLimitMinutes: task.timeLimitMinutes,
             },
             status: submission.status,
             score: evaluation?.score,
             applicationDate: submission.submittedAt || submission.assignedAt,
+            timeSpentMinutes: submission.timeSpentMinutes,
         };
     })
     .filter((item): item is EvaluationData => item !== null);

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -217,6 +218,20 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
     }
   }
 
+  const renderTimeSpent = (timeSpent: number | undefined, timeLimit: number | undefined) => {
+    if (!timeSpent) return <span className="text-muted-foreground">N/A</span>;
+    if (!timeLimit) return <span>{timeSpent} min</span>;
+
+    const percentage = (timeSpent / timeLimit) * 100;
+    const colorClass = percentage > 100 ? 'text-destructive' : percentage > 90 ? 'text-yellow-500' : '';
+    
+    return (
+        <div className={cn("font-medium", colorClass)}>
+            {timeSpent} / <span className="text-muted-foreground">{timeLimit} min</span>
+        </div>
+    );
+};
+
   return (
     <div className="space-y-6">
       {/* Filters and Actions */}
@@ -332,6 +347,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
+              <TableHead>Time Spent</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('applicationDate')}>
                     Submitted
@@ -368,6 +384,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
+                   <TableCell>{renderTimeSpent(item.timeSpentMinutes, item.task.timeLimitMinutes)}</TableCell>
                   <TableCell>{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -418,7 +435,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
+                <TableCell colSpan={8} className="h-24 text-center">
                   No evaluations found.
                 </TableCell>
               </TableRow>

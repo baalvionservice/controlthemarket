@@ -503,6 +503,7 @@ export const mockSubmissions: Submission[] = [
     assignedAt: '2024-08-09T10:00:00Z',
     submittedAt: '2024-08-10T10:00:00Z',
     lastUpdated: '2024-08-12T09:00:00Z',
+    timeSpentMinutes: 115,
   },
   {
     id: 'sub-2',
@@ -525,6 +526,7 @@ export const mockSubmissions: Submission[] = [
     assignedAt: '2024-08-10T11:00:00Z',
     submittedAt: '2024-08-11T14:30:00Z',
     lastUpdated: '2024-08-12T11:00:00Z',
+    timeSpentMinutes: 130,
   },
   {
     id: 'sub-3',
@@ -607,6 +609,7 @@ export const mockSubmissions: Submission[] = [
     assignedAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(),
     submittedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
     lastUpdated: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+    timeSpentMinutes: 50,
   },
   {
     id: 'sub-7',

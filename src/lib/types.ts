@@ -150,6 +150,7 @@ export interface Submission {
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string
   lastUpdated: string; // ISO 8601 date string
+  timeSpentMinutes?: number;
   attemptsCount?: number;
   currentRound?: number;
 }

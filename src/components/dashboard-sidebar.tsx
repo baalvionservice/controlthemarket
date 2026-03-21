@@ -72,7 +72,7 @@ const adminNav = [
   { name: 'Manage Tenants', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
-  { name: 'Test Automation', href: '/admin/testing', icon: FlaskConical },
+  { name: 'Backend/API Testing', href: '/admin/testing', icon: FlaskConical },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },

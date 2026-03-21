@@ -1,4 +1,5 @@
 
+
 import { getSubmissions, getUsers, getTasks, getCompanies } from "@/lib/api";
 import { TestCaseList } from "./test-case-list";
 import type { Submission, Task, User, Company, TestCaseStatus } from '@/lib/types';
@@ -20,7 +21,7 @@ export type SubmissionWithTestData = {
   submittedAt: string;
 };
 
-export default async function TestCaseDashboardPage() {
+export default async function BackendTestingDashboardPage() {
   const [
     allSubmissions,
     allUsers,
@@ -58,18 +59,18 @@ export default async function TestCaseDashboardPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Test Automation
+                Backend/API Testing
             </h2>
             <p className="text-muted-foreground">
-                Overview of automated test case results across all submissions.
+                Overview of automated backend test case results across all submissions.
             </p>
         </div>
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>Submission Test Results</CardTitle>
+            <CardTitle>API Test Results</CardTitle>
             <CardDescription>
-                Filter submissions by their overall test case status.
+                Filter submissions by their overall API test case status.
             </CardDescription>
         </CardHeader>
         <CardContent>

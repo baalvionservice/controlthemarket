@@ -52,17 +52,17 @@ export function TestCasePanel({ submission }: { submission: Submission }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
             <FlaskConical className="h-5 w-5" />
-            Test Case Simulation
+            Backend/API Test Simulation
         </CardTitle>
         <CardDescription>
-            Simulated results from automated functional tests.
+            Simulated results from automated API and backend tests.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between rounded-md border p-4">
             <div>
                 <h4 className="font-semibold">Overall Test Status</h4>
-                <p className="text-sm text-muted-foreground">Based on all executed test cases.</p>
+                <p className="text-sm text-muted-foreground">Based on all executed API test cases.</p>
             </div>
             <Badge variant={getOverallStatusVariant(submission.testCaseStatus)} className="text-base">
                 {submission.testCaseStatus || 'Pending'}
@@ -85,12 +85,12 @@ export function TestCasePanel({ submission }: { submission: Submission }) {
                       </div>
                   </div>
               ))}
-              {testCases.length === 0 && <p className="text-sm text-center text-muted-foreground py-4">No test cases found for this submission.</p>}
+              {testCases.length === 0 && <p className="text-sm text-center text-muted-foreground py-4">No API test cases found for this submission.</p>}
           </div>
         )}
         <Button variant="outline" className="w-full">
             <RefreshCw className="mr-2 h-4 w-4" />
-            Re-run All Tests
+            Re-run All API Tests
         </Button>
       </CardContent>
     </Card>

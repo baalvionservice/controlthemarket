@@ -47,6 +47,7 @@ import {
   Monitor,
   Server,
   HeartPulse,
+  CreditCard,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -73,6 +74,7 @@ const companyNav = [
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
   { name: 'Compare', href: '/company/compare', icon: GitCompare },
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
+  { name: 'Subscription', href: '/company/subscription', icon: CreditCard },
   { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
 

@@ -258,8 +258,8 @@ export default function AdminSettingsPage() {
         {/* Evaluation Schemas Card */}
         <Card className="col-span-1 lg:col-span-2">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" />Evaluation Schemas (Rule Configuration)</CardTitle>
-                <CardDescription>Manage the criteria and scoring rubrics (rules) for your candidate evaluations.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" />Auto-Scoring Logic (Evaluation Schemas)</CardTitle>
+                <CardDescription>Manage the criteria, weights, and rules used by the auto-scoring system to evaluate candidate submissions.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                  <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">

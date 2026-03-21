@@ -49,6 +49,7 @@ type SortDirection = 'asc' | 'desc';
 const statuses: (SubmissionStatus | 'All')[] = ["All", "assigned", "in-progress", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round", "flagged"];
 const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 const validationStatuses: (ValidationStatus | 'All')[] = ["All", "Valid", "Invalid", "Warning", "Pending"];
+const autoScoringStatuses: ('Pending' | 'Completed' | 'Failed' | 'All')[] = ["All", "Pending", "Completed", "Failed"];
 
 
 export const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
@@ -81,6 +82,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [historyCandidate, setHistoryCandidate] = useState<User | null>(null);
   const [validationStatusFilter, setValidationStatusFilter] = useState<ValidationStatus | 'All'>('All');
+  const [autoScoringStatusFilter, setAutoScoringStatusFilter] = useState<('Pending' | 'Completed' | 'Failed' | 'All')>('All');
 
   useEffect(() => {
     setTableData(data);
@@ -94,6 +96,8 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
       const matchesRole = roleFilter === 'All' || item.task.roleCategory === roleFilter;
       const matchesValidation = validationStatusFilter === 'All' || item.validationStatus === validationStatusFilter;
+      const matchesAutoScoring = autoScoringStatusFilter === 'All' || item.autoScoringStatus === autoScoringStatusFilter;
+
       const matchesDate = (() => {
         if (!dateRange?.from) return true;
         const itemDate = new Date(item.applicationDate);
@@ -103,7 +107,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
         }
         return itemDate.getTime() === dateRange.from.getTime();
       })();
-      return matchesSearch && matchesStatus && matchesRole && matchesDate && matchesValidation;
+      return matchesSearch && matchesStatus && matchesRole && matchesDate && matchesValidation && matchesAutoScoring;
     });
 
     return filtered.sort((a, b) => {
@@ -123,7 +127,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
       if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [tableData, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection, validationStatusFilter]);
+  }, [tableData, searchTerm, statusFilter, roleFilter, dateRange, sortKey, sortDirection, validationStatusFilter, autoScoringStatusFilter]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -222,7 +226,16 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
         case 'Pending': return 'outline';
         default: return 'outline';
     }
-    };
+  };
+  
+  const getAutoScoringStatusVariant = (status?: 'Pending' | 'Completed' | 'Failed'): 'default' | 'destructive' | 'warning' | 'outline' => {
+    switch (status) {
+        case 'Completed': return 'default';
+        case 'Failed': return 'destructive';
+        case 'Pending': return 'warning';
+        default: return 'outline';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -251,6 +264,14 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                 </SelectTrigger>
                 <SelectContent>
                     {validationStatuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+                </SelectContent>
+            </Select>
+            <Select value={autoScoringStatusFilter} onValueChange={(value) => setAutoScoringStatusFilter(value as any)}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectValue placeholder="Filter by Auto-Scoring" />
+                </SelectTrigger>
+                <SelectContent>
+                    {autoScoringStatuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
                 </SelectContent>
             </Select>
             <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as RoleCategory | 'All')}>
@@ -307,6 +328,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('score')}>Score<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
               </TableHead>
+              <TableHead>Auto Score</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('applicationDate')}>Submitted<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
               </TableHead>
@@ -341,6 +363,18 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                     )}
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1 items-start">
+                        {item.autoScore ? (
+                            <span className="font-semibold">{item.autoScore}/100</span>
+                        ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                        )}
+                        {item.autoScoringStatus && (
+                            <Badge variant={getAutoScoringStatusVariant(item.autoScoringStatus)}>{item.autoScoringStatus}</Badge>
+                        )}
+                    </div>
+                  </TableCell>
                   <TableCell>{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -363,7 +397,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">No submissions found.</TableCell>
+                <TableCell colSpan={9} className="h-24 text-center">No submissions found.</TableCell>
               </TableRow>
             )}
           </TableBody>

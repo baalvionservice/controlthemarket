@@ -1,4 +1,5 @@
 
+
 import { getSubmissions, getUsers, getTasks, getCompanies, getEvaluations } from "@/lib/api";
 import { AdminSubmissionsList } from "./submission-list";
 import type { Submission, Task, User, Evaluation, Company } from '@/lib/types';
@@ -18,6 +19,8 @@ export type AdminSubmissionData = {
   status: Submission['status'];
   validationStatus?: Submission['validationStatus'];
   score?: number;
+  autoScore?: number;
+  autoScoringStatus?: Submission['autoScoringStatus'];
   applicationDate: string;
 };
 
@@ -53,6 +56,8 @@ export default async function AdminSubmissionsPage() {
             status: submission.status,
             validationStatus: submission.validationStatus,
             score: evaluation?.score,
+            autoScore: submission.autoScore,
+            autoScoringStatus: submission.autoScoringStatus,
             applicationDate: submission.submittedAt || submission.assignedAt,
         };
     })

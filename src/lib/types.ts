@@ -138,6 +138,8 @@ export interface Submission {
   status: SubmissionStatus;
   validationStatus?: ValidationStatus;
   testCaseStatus?: TestCaseStatus;
+  autoScore?: number;
+  autoScoringStatus?: 'Pending' | 'Completed' | 'Failed';
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string

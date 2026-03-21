@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { ActivityLog } from '@/components/activity-log';
 import { ValidationResultPanel } from './validation-result-panel';
 import { TestCasePanel } from './test-case-panel';
+import { AutoScoringResultPanel } from './auto-scoring-result-panel';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -97,6 +98,7 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
             </Card>
         </div>
         <div className="space-y-6">
+            <AutoScoringResultPanel submission={submission} />
             <ValidationResultPanel submission={submission} />
             <TestCasePanel submission={submission} />
             <ActivityLog submission={submission} evaluation={evaluation} isAdminOverride={true} />

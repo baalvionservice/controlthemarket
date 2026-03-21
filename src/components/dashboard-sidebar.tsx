@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -51,6 +52,7 @@ import {
   CreditCard,
   Receipt,
   PieChart,
+  Banknote,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -79,7 +81,8 @@ const companyNav = [
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
   { name: 'Subscription', href: '/company/subscription', icon: CreditCard },
   { name: 'Usage Metrics', href: '/company/usage', icon: PieChart },
-  { name: 'Billing', href: '/company/billing', icon: Receipt },
+  { name: 'Billing', href: '/company/billing', icon: Banknote },
+  { name: 'Invoices', href: '/company/invoices', icon: Receipt },
   { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
 

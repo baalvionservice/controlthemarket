@@ -397,16 +397,33 @@ export interface SystemIncident {
     description: string;
 }
 
-export type InvoiceStatus = 'Paid' | 'Failed' | 'Pending' | 'Due';
+export type InvoiceStatus = 'Paid' | 'Failed' | 'Pending' | 'Due' | 'Overdue';
+
+export interface InvoiceLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
 
 export interface Invoice {
   id: string;
   amount: number;
   date: string; // ISO date string
+  dueDate: string; // ISO date string
   status: InvoiceStatus;
   planName: string;
   pdfUrl?: string; // link to mock pdf
+  billingPeriod: {
+    start: string; // ISO date string
+    end: string; // ISO date string
+  };
+  lineItems: InvoiceLineItem[];
+  subtotal: number;
+  tax: number;
 }
+
 
 export interface UsageMetric {
   date: string;

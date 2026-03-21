@@ -1497,13 +1497,93 @@ export const mockSystemIncidents: SystemIncident[] = [
 ];
 
 export const mockInvoices: Invoice[] = [
-  { id: 'inv-000', amount: 79.00, date: new Date().toISOString(), status: 'Due', planName: 'Pro Plan' },
-  { id: 'inv-001', amount: 79.00, date: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(), status: 'Paid', planName: 'Pro Plan' },
-  { id: 'inv-002', amount: 79.00, date: new Date(new Date().setMonth(new Date().getMonth() - 2)).toISOString(), status: 'Paid', planName: 'Pro Plan' },
-  { id: 'inv-003', amount: 79.00, date: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(), status: 'Paid', planName: 'Pro Plan' },
-  { id: 'inv-004', amount: 29.00, date: new Date(new Date().setMonth(new Date().getMonth() - 4)).toISOString(), status: 'Failed', planName: 'Basic Plan' },
-  { id: 'inv-005', amount: 29.00, date: new Date(new Date().setMonth(new Date().getMonth() - 5)).toISOString(), status: 'Paid', planName: 'Basic Plan' },
+  {
+    id: 'inv-001',
+    amount: 85.32,
+    date: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(),
+    dueDate: new Date(new Date().setMonth(new Date().getMonth() - 1, 15)).toISOString(),
+    status: 'Paid',
+    planName: 'Pro Plan',
+    billingPeriod: {
+      start: new Date(new Date().setMonth(new Date().getMonth() - 2)).toISOString(),
+      end: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(),
+    },
+    lineItems: [
+      { id: 'item-1', description: 'Pro Plan (Monthly)', quantity: 1, unitPrice: 79.00, total: 79.00 },
+    ],
+    subtotal: 79.00,
+    tax: 6.32,
+  },
+  {
+    id: 'inv-002',
+    amount: 79.00,
+    date: new Date().toISOString(),
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
+    status: 'Due',
+    planName: 'Pro Plan',
+     billingPeriod: {
+      start: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(),
+      end: new Date().toISOString(),
+    },
+    lineItems: [
+      { id: 'item-1', description: 'Pro Plan (Monthly)', quantity: 1, unitPrice: 79.00, total: 79.00 },
+    ],
+    subtotal: 79.00,
+    tax: 0.00,
+  },
+  {
+    id: 'inv-003',
+    amount: 31.32,
+    date: new Date(new Date().setMonth(new Date().getMonth() - 2)).toISOString(),
+    dueDate: new Date(new Date().setMonth(new Date().getMonth() - 2, 15)).toISOString(),
+    status: 'Paid',
+    planName: 'Basic Plan',
+    billingPeriod: {
+      start: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(),
+      end: new Date(new Date().setMonth(new Date().getMonth() - 2)).toISOString(),
+    },
+    lineItems: [
+      { id: 'item-1', description: 'Basic Plan (Monthly)', quantity: 1, unitPrice: 29.00, total: 29.00 },
+    ],
+    subtotal: 29.00,
+    tax: 2.32,
+  },
+  {
+    id: 'inv-004',
+    amount: 31.32,
+    date: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(),
+    dueDate: new Date(new Date().setMonth(new Date().getMonth() - 3, 15)).toISOString(),
+    status: 'Overdue',
+    planName: 'Basic Plan',
+    billingPeriod: {
+      start: new Date(new Date().setMonth(new Date().getMonth() - 4)).toISOString(),
+      end: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(),
+    },
+    lineItems: [
+      { id: 'item-1', description: 'Basic Plan (Monthly)', quantity: 1, unitPrice: 29.00, total: 29.00 },
+    ],
+    subtotal: 29.00,
+    tax: 2.32,
+  },
+   {
+    id: 'inv-005',
+    amount: 853.20,
+    date: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
+    dueDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1, new Date().getMonth(), 15)).toISOString(),
+    status: 'Paid',
+    planName: 'Pro Plan (Yearly)',
+    billingPeriod: {
+      start: new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString(),
+      end: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
+    },
+    lineItems: [
+      { id: 'item-1', description: 'Pro Plan (Yearly)', quantity: 1, unitPrice: 790.00, total: 790.00 },
+    ],
+    subtotal: 790.00,
+    tax: 63.20,
+  },
 ];
+
 
 export const mockPlanUsage: PlanUsage[] = [
   { feature: 'API Calls', usage: 12500, limit: 50000, unit: 'requests' },

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -26,7 +25,6 @@ interface ApiDetailsDialogProps {
 
 export function ApiDetailsDialog({ isOpen, onOpenChange, apiIntegration }: ApiDetailsDialogProps) {
   const { toast } = useToast();
-  // We can use state to manage form fields if we want to make them editable
   const [apiKey, setApiKey] = useState('');
   const [endpointUrl, setEndpointUrl] = useState('');
 
@@ -48,17 +46,27 @@ export function ApiDetailsDialog({ isOpen, onOpenChange, apiIntegration }: ApiDe
   }
 
   if (!apiIntegration) return null;
+  
+  const mockActivities = [
+    { id: 1, message: 'Synced 1 new user', time: '2 hours ago' },
+    { id: 2, message: 'Triggered by event: submission.evaluated', time: '3 hours ago' },
+    { id: 3, message: 'Connection test successful', time: '5 hours ago' },
+  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl">API Settings: {apiIntegration.name}</DialogTitle>
+          <DialogTitle className="text-2xl">Integration Settings: {apiIntegration.name}</DialogTitle>
           <DialogDescription>
             {apiIntegration.description}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 mt-4">
+            <div className="space-y-2">
+                <Label htmlFor="api-category">Category</Label>
+                <Input id="api-category" value={apiIntegration.category} readOnly disabled />
+            </div>
             <div className="space-y-2">
                 <Label htmlFor="api-key">API Key / Token</Label>
                 <Input id="api-key" type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
@@ -70,14 +78,15 @@ export function ApiDetailsDialog({ isOpen, onOpenChange, apiIntegration }: ApiDe
              <div>
                 <h4 className="font-medium mb-2">Subscribed Events</h4>
                 <div className="flex flex-wrap gap-2">
-                    {apiIntegration.subscribedEvents.map(event => <Badge key={event} variant="secondary">{event}</Badge>)}
+                     {apiIntegration.subscribedEvents.length > 0 ? apiIntegration.subscribedEvents.map(event => <Badge key={event} variant="secondary">{event}</Badge>) : <span className="text-sm text-muted-foreground">No events subscribed.</span>}
                 </div>
             </div>
              <div>
-                 <h4 className="font-medium mb-2">Mock Test Run Results</h4>
-                <div className="rounded-md border p-3 text-sm bg-muted text-muted-foreground font-mono">
-                    <p>Last Test: <span className="text-foreground">Success (200 OK)</span></p>
-                    <p>Latency: <span className="text-foreground">120ms</span></p>
+                 <h4 className="font-medium mb-2">Recent Activity (Mock)</h4>
+                <div className="rounded-md border p-4 text-sm text-muted-foreground space-y-2">
+                    {mockActivities.map(activity => (
+                        <p key={activity.id}><span className="font-semibold text-foreground">{activity.message}</span> - <span className="text-xs">{activity.time}</span></p>
+                    ))}
                 </div>
             </div>
         </div>

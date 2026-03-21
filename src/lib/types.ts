@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'candidate' | 'company' | 'admin';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 
@@ -286,10 +287,12 @@ export interface Team {
 }
 
 export type ApiIntegrationStatus = 'Active' | 'Inactive' | 'Error';
+export type ApiIntegrationCategory = 'Analytics' | 'Chat' | 'Cloud Storage' | 'DevOps' | 'Monitoring' | 'Other';
 
 export interface ApiIntegration {
   id: string;
   name: string;
+  category: ApiIntegrationCategory;
   description: string;
   status: ApiIntegrationStatus;
   lastSync: string; // ISO date string

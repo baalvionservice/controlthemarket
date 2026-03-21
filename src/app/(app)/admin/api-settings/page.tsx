@@ -19,10 +19,10 @@ export default async function ApiSettingsPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                API Integration Settings
+                Third-Party Integrations
             </h2>
             <p className="text-muted-foreground">
-                Manage and monitor integrations with external APIs.
+                Manage and monitor integrations with external tools and services.
             </p>
         </div>
         <Button>
@@ -31,9 +31,9 @@ export default async function ApiSettingsPage() {
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>Configured APIs</CardTitle>
+            <CardTitle>Configured Integrations</CardTitle>
             <CardDescription>
-                An overview of all active and inactive API connections.
+                An overview of all active and inactive third-party connections.
             </CardDescription>
         </CardHeader>
         <CardContent>

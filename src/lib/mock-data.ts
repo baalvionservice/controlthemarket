@@ -1148,7 +1148,8 @@ export const mockTeams: Team[] = [
 export const mockApiIntegrations: ApiIntegration[] = [
   {
     id: 'api-1',
-    name: 'Greenhouse API',
+    name: 'Greenhouse',
+    category: 'DevOps',
     description: 'Syncs shortlisted candidates with Greenhouse jobs.',
     status: 'Active',
     lastSync: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
@@ -1159,6 +1160,7 @@ export const mockApiIntegrations: ApiIntegration[] = [
   {
     id: 'api-2',
     name: 'Jira Cloud',
+    category: 'DevOps',
     description: 'Creates a Jira ticket for flagged submissions.',
     status: 'Active',
     lastSync: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
@@ -1168,7 +1170,8 @@ export const mockApiIntegrations: ApiIntegration[] = [
   },
   {
     id: 'api-3',
-    name: 'Slack Notifications',
+    name: 'Slack',
+    category: 'Chat',
     description: 'Sends notifications to a Slack channel for new submissions.',
     status: 'Inactive',
     lastSync: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
@@ -1178,12 +1181,35 @@ export const mockApiIntegrations: ApiIntegration[] = [
   },
   {
     id: 'api-4',
-    name: 'Internal HR System',
-    description: 'Syncs new user data with the internal HR database.',
+    name: 'Sentry',
+    category: 'Monitoring',
+    description: 'Reports application errors to Sentry for tracking.',
     status: 'Error',
     lastSync: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
-    apiKey: 'hr_api_******************',
-    endpointUrl: 'https://hr.internal/api/users',
+    apiKey: 'sentry_dsn_******************',
+    endpointUrl: 'https://o45040.ingest.sentry.io/api/45040/store/',
     subscribedEvents: ['user.created'],
   },
+  {
+    id: 'api-5',
+    name: 'Google Analytics',
+    category: 'Analytics',
+    description: 'Tracks user engagement and platform events.',
+    status: 'Active',
+    lastSync: new Date(new Date().setHours(new Date().getHours() - 4)).toISOString(),
+    apiKey: 'G-**********',
+    endpointUrl: 'https://www.google-analytics.com/mp/collect',
+    subscribedEvents: ['user.created', 'task.published'],
+  },
+   {
+    id: 'api-6',
+    name: 'Vercel',
+    category: 'DevOps',
+    description: 'Triggers deployments based on GitHub commits.',
+    status: 'Active',
+    lastSync: new Date(new Date().setMinutes(new Date().getMinutes() - 30)).toISOString(),
+    apiKey: 'vercel_token_******************',
+    endpointUrl: 'https://api.vercel.com/v1/deployments',
+    subscribedEvents: [],
+  }
 ];

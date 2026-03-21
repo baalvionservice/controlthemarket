@@ -22,11 +22,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search, Power, PowerOff, Settings2, Trash2, TestTube2, CheckCircle, AlertTriangle, Clock } from 'lucide-react';
-import type { ApiIntegration, ApiIntegrationStatus } from '@/lib/types';
+import type { ApiIntegration, ApiIntegrationStatus, ApiIntegrationCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { ApiDetailsDialog } from './api-details-dialog';
 
 const apiStatuses: (ApiIntegrationStatus | 'All')[] = ["All", "Active", "Inactive", "Error"];
+const apiCategories: (ApiIntegrationCategory | 'All')[] = ["All", "Analytics", "Chat", "Cloud Storage", "DevOps", "Monitoring", "Other"];
+
 
 const getStatusVariant = (status: ApiIntegrationStatus): 'default' | 'destructive' | 'outline' => {
     switch (status) {
@@ -49,6 +51,7 @@ export function ApiIntegrationDashboard({ initialData }: { initialData: ApiInteg
   const [data, setData] = useState<ApiIntegration[]>(initialData);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<ApiIntegrationStatus | 'All'>('All');
+  const [categoryFilter, setCategoryFilter] = useState<ApiIntegrationCategory | 'All'>('All');
   const [viewingApi, setViewingApi] = useState<ApiIntegration | null>(null);
   const { toast } = useToast();
 
@@ -56,9 +59,10 @@ export function ApiIntegrationDashboard({ initialData }: { initialData: ApiInteg
     return data.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesCategory = categoryFilter === 'All' || item.category === categoryFilter;
+      return matchesSearch && matchesStatus && matchesCategory;
     }).sort((a, b) => new Date(b.lastSync).getTime() - new Date(a.lastSync).getTime());
-  }, [data, searchTerm, statusFilter]);
+  }, [data, searchTerm, statusFilter, categoryFilter]);
   
   const handleAction = (apiId: string, action: 'toggle' | 'delete' | 'test') => {
     const api = data.find(d => d.id === apiId);
@@ -101,6 +105,14 @@ export function ApiIntegrationDashboard({ initialData }: { initialData: ApiInteg
                         {apiStatuses.map(status => <SelectItem key={status} value={status}>{status}</SelectItem>)}
                     </SelectContent>
                 </Select>
+                 <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value as ApiIntegrationCategory | 'All')}>
+                    <SelectTrigger className="w-full md:w-[180px]">
+                        <SelectValue placeholder="Filter by category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {apiCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                    </SelectContent>
+                </Select>
             </div>
         </div>
 
@@ -108,7 +120,8 @@ export function ApiIntegrationDashboard({ initialData }: { initialData: ApiInteg
             <Table>
             <TableHeader>
                 <TableRow>
-                <TableHead>API Name</TableHead>
+                <TableHead>Tool</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Events</TableHead>
                 <TableHead>Last Sync</TableHead>
@@ -120,6 +133,7 @@ export function ApiIntegrationDashboard({ initialData }: { initialData: ApiInteg
                 filteredData.map((item) => (
                     <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
                     <TableCell>
                         <Badge variant={getStatusVariant(item.status)} className="gap-1">
                             {getStatusIcon(item.status)}
@@ -127,7 +141,7 @@ export function ApiIntegrationDashboard({ initialData }: { initialData: ApiInteg
                         </Badge>
                     </TableCell>
                     <TableCell className="flex flex-wrap gap-1">
-                        {item.subscribedEvents.map(event => <Badge key={event} variant="secondary" className="capitalize">{event.replace('.', ' ')}</Badge>)}
+                        {item.subscribedEvents.length > 0 ? item.subscribedEvents.map(event => <Badge key={event} variant="secondary" className="capitalize">{event.replace('.', ' ')}</Badge>) : <span className="text-xs text-muted-foreground">None</span>}
                     </TableCell>
                     <TableCell>{formatDistanceToNow(new Date(item.lastSync), { addSuffix: true })}</TableCell>
                     <TableCell className="text-right">
@@ -142,7 +156,7 @@ export function ApiIntegrationDashboard({ initialData }: { initialData: ApiInteg
                 ))
                 ) : (
                 <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">No API integrations found.</TableCell>
+                    <TableCell colSpan={6} className="h-24 text-center">No integrations found.</TableCell>
                 </TableRow>
                 )}
             </TableBody>

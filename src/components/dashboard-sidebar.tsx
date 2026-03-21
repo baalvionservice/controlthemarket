@@ -70,6 +70,7 @@ const candidateNav = [
   { name: 'Role Tasks', href: '/candidate/tasks', icon: Briefcase },
   { name: 'My Tasks', href: '/candidate/submissions', icon: FileText },
   { name: 'Rankings', href: '/candidate/rankings', icon: Trophy },
+  { name: 'Live Session', href: '/candidate/live-session', icon: Monitor },
 ];
 
 const companyNav = [

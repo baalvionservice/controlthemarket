@@ -35,6 +35,7 @@ import {
   FlaskConical,
   Bot,
   Terminal,
+  Code,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -74,6 +75,7 @@ const adminNav = [
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Execution Environment', href: '/admin/execution', icon: Terminal },
+  { name: 'Live Coding', href: '/admin/live-coding', icon: Code },
   { name: 'Backend/API Testing', href: '/admin/testing', icon: FlaskConical },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },

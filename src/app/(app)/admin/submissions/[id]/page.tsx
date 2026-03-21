@@ -21,6 +21,7 @@ import { ValidationResultPanel } from './validation-result-panel';
 import { TestCasePanel } from './test-case-panel';
 import { AiEvaluationPanel } from './ai-evaluation-panel';
 import { SandboxWorkspacePanel } from './sandbox-workspace-panel';
+import { LiveCodingWorkspacePanel } from './live-coding-workspace-panel';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -97,6 +98,7 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
                     <OverrideForm submission={submission} />
                 </CardContent>
             </Card>
+            <LiveCodingWorkspacePanel submission={submission} />
         </div>
         <div className="space-y-6">
             <AiEvaluationPanel submission={submission} />

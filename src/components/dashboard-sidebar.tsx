@@ -81,8 +81,8 @@ const companyNav = [
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
   { name: 'Subscription', href: '/company/subscription', icon: CreditCard },
   { name: 'Usage Metrics', href: '/company/usage', icon: PieChart },
-  { name: 'Billing', href: '/company/billing', icon: Receipt },
   { name: 'Invoices', href: '/company/invoices', icon: Receipt },
+  { name: 'Billing', href: '/company/billing', icon: Banknote },
   { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
 

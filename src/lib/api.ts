@@ -234,14 +234,3 @@ export async function getRevenueSources(): Promise<RevenueSource[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
   return mockRevenueSources;
 }
-
-// --- Subscription API ---
-export async function getPlans(): Promise<Plan[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockPlans;
-}
-
-export async function getSubscriptions(): Promise<Subscription[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockSubscriptions;
-}

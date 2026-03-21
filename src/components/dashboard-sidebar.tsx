@@ -33,6 +33,7 @@ import {
   LayoutGrid,
   Lightbulb,
   FlaskConical,
+  Bot,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -65,6 +66,7 @@ const companyNav = [
 const adminNav = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Intelligence Hub', href: '/admin/intelligence', icon: Lightbulb },
+  { name: 'Automation Hub', href: '/admin/automation', icon: Bot },
   { name: 'Role Dashboards', href: '/admin/roles', icon: LayoutGrid },
   { name: 'Manage Users', href: '/admin/users', icon: Users },
   { name: 'Manage Tenants', href: '/admin/companies', icon: Building },

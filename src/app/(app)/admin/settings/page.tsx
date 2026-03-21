@@ -14,7 +14,8 @@ import {
     FileText, 
     ShieldCheck,
     Save,
-    FileCheck2
+    FileCheck2,
+    Bot
 } from "lucide-react";
 import {
   Card,
@@ -40,6 +41,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export default function AdminSettingsPage() {
     const { toast } = useToast();
@@ -233,7 +235,9 @@ export default function AdminSettingsPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button variant="outline">Configure Advanced Rules</Button>
+                    <Button variant="outline" asChild>
+                        <Link href="/admin/automation">Configure Automation</Link>
+                    </Button>
                 </CardFooter>
             </Card>
 
@@ -250,7 +254,9 @@ export default function AdminSettingsPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button variant="outline">View Access Logs</Button>
+                    <Button variant="outline" asChild>
+                        <Link href="/admin/activity">View Access Logs</Link>
+                    </Button>
                 </CardFooter>
             </Card>
         </div>
@@ -258,7 +264,7 @@ export default function AdminSettingsPage() {
         {/* Evaluation Schemas Card */}
         <Card className="col-span-1 lg:col-span-2">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Settings className="h-5 w-5" />Auto-Scoring Logic (Evaluation Schemas)</CardTitle>
+                <CardTitle className="flex items-center gap-2"><Bot className="h-5 w-5" />Auto-Scoring Logic (Evaluation Schemas)</CardTitle>
                 <CardDescription>Manage the criteria, weights, and rules used by the auto-scoring system to evaluate candidate submissions.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

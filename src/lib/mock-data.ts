@@ -34,6 +34,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 60)).toISOString(),
     isActive: true,
     isVerified: true,
+    onboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar2/100/100',
       bio: 'Hiring manager at TechCorp.',
@@ -82,6 +83,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
     isActive: true,
     isVerified: true,
+    onboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar5/100/100',
       bio: 'Lead Recruiter at Innovate Inc.',

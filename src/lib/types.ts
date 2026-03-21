@@ -12,6 +12,7 @@ export interface User {
   isVerified?: boolean;
   companyId?: string; // For users with the 'company' role
   companyName?: string; // For users with the 'company' role
+  onboardingCompleted?: boolean;
   profile?: {
     avatarUrl: string;
     bio?: string;

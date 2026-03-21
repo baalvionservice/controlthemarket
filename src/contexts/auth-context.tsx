@@ -33,6 +33,7 @@ interface AuthContextType {
   signup: (details: SignupDetails) => Promise<AuthResult>;
   logout: () => void;
   loading: boolean;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -60,6 +61,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     setLoading(false);
   }, []);
+  
+  const updateUser = (updates: Partial<User>) => {
+    setUser(prevUser => {
+        if (!prevUser) return null;
+        const updatedUser = { ...prevUser, ...updates };
+        localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
+        return updatedUser;
+    });
+  };
 
   const login = async (credentials: LoginCredentials): Promise<AuthResult> => {
     const foundUser = sessionUsers.find(
@@ -121,6 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSessionCompanies(prev => [...prev, newCompany]);
       newUser.companyId = companyId;
       newUser.companyName = newCompany.name;
+      newUser.onboardingCompleted = false;
     }
 
     setSessionUsers(prev => [...prev, newUser]);
@@ -142,13 +153,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     if (!user && !isPublicPath) {
       router.push('/login');
-    } else if (user && (isPublicPath || pathname === '/dashboard')) {
-      router.push(`/${user.role}/dashboard`);
+    } else if (user && isPublicPath) {
+      if (user.role === 'company' && !user.onboardingCompleted) {
+        router.push('/company/onboarding');
+      } else {
+        router.push(`/${user.role}/dashboard`);
+      }
     }
   }, [user, loading, pathname, router]);
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

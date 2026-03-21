@@ -15,9 +15,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       return;
     }
     
-    // If not loading and no user, the AuthProvider will handle the redirect to login.
     if (!user) {
-        return;
+        return; // AuthProvider will handle the redirect to login.
+    }
+
+    // Onboarding check for company users
+    if (user.role === 'company' && !user.onboardingCompleted && !pathname.startsWith('/company/onboarding')) {
+      router.replace('/company/onboarding');
+      return; // Redirect and stop further checks
     }
 
     // If the user is on the base '/dashboard' path, redirect them to their specific role's dashboard.
@@ -26,7 +31,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       return;
     }
     
-    // If the user is on a path that does not belong to their role, redirect them.
+    // If the user is on a path that does not belong to their role (and not in onboarding), redirect them.
     if (!pathname.startsWith(`/${user.role}`)) {
       router.replace(`/${user.role}/dashboard`);
     }
@@ -51,6 +56,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );
+  }
+  
+  // Don't show sidebar during onboarding
+  if (pathname.startsWith('/company/onboarding')) {
+    return <main>{children}</main>;
   }
 
   return <DashboardSidebar>{children}</DashboardSidebar>;

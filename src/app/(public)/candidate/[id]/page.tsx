@@ -25,6 +25,10 @@ import {
     Share2,
     Briefcase,
     MapPin,
+    ShieldCheck,
+    Rocket,
+    Award,
+    BrainCircuit,
 } from 'lucide-react';
 import {
   Table,
@@ -35,7 +39,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { format } from 'date-fns';
-import type { Evaluation, RoleCategory, Submission, User } from '@/lib/types';
+import type { Evaluation, RoleCategory, Submission, User, Badge as BadgeType } from '@/lib/types';
+import { mockBadges } from '@/lib/mock-data';
+import { cn } from '@/lib/utils';
+
+const badgeIcons: { [key: string]: React.ElementType } = {
+  Trophy, ShieldCheck, Rocket, Award, BrainCircuit
+};
+
 
 // Copied from leaderboard page for ranking logic
 const calculateAggregatedScore = (evaluations: Evaluation[]): number => {
@@ -143,6 +154,33 @@ export default async function CandidateProfilePage({ params }: { params: { id: s
             </CardContent>
           </Card>
           
+          <Card>
+            <CardHeader><CardTitle>Badges</CardTitle></CardHeader>
+            <CardContent className="flex flex-col gap-4">
+                {candidate.profile?.badgeIds && candidate.profile.badgeIds.length > 0 ? candidate.profile.badgeIds.map(badgeId => {
+                    const badge = mockBadges.find(b => b.id === badgeId);
+                    if (!badge) return null;
+                    const Icon = badgeIcons[badge.icon];
+                    const rarityColors = {
+                        Elite: 'border-yellow-400/50 bg-yellow-400/10',
+                        Rare: 'border-purple/50 bg-purple/10',
+                        Common: 'border-border',
+                    };
+                    return (
+                        <div key={badge.id} className={cn("flex items-center gap-4 rounded-md border p-3", rarityColors[badge.rarity])}>
+                        <Icon className="h-8 w-8 text-primary" />
+                        <div>
+                            <p className="font-semibold">{badge.name}</p>
+                            <p className="text-sm text-muted-foreground">{badge.description}</p>
+                        </div>
+                        </div>
+                    )
+                }) : (
+                    <p className="text-sm text-muted-foreground">No badges earned yet.</p>
+                )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader><CardTitle>Skills</CardTitle></CardHeader>
             <CardContent className="flex flex-wrap gap-2">

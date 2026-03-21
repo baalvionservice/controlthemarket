@@ -3,6 +3,16 @@
 export type UserRole = 'candidate' | 'company' | 'admin';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 
+export type BadgeRarity = 'Common' | 'Rare' | 'Elite';
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: BadgeRarity;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -23,6 +33,7 @@ export interface User {
     githubUrl?: string;
     linkedinUrl?: string;
     portfolioLinks?: string[];
+    badgeIds?: string[];
   };
   candidatePerformance?: {
     completedTasks?: number;

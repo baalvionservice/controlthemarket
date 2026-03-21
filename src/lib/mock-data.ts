@@ -1,6 +1,43 @@
 
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, ApiIntegrationCategory, Badge } from './types';
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, ApiIntegrationCategory } from './types';
+export const mockBadges: Badge[] = [
+  {
+    id: 'badge-1',
+    name: 'Top 10 Performer',
+    description: 'Achieved a ranking in the top 10% of all candidates.',
+    icon: 'Trophy',
+    rarity: 'Elite',
+  },
+  {
+    id: 'badge-2',
+    name: 'Verified Talent',
+    description: 'Manually verified by the SkillMatch Pro team for exceptional skill.',
+    icon: 'ShieldCheck',
+    rarity: 'Elite',
+  },
+  {
+    id: 'badge-3',
+    name: 'Quick Starter',
+    description: 'Completed the first assigned task within 24 hours.',
+    icon: 'Rocket',
+    rarity: 'Rare',
+  },
+  {
+    id: 'badge-4',
+    name: 'Specialist',
+    description: 'Completed 5 tasks within the same role category.',
+    icon: 'Award',
+    rarity: 'Rare',
+  },
+  {
+    id: 'badge-5',
+    name: 'Problem Solver',
+    description: 'Achieved a score of 90+ on a task of Advanced or Expert difficulty.',
+    icon: 'BrainCircuit',
+    rarity: 'Common',
+  },
+];
 
 export const mockUsers: User[] = [
   {
@@ -19,6 +56,7 @@ export const mockUsers: User[] = [
       skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS'],
       githubUrl: 'https://github.com/alice-candidate',
       linkedinUrl: 'https://linkedin.com/in/alice-candidate',
+      badgeIds: ['badge-1', 'badge-3', 'badge-5'],
     },
     candidatePerformance: {
       completedTasks: 2,
@@ -68,6 +106,7 @@ export const mockUsers: User[] = [
       experienceLevel: 'Advanced',
       skills: ['Node.js', 'Python', 'GraphQL', 'AWS'],
       githubUrl: 'https://github.com/diana-dev',
+      badgeIds: ['badge-2', 'badge-4'],
     },
     candidatePerformance: {
       completedTasks: 1,

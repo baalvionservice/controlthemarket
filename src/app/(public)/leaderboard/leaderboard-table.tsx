@@ -13,6 +13,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { PublicCandidateRanking } from './page';
 import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { mockBadges } from '@/lib/mock-data';
+import { Trophy, ShieldCheck, Rocket, Award, BrainCircuit } from 'lucide-react';
+
+const badgeIcons: { [key: string]: React.ElementType } = {
+  Trophy, ShieldCheck, Rocket, Award, BrainCircuit
+};
 
 export function LeaderboardTable({ data }: { data: PublicCandidateRanking[] }) {
     if (data.length === 0) {
@@ -32,7 +39,7 @@ export function LeaderboardTable({ data }: { data: PublicCandidateRanking[] }) {
                         <TableHead className="w-[80px]">Rank</TableHead>
                         <TableHead>Candidate</TableHead>
                         <TableHead>Primary Role</TableHead>
-                        <TableHead>Skill Level</TableHead>
+                        <TableHead>Badges</TableHead>
                         <TableHead>Tasks Completed</TableHead>
                         <TableHead>Score</TableHead>
                         <TableHead className="text-right">Action</TableHead>
@@ -54,8 +61,27 @@ export function LeaderboardTable({ data }: { data: PublicCandidateRanking[] }) {
                              <TableCell>
                                 {item.primaryRole ? <Badge variant="secondary">{item.primaryRole}</Badge> : '-'}
                             </TableCell>
-                             <TableCell>
-                                {item.candidate.profile?.experienceLevel ? <Badge variant="outline">{item.candidate.profile.experienceLevel}</Badge> : '-'}
+                            <TableCell>
+                                <div className="flex items-center gap-1.5">
+                                    {item.candidate.profile?.badgeIds?.slice(0, 4).map(badgeId => {
+                                        const badge = mockBadges.find(b => b.id === badgeId);
+                                        if (!badge) return null;
+                                        const Icon = badgeIcons[badge.icon];
+                                        return (
+                                            <TooltipProvider key={badge.id}>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <Icon className="h-5 w-5 text-muted-foreground" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p className="font-semibold">{badge.name}</p>
+                                                        <p className="text-xs text-muted-foreground">{badge.description}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        )
+                                    })}
+                                </div>
                             </TableCell>
                             <TableCell>{item.tasksCompleted}</TableCell>
                             <TableCell className="font-semibold">{item.aggregatedScore}</TableCell>

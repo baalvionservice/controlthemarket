@@ -5,15 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Crown, Medal, Trophy } from "lucide-react";
+import { Crown, Medal, Trophy, ShieldCheck, Rocket, Award, BrainCircuit } from "lucide-react";
 import type { PublicCandidateRanking } from "./page";
 import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { mockBadges } from "@/lib/mock-data";
+
 
 const rankIcons = [
     { icon: Crown, color: "text-yellow-500", shadow: "shadow-yellow-500/50" },
     { icon: Medal, color: "text-gray-400", shadow: "shadow-gray-400/50" },
     { icon: Trophy, color: "text-orange-500", shadow: "shadow-orange-500/50" }
 ];
+
+const badgeIcons: { [key: string]: React.ElementType } = {
+  Trophy, ShieldCheck, Rocket, Award, BrainCircuit
+};
 
 export function LeaderboardTopPerformers({ performers }: { performers: PublicCandidateRanking[] }) {
     if (performers.length === 0) {
@@ -67,6 +74,26 @@ function PerformerCard({ performer, rank }: { performer: PublicCandidateRanking;
                 <div className="flex flex-wrap justify-center gap-2">
                     {performer.primaryRole && <Badge variant="secondary">{performer.primaryRole}</Badge>}
                     {performer.candidate.profile?.experienceLevel && <Badge variant="outline">{performer.candidate.profile.experienceLevel}</Badge>}
+                </div>
+                 <div className="flex justify-center gap-3 pt-2">
+                    {performer.candidate.profile?.badgeIds?.slice(0, 3).map(badgeId => {
+                        const badge = mockBadges.find(b => b.id === badgeId);
+                        if (!badge) return null;
+                        const Icon = badgeIcons[badge.icon];
+                        return (
+                            <TooltipProvider key={badge.id}>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Icon className="h-6 w-6 text-muted-foreground hover:text-primary" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p className="font-semibold">{badge.name}</p>
+                                        <p className="text-xs text-muted-foreground">{badge.description}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )
+                    })}
                 </div>
                 <Button variant="outline" asChild className="w-full">
                     <Link href={`/candidate/${performer.candidate.id}`}>View Profile</Link>

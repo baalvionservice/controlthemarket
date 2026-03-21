@@ -1,3 +1,4 @@
+
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -24,6 +25,12 @@ export default function PublicLayout({
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             >
               Leaderboard
+            </Link>
+            <Link
+              href="/badges"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Badges
             </Link>
           </nav>
           <div className="ml-auto flex items-center space-x-4">

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -328,7 +329,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('score')}>Score<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
               </TableHead>
-              <TableHead className="hidden md:table-cell">Auto Score</TableHead>
+              <TableHead className="hidden lg:table-cell">Auto Score</TableHead>
               <TableHead className="hidden lg:table-cell">
                 <Button variant="ghost" onClick={() => handleSort('applicationDate')}>Submitted<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
               </TableHead>
@@ -363,7 +364,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                     )}
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden lg:table-cell">
                     <div className="flex flex-col gap-1 items-start">
                         {item.autoScore ? (
                             <span className="font-semibold">{item.autoScore}/100</span>

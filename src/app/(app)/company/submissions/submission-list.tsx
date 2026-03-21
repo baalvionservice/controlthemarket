@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -348,7 +349,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                 </Button>
               </TableHead>
               <TableHead className="hidden md:table-cell">Time Spent</TableHead>
-              <TableHead className="hidden md:table-cell">
+              <TableHead className="hidden lg:table-cell">
                 <Button variant="ghost" onClick={() => handleSort('applicationDate')}>
                     Submitted
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -385,7 +386,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
                    <TableCell className="hidden md:table-cell">{renderTimeSpent(item.timeSpentMinutes, item.task.timeLimitMinutes)}</TableCell>
-                  <TableCell className="hidden md:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

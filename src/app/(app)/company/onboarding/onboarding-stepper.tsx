@@ -1,3 +1,4 @@
+
 'use client';
 
 import { cn } from '@/lib/utils';
@@ -13,7 +14,7 @@ export function OnboardingStepper({ steps, currentStep }: OnboardingStepperProps
     <nav aria-label="Progress">
       <ol role="list" className="flex items-center">
         {steps.map((stepName, stepIdx) => (
-          <li key={stepName} className={cn('relative', stepIdx !== steps.length - 1 ? 'pr-8 sm:pr-20 flex-1' : '')}>
+          <li key={stepName} className={cn('relative', stepIdx !== steps.length - 1 ? 'pr-8 md:pr-20 flex-1' : '')}>
             {stepIdx < currentStep ? (
               <>
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">

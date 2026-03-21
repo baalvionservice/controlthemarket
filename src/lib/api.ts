@@ -14,8 +14,9 @@ import {
   mockGitHubRepositories,
   mockWebhooks,
   mockWebhookTriggerLogs,
+  mockTeams,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -125,4 +126,10 @@ export async function getWebhooks(): Promise<Webhook[]> {
 export async function getWebhookTriggerLogs(webhookId: string): Promise<WebhookTriggerLog[]> {
     await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
     return mockWebhookTriggerLogs.filter(log => log.webhookId === webhookId);
+}
+
+// --- Team API ---
+export async function getTeams(): Promise<Team[]> {
+    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+    return mockTeams;
 }

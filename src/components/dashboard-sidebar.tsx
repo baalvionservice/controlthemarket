@@ -42,6 +42,7 @@ import {
   Github,
   Webhook,
   Bell,
+  Handshake,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -78,6 +79,7 @@ const adminNav = [
   { name: 'Role Dashboards', href: '/admin/roles', icon: LayoutGrid },
   { name: 'Manage Users', href: '/admin/users', icon: Users },
   { name: 'Manage Tenants', href: '/admin/companies', icon: Building },
+  { name: 'Team Collaboration', href: '/admin/teams', icon: Handshake },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Execution Environment', href: '/admin/execution', icon: Terminal },

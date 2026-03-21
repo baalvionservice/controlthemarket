@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -89,6 +89,48 @@ export const mockUsers: User[] = [
       bio: 'Lead Recruiter at Innovate Inc.',
     },
   },
+  {
+    id: 'user-6',
+    name: 'Frank Recruiter',
+    email: 'frank@techcorp.com',
+    role: 'company',
+    companyId: 'company-1',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
+    isActive: true,
+    isVerified: true,
+    onboardingCompleted: true,
+    profile: {
+      avatarUrl: 'https://picsum.photos/seed/avatar6/100/100',
+    },
+  },
+    {
+    id: 'user-7',
+    name: 'Grace Engineer',
+    email: 'grace@techcorp.com',
+    role: 'company',
+    companyId: 'company-1',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 12)).toISOString(),
+    isActive: true,
+    isVerified: true,
+    onboardingCompleted: true,
+    profile: {
+      avatarUrl: 'https://picsum.photos/seed/avatar7/100/100',
+    },
+  },
+    {
+    id: 'user-8',
+    name: 'Heidi HR',
+    email: 'heidi@innovate.io',
+    role: 'company',
+    companyId: 'company-2',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 18)).toISOString(),
+    isActive: true,
+    isVerified: true,
+    onboardingCompleted: true,
+    profile: {
+      avatarUrl: 'https://picsum.photos/seed/avatar8/100/100',
+    },
+  }
 ];
 
 export const mockCompanies: Company[] = [
@@ -224,7 +266,6 @@ export const mockTasks: Task[] = [
     status: 'published',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
-    multiRound: false,
     imageUrl: 'https://picsum.photos/seed/kanban/600/400',
     imageHint: 'kanban board'
   },
@@ -1078,4 +1119,28 @@ export const mockWebhookTriggerLogs: WebhookTriggerLog[] = [
     { id: 'log-wh-2', webhookId: 'wh-1', timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), status: 'Success', payload: JSON.stringify({ event: 'submission.created', submissionId: 'sub-7', candidateName: 'Alice Candidate' }, null, 2) },
     { id: 'log-wh-3', webhookId: 'wh-2', timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), status: 'Success', payload: JSON.stringify({ event: 'submission.evaluated', submissionId: 'sub-1', score: 84 }, null, 2) },
     { id: 'log-wh-4', webhookId: 'wh-4', timestamp: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(), status: 'Failed', payload: JSON.stringify({ event: 'user.created', userId: 'user-4', error: 'Invalid API Key' }, null, 2) },
+];
+
+export const mockTeams: Team[] = [
+  {
+    id: 'team-1',
+    name: 'Frontend Wizards',
+    companyId: 'company-1',
+    memberIds: ['user-2', 'user-6'],
+    leadId: 'user-2',
+  },
+  {
+    id: 'team-2',
+    name: 'API Ninjas',
+    companyId: 'company-2',
+    memberIds: ['user-5', 'user-8'],
+    leadId: 'user-5',
+  },
+  {
+    id: 'team-3',
+    name: 'TechCorp General',
+    companyId: 'company-1',
+    memberIds: ['user-2', 'user-6', 'user-7'],
+    leadId: 'user-2',
+  },
 ];

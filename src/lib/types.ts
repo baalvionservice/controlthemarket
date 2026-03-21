@@ -276,3 +276,11 @@ export interface WebhookTriggerLog {
     status: 'Success' | 'Failed';
     payload: string;
 }
+
+export interface Team {
+  id: string;
+  name: string;
+  companyId: string;
+  memberIds: string[];
+  leadId: string; // The user ID of the team lead
+}

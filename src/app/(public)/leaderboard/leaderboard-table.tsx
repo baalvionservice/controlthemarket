@@ -38,8 +38,8 @@ export function LeaderboardTable({ data }: { data: PublicCandidateRanking[] }) {
                     <TableRow>
                         <TableHead className="w-[80px]">Rank</TableHead>
                         <TableHead>Candidate</TableHead>
-                        <TableHead>Primary Role</TableHead>
-                        <TableHead>Badges</TableHead>
+                        <TableHead className="hidden md:table-cell">Primary Role</TableHead>
+                        <TableHead className="hidden md:table-cell">Badges</TableHead>
                         <TableHead>Tasks Completed</TableHead>
                         <TableHead>Score</TableHead>
                         <TableHead className="text-right">Action</TableHead>
@@ -58,10 +58,10 @@ export function LeaderboardTable({ data }: { data: PublicCandidateRanking[] }) {
                                     <span className="font-medium">{item.candidate.name}</span>
                                 </div>
                             </TableCell>
-                             <TableCell>
+                             <TableCell className="hidden md:table-cell">
                                 {item.primaryRole ? <Badge variant="secondary">{item.primaryRole}</Badge> : '-'}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden md:table-cell">
                                 <div className="flex items-center gap-1.5">
                                     {item.candidate.profile?.badgeIds?.slice(0, 4).map(badgeId => {
                                         const badge = mockBadges.find(b => b.id === badgeId);

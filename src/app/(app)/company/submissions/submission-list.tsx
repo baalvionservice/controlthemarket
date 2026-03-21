@@ -339,7 +339,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Applied Position</TableHead>
+              <TableHead className="hidden md:table-cell">Applied Position</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('score')}>
@@ -347,8 +347,8 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Time Spent</TableHead>
-              <TableHead>
+              <TableHead className="hidden lg:table-cell">Time Spent</TableHead>
+              <TableHead className="hidden lg:table-cell">
                 <Button variant="ghost" onClick={() => handleSort('applicationDate')}>
                     Submitted
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -377,15 +377,15 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                         <span className="font-medium">{item.candidate.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Badge variant={getRoleCategoryVariant(item.task.roleCategory)}>{item.task.roleCategory}</Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
-                   <TableCell>{renderTimeSpent(item.timeSpentMinutes, item.task.timeLimitMinutes)}</TableCell>
-                  <TableCell>{format(new Date(item.applicationDate), 'PPP')}</TableCell>
+                   <TableCell className="hidden lg:table-cell">{renderTimeSpent(item.timeSpentMinutes, item.task.timeLimitMinutes)}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

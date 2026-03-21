@@ -59,10 +59,10 @@ export function AdminTeamList({ initialData }: { initialData: AdminTeamData[] })
             <TableRow>
               <TableHead>Team</TableHead>
               <TableHead>Company</TableHead>
-              <TableHead>Team Lead</TableHead>
+              <TableHead className="hidden md:table-cell">Team Lead</TableHead>
               <TableHead>Members</TableHead>
-              <TableHead>Tasks</TableHead>
-              <TableHead>Submissions</TableHead>
+              <TableHead className="hidden md:table-cell">Tasks</TableHead>
+              <TableHead className="hidden md:table-cell">Submissions</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -72,7 +72,7 @@ export function AdminTeamList({ initialData }: { initialData: AdminTeamData[] })
                 <TableRow key={team.id}>
                   <TableCell className="font-medium">{team.name}</TableCell>
                   <TableCell>{team.company.name}</TableCell>
-                  <TableCell>{team.lead.name}</TableCell>
+                  <TableCell className="hidden md:table-cell">{team.lead.name}</TableCell>
                   <TableCell>
                     <div className="flex -space-x-2">
                         {team.members.slice(0,3).map(member => (
@@ -93,8 +93,8 @@ export function AdminTeamList({ initialData }: { initialData: AdminTeamData[] })
                         )}
                     </div>
                   </TableCell>
-                  <TableCell>{team.taskCount}</TableCell>
-                  <TableCell>{team.submissionCount}</TableCell>
+                  <TableCell className="hidden md:table-cell">{team.taskCount}</TableCell>
+                  <TableCell className="hidden md:table-cell">{team.submissionCount}</TableCell>
                   <TableCell className="text-right">
                      <Button variant="ghost" size="sm" onClick={() => setViewingTeam(team)}>View Details</Button>
                   </TableCell>

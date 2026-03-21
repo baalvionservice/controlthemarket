@@ -201,9 +201,9 @@ export function AdminCompaniesList({
               </TableHead>
               <TableHead>Tenant</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Owner</TableHead>
+              <TableHead className="hidden md:table-cell">Owner</TableHead>
               <TableHead>Subscription</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead className="hidden lg:table-cell">Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -235,7 +235,7 @@ export function AdminCompaniesList({
                         {company.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{company.ownerName}</TableCell>
+                  <TableCell className="hidden md:table-cell">{company.ownerName}</TableCell>
                    <TableCell>
                     {company.subscription ? (
                         <div>
@@ -248,7 +248,7 @@ export function AdminCompaniesList({
                         <Badge variant="outline">No Plan</Badge>
                     )}
                   </TableCell>
-                  <TableCell>{format(new Date(company.createdAt), 'PPP')}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{format(new Date(company.createdAt), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                      <Button variant="ghost" size="sm" onClick={() => handleViewTenant(company)}>View</Button>
                      <Button variant="ghost" size="sm" onClick={() => handleEditCompany(company)}>Edit</Button>

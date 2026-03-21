@@ -87,11 +87,11 @@ export function RankingList({ data, schemas }: RankingListProps) {
             <TableRow>
               <TableHead className="w-[80px]">Rank</TableHead>
               <TableHead>Candidate</TableHead>
-              <TableHead>Primary Role</TableHead>
-              <TableHead>Skill Level</TableHead>
+              <TableHead className="hidden md:table-cell">Primary Role</TableHead>
+              <TableHead className="hidden lg:table-cell">Skill Level</TableHead>
               <TableHead>Avg. Score</TableHead>
               <TableHead>Percentile</TableHead>
-              {allCriteriaNames.map(name => <TableHead key={name}>{name}</TableHead>)}
+              {allCriteriaNames.map(name => <TableHead key={name} className="hidden lg:table-cell">{name}</TableHead>)}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -117,14 +117,14 @@ export function RankingList({ data, schemas }: RankingListProps) {
                       </div>
                     </div>
                   </TableCell>
-                   <TableCell>
+                   <TableCell className="hidden md:table-cell">
                     {item.primaryRole ? (
                         <Badge variant={getRoleCategoryVariant(item.primaryRole)}>{item.primaryRole}</Badge>
                     ) : (
                         <span className="text-muted-foreground">-</span>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden lg:table-cell">
                     {item.candidate.profile?.experienceLevel ? (
                       <Badge variant={getLevelVariant(item.candidate.profile.experienceLevel)}>
                         {item.candidate.profile.experienceLevel}
@@ -143,7 +143,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
                     </Badge>
                   </TableCell>
                   {allCriteriaNames.map(name => (
-                    <TableCell key={name}>
+                    <TableCell key={name} className="hidden lg:table-cell">
                       {item.criteriaScores[name] !== undefined ? (
                         <Badge variant="outline">{item.criteriaScores[name]}/10</Badge>
                       ) : (

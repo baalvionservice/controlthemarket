@@ -162,8 +162,8 @@ export function AdminUsersList({ initialData }: { initialData: AdminUserData[] }
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Activity</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead className="hidden md:table-cell">Activity</TableHead>
+              <TableHead className="hidden lg:table-cell">Joined</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -201,12 +201,12 @@ export function AdminUsersList({ initialData }: { initialData: AdminUserData[] }
                         {user.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
-                   <TableCell>
+                   <TableCell className="hidden md:table-cell">
                       {user.role === 'candidate' && `${user.submissionCount} submissions`}
                       {user.role === 'company' && `${user.taskCount} tasks`}
                       {user.role === 'admin' && '-'}
                     </TableCell>
-                  <TableCell>{format(new Date(user.createdAt), 'PPP')}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{format(new Date(user.createdAt), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                      <Button variant="ghost" size="sm" onClick={() => handleEditUser(user)}>Edit</Button>
                   </TableCell>

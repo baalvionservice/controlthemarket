@@ -176,11 +176,11 @@ export function AdminTaskList({ tasks }: { tasks: TaskWithDetails[] }) {
                           />
                         </TableHead>
                         <TableHead>Title</TableHead>
-                        <TableHead>Company</TableHead>
+                        <TableHead className="hidden md:table-cell">Company</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Difficulty</TableHead>
-                        <TableHead>Deadline</TableHead>
-                        <TableHead>Submissions</TableHead>
+                        <TableHead className="hidden lg:table-cell">Deadline</TableHead>
+                        <TableHead className="hidden lg:table-cell">Submissions</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -196,15 +196,15 @@ export function AdminTaskList({ tasks }: { tasks: TaskWithDetails[] }) {
                               />
                             </TableCell>
                             <TableCell className="font-medium">{task.title}</TableCell>
-                            <TableCell>{task.companyName}</TableCell>
+                            <TableCell className="hidden md:table-cell">{task.companyName}</TableCell>
                             <TableCell>
                                 <Badge variant={getStatusVariant(task.status)} className="capitalize">{task.status}</Badge>
                             </TableCell>
                             <TableCell>
                                 <Badge variant="outline">{task.difficulty}</Badge>
                             </TableCell>
-                            <TableCell>{format(new Date(task.deadline), "PPP")}</TableCell>
-                            <TableCell>{task.submissionCount}</TableCell>
+                            <TableCell className="hidden lg:table-cell">{format(new Date(task.deadline), "PPP")}</TableCell>
+                            <TableCell className="hidden lg:table-cell">{task.submissionCount}</TableCell>
                             <TableCell className="text-right">
                                 <Button variant="ghost" size="icon" title="Edit Task" onClick={() => handleAction('Edit', task.title, task.id)}>
                                     <Edit className="h-4 w-4" />

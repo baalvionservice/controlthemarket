@@ -107,6 +107,7 @@ const adminNav = [
   { name: 'System Logs', href: '/admin/logs', icon: ScrollText },
   { name: 'Session Recordings', href: '/admin/recordings', icon: Video },
   { name: 'Security', href: '/admin/security', icon: Shield },
+  { name: 'Backend Testing', href: '/admin/testing', icon: FlaskConical },
   { name: 'GitHub Integration', href: '/admin/integrations', icon: Github },
   { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook },
   { name: '3rd-Party Integrations', href: '/admin/api-settings', icon: Plug },

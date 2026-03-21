@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'candidate' | 'company' | 'admin';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 
@@ -457,11 +458,40 @@ export interface RevenueMetric {
 }
 
 export interface PlanDistribution {
-    plan: string;
+    plan: 'Basic' | 'Pro' | 'Enterprise';
     count: number;
 }
 
 export interface RevenueSource {
     source: 'Subscriptions' | 'Usage-based' | 'Add-ons';
     amount: number;
+}
+
+export interface Plan {
+  id: string;
+  name: string;
+  priceMonthly: number;
+  priceYearly: number;
+  limits: {
+    tasks: number;
+    submissions: number;
+    teamMembers: number;
+  };
+  features: string[];
+}
+
+export type SubscriptionStatus = 'ACTIVE' | 'CANCELED' | 'EXPIRED' | 'TRIAL';
+export type BillingCycle = 'MONTHLY' | 'YEARLY';
+export type PaymentProvider = 'STRIPE' | 'RAZORPAY';
+
+export interface Subscription {
+  id: string;
+  companyId: string;
+  planId: string;
+  status: SubscriptionStatus;
+  startDate: string; // ISO
+  endDate: string; // ISO
+  billingCycle: BillingCycle;
+  paymentProvider?: PaymentProvider;
+  externalSubscriptionId?: string;
 }

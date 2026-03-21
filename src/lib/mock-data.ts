@@ -1,5 +1,6 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity } from './types';
+
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1375,3 +1376,67 @@ export const mockSystemLogs: SystemLog[] = Array.from({ length: 75 }, (_, i) => 
     message: messageList[i % messageList.length]
   }
 });
+
+
+export const mockSystemErrors: SystemError[] = [
+  {
+    id: 'err-1',
+    service: 'API',
+    type: 'Unhandled Exception',
+    severity: 'Critical',
+    message: 'TypeError: Cannot read properties of undefined (reading \'id\')',
+    stackTrace: 'at /app/src/services/userService.ts:42:15\nat processTicksAndRejections (node:internal/process/task_queues:95:5)',
+    frequency: 125,
+    lastOccurred: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
+    status: 'Open',
+    affectedUsers: 42,
+  },
+  {
+    id: 'err-2',
+    service: 'Database',
+    type: 'Connection Error',
+    severity: 'Critical',
+    message: 'Failed to connect to database: Connection timed out',
+    stackTrace: 'at /app/src/lib/database.ts:25:11',
+    frequency: 3,
+    lastOccurred: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+    status: 'Resolved',
+    affectedUsers: 500,
+  },
+  {
+    id: 'err-3',
+    service: 'IntegrationService',
+    type: 'API Timeout',
+    severity: 'Warning',
+    message: 'Request to third-party API "GitHub" timed out after 10000ms.',
+    stackTrace: 'at /app/src/services/githubService.ts:112:8',
+    frequency: 342,
+    lastOccurred: new Date(new Date().setMinutes(new Date().getMinutes() - 30)).toISOString(),
+    status: 'Open',
+    affectedUsers: 15,
+  },
+  {
+    id: 'err-4',
+    service: 'Frontend',
+    type: 'Rendering Error',
+    severity: 'Minor',
+    message: 'Hydration failed because the initial UI does not match what was rendered on the server.',
+    stackTrace: 'at /app/src/components/ui/SomeComponent.tsx:55:21',
+    frequency: 12,
+    lastOccurred: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString(),
+    status: 'Ignored',
+    affectedUsers: 8,
+  },
+    {
+    id: 'err-5',
+    service: 'Auth',
+    type: 'Authentication Error',
+    severity: 'Warning',
+    message: 'Invalid JWT signature.',
+    stackTrace: 'at /app/src/middleware/auth.ts:15:9',
+    frequency: 250,
+    lastOccurred: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    status: 'Open',
+    affectedUsers: 250,
+  }
+];

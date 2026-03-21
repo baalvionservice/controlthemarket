@@ -346,3 +346,18 @@ export interface SystemLog {
   timestamp: string; // ISO 8601
   message: string;
 }
+
+export type ErrorSeverity = 'Critical' | 'Warning' | 'Minor';
+
+export interface SystemError {
+  id: string;
+  service: string; // e.g., 'API', 'Auth', 'Database'
+  type: string; // e.g., 'Unhandled Exception', 'API Timeout'
+  severity: ErrorSeverity;
+  message: string;
+  stackTrace: string;
+  frequency: number;
+  lastOccurred: string; // ISO 8601
+  status: 'Open' | 'Resolved' | 'Ignored';
+  affectedUsers: number;
+}

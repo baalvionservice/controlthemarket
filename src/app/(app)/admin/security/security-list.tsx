@@ -27,7 +27,7 @@ import { Search, ShieldAlert, ShieldCheck, ShieldQuestion } from 'lucide-react';
 import type { PlagiarismRisk } from '@/lib/types';
 import type { SecurityDashboardData } from './page';
 import { useToast } from '@/hooks/use-toast';
-import { getStatusVariant } from '../../submissions/submission-list';
+import { getStatusVariant } from '../submissions/submission-list';
 
 const riskLevels: (PlagiarismRisk | 'All')[] = ["All", "High", "Medium", "Low", "None"];
 

@@ -518,7 +518,6 @@ export const mockTasks: Task[] = [
     title: 'Analyze Sales Data and Create Dashboard',
     description: 'Analyze a provided sales dataset to identify trends and create a visualization dashboard.',
     instructions: '1. Clean the provided CSV data.\n2. Analyze monthly revenue and top-selling products.\n3. Create a dashboard with at least 3 charts (e.g., bar, line, pie) to visualize your findings.\n4. Provide a summary of your key insights.',
-    expectedOutputs: 'A link to a public dashboard (e.g., Tableau, Power BI, Looker) or a Jupyter Notebook containing your analysis and visualizations.',
     roleCategory: 'Data',
     taskTypes: ['Data Cleaning', 'Visualization', 'Reporting'],
     difficulty: 'Intermediate',

@@ -4,11 +4,16 @@ import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect } from 'react';
+import { useConsent } from '@/contexts/consent-context';
+import { ConsentModal } from '@/components/consent-modal';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { isConsentGiven, loading: consentLoading } = useConsent();
   const router = useRouter();
   const pathname = usePathname();
+
+  const loading = authLoading || consentLoading;
 
   useEffect(() => {
     if (loading) {
@@ -36,6 +41,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       router.replace(`/${user.role}/dashboard`);
     }
   }, [user, loading, pathname, router]);
+
+  if (user?.role === 'candidate' && !isConsentGiven && !loading) {
+    return <ConsentModal />;
+  }
 
   // While loading or if no user is authenticated, show a loading spinner.
   // The AuthProvider will handle redirecting unauthenticated users to the login page.

@@ -22,12 +22,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, FileText, CheckCircle, Clock } from 'lucide-react';
+import { ArrowRight, FileText, CheckCircle, Clock, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import { useConsent } from '@/contexts/consent-context';
+import { format } from 'date-fns';
 
 export default function CandidateDashboard() {
   const { user } = useAuth();
   const { submissions: allSubmissions } = useSubmissions();
+  const { isConsentGiven, consentTimestamp } = useConsent();
   
   const submissions = useMemo(() => {
     if (!user) return [];
@@ -66,23 +69,24 @@ export default function CandidateDashboard() {
         </h2>
       </div>
 
-      <Card>
-        <CardHeader>
-            <CardTitle>Overall Progress</CardTitle>
-            <CardDescription>You've submitted {stats.submitted} of {stats.total} assigned tasks.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <Progress value={stats.completionPercentage} className="mb-2"/>
-            <p className="text-right text-sm text-muted-foreground">{stats.completionPercentage}% complete</p>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {isConsentGiven && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Consent Status
+              </CardTitle>
+              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-2xl font-bold text-green-500">Accepted</div>
+              {consentTimestamp && <p className="text-xs text-muted-foreground">on {format(new Date(consentTimestamp), 'PPP')}</p>}
+            </CardContent>
+          </Card>
+        )}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Assigned Tasks
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Assigned Tasks</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
@@ -110,6 +114,17 @@ export default function CandidateDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+            <CardTitle>Overall Progress</CardTitle>
+            <CardDescription>You've submitted {stats.submitted} of {stats.total} assigned tasks.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Progress value={stats.completionPercentage} className="mb-2"/>
+            <p className="text-right text-sm text-muted-foreground">{stats.completionPercentage}% complete</p>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

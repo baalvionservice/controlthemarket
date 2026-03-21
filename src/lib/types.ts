@@ -188,6 +188,7 @@ export interface Evaluation {
   feedback: string;
   evaluatedBy: string; // userId of company member
   evaluatedAt: string; // ISO 8601 date string
+  videoFeedbackUrl?: string; // URL to the recorded video feedback
 }
 
 export interface EvaluationCriterion {

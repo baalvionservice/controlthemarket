@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FeedbackForm } from './feedback-form';
 import type { Submission, Task, User as Candidate, Evaluation } from '@/lib/types';
+import { VideoFeedbackPanel } from './video-feedback-panel';
 
 
 type SubmissionWithRelations = Submission & {
@@ -79,29 +80,35 @@ export default function GiveFeedbackPage({ params }: { params: { id: string } })
             </div>
         </div>
       </div>
-
-      <Card>
-        <CardHeader>
-            <CardTitle>Detailed Feedback Form</CardTitle>
-            <CardDescription>
-                Provide specific comments for each evaluation criterion. The candidate will see this feedback.
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            {evaluation ? (
-                <FeedbackForm evaluation={evaluation} />
-            ) : (
-                <div className="text-center text-muted-foreground p-8">
-                    <p>An evaluation must be completed before providing detailed feedback.</p>
-                    <Button asChild variant="link">
-                        <Link href={`/company/submissions/${submission.id}`}>
-                            Complete Evaluation
-                        </Link>
-                    </Button>
-                </div>
-            )}
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+             <Card>
+                <CardHeader>
+                    <CardTitle>Detailed Feedback Form</CardTitle>
+                    <CardDescription>
+                        Provide specific comments for each evaluation criterion. The candidate will see this feedback.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {evaluation ? (
+                        <FeedbackForm evaluation={evaluation} />
+                    ) : (
+                        <div className="text-center text-muted-foreground p-8">
+                            <p>An evaluation must be completed before providing detailed feedback.</p>
+                            <Button asChild variant="link">
+                                <Link href={`/company/submissions/${submission.id}`}>
+                                    Complete Evaluation
+                                </Link>
+                            </Button>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+         <div className="space-y-6">
+            <VideoFeedbackPanel />
+        </div>
+      </div>
     </div>
   );
 }

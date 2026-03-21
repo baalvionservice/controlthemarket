@@ -256,3 +256,23 @@ export interface GitHubRepository {
   branchCount: number;
   lastCommitMessage: string;
 }
+
+export type WebhookEvent = 'submission.created' | 'submission.evaluated' | 'task.published' | 'user.created';
+export type WebhookStatus = 'Active' | 'Inactive' | 'Error';
+
+export interface Webhook {
+  id: string;
+  name: string;
+  url: string;
+  events: WebhookEvent[];
+  status: WebhookStatus;
+  lastTriggered?: string; // ISO date string
+}
+
+export interface WebhookTriggerLog {
+    id: string;
+    webhookId: string;
+    timestamp: string;
+    status: 'Success' | 'Failed';
+    payload: string;
+}

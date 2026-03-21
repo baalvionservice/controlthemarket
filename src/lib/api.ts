@@ -12,8 +12,10 @@ import {
   mockAlerts,
   mockTestCases,
   mockGitHubRepositories,
+  mockWebhooks,
+  mockWebhookTriggerLogs,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -112,4 +114,15 @@ export async function getTestCasesBySubmission(submissionId: string): Promise<Te
 export async function getGitHubRepositories(): Promise<GitHubRepository[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
   return mockGitHubRepositories;
+}
+
+// --- Webhook API ---
+export async function getWebhooks(): Promise<Webhook[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockWebhooks;
+}
+
+export async function getWebhookTriggerLogs(webhookId: string): Promise<WebhookTriggerLog[]> {
+    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+    return mockWebhookTriggerLogs.filter(log => log.webhookId === webhookId);
 }

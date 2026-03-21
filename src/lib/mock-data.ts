@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1037,4 +1037,45 @@ export const mockGitHubRepositories: GitHubRepository[] = [
     branchCount: 1,
     lastCommitMessage: 'Initial commit',
   },
+];
+
+export const mockWebhooks: Webhook[] = [
+  {
+    id: 'wh-1',
+    name: 'Zapier: New Submission',
+    url: 'https://hooks.zapier.com/hooks/catch/12345/abcde/',
+    events: ['submission.created'],
+    status: 'Active',
+    lastTriggered: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString(),
+  },
+  {
+    id: 'wh-2',
+    name: 'Slack: Evaluation Completed',
+    url: 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX',
+    events: ['submission.evaluated'],
+    status: 'Active',
+    lastTriggered: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+  },
+  {
+    id: 'wh-3',
+    name: 'Internal Analytics Service',
+    url: 'https://internal-analytics.skillmatch.pro/webhook',
+    events: ['submission.created', 'submission.evaluated', 'user.created'],
+    status: 'Inactive',
+  },
+  {
+    id: 'wh-4',
+    name: 'External CRM Sync',
+    url: 'https://crm.example.com/api/v1/webhook',
+    events: ['user.created'],
+    status: 'Error',
+    lastTriggered: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+  },
+];
+
+export const mockWebhookTriggerLogs: WebhookTriggerLog[] = [
+    { id: 'log-wh-1', webhookId: 'wh-1', timestamp: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString(), status: 'Success', payload: JSON.stringify({ event: 'submission.created', submissionId: 'sub-6', candidateName: 'Diana Developer' }, null, 2) },
+    { id: 'log-wh-2', webhookId: 'wh-1', timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), status: 'Success', payload: JSON.stringify({ event: 'submission.created', submissionId: 'sub-7', candidateName: 'Alice Candidate' }, null, 2) },
+    { id: 'log-wh-3', webhookId: 'wh-2', timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(), status: 'Success', payload: JSON.stringify({ event: 'submission.evaluated', submissionId: 'sub-1', score: 84 }, null, 2) },
+    { id: 'log-wh-4', webhookId: 'wh-4', timestamp: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(), status: 'Failed', payload: JSON.stringify({ event: 'user.created', userId: 'user-4', error: 'Invalid API Key' }, null, 2) },
 ];

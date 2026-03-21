@@ -428,6 +428,77 @@
         }
       },
       "required": ["id", "submissionId", "score", "feedback", "evaluatedBy", "evaluatedAt"]
+    },
+    "Plan": {
+      "title": "Subscription Plan",
+      "description": "Defines a pricing tier and its associated limits and features.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "enum": ["Free", "Pro", "Enterprise"] },
+        "priceMonthly": { "type": "number" },
+        "priceYearly": { "type": "number" },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "tasks": { "type": "number" },
+            "submissions": { "type": "number" },
+            "teamMembers": { "type": "number" }
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["id", "name", "priceMonthly", "priceYearly"]
+    },
+    "Subscription": {
+      "title": "Company Subscription",
+      "description": "Represents a company's subscription to a specific plan.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "companyId": { "type": "string" },
+        "planId": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "CANCELED", "EXPIRED", "TRIAL"] },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" },
+        "billingCycle": { "type": "string", "enum": ["MONTHLY", "YEARLY"] },
+        "paymentProvider": { "type": "string", "enum": ["STRIPE", "RAZORPAY"] },
+        "externalSubscriptionId": { "type": "string" }
+      },
+      "required": ["id", "companyId", "planId", "status", "startDate"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Represents a billing invoice for a company's subscription.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "companyId": { "type": "string" },
+        "subscriptionId": { "type": "string" },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "default": "USD" },
+        "status": { "type": "string", "enum": ["DUE", "PAID", "FAILED", "PENDING"] },
+        "paymentProvider": { "type": "string" },
+        "transactionId": { "type": "string" },
+        "paidAt": { "type": "string", "format": "date-time" },
+        "dueDate": { "type": "string", "format": "date" },
+        "lineItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "amount": { "type": "number" }
+            }
+          }
+        },
+        "subtotal": { "type": "number" },
+        "tax": { "type": "number" }
+      },
+      "required": ["id", "companyId", "subscriptionId", "amount", "status", "dueDate"]
     }
   },
   "auth": {
@@ -469,6 +540,24 @@
         "$ref": "#/backend/entities/Evaluation"
       },
       "description": "Stores evaluation feedback and scores for submissions."
+    },
+    "/plans/{planId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Plan"
+      },
+      "description": "Stores the available subscription plans."
+    },
+    "/subscriptions/{subscriptionId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Subscription"
+      },
+      "description": "Stores company subscriptions to plans."
+    },
+    "/invoices/{invoiceId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Invoice"
+      },
+      "description": "Stores billing invoices for companies."
     }
   }
 }

@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1337,3 +1337,41 @@ export const mockServiceStatus: ServiceStatus[] = [
     { id: 'service-5', name: 'AI Assistant', status: 'Running', lastChecked: new Date().toISOString() },
     { id: 'service-6', name: 'Notifications', status: Math.random() > 0.9 ? 'Down' : 'Running', lastChecked: new Date().toISOString() },
 ];
+
+export const mockSystemLogs: SystemLog[] = Array.from({ length: 75 }, (_, i) => {
+  const services = ['API', 'Auth', 'Database', 'TaskQueue', 'IntegrationService', 'Frontend'];
+  const severities: LogSeverity[] = ['Info', 'Info', 'Info', 'Warning', 'Error'];
+  const messages = {
+    Info: [
+      'User user-1 successfully authenticated.',
+      'GET /api/tasks request completed in 25ms.',
+      'New submission sub-1 processed.',
+      'Task task-1 status updated to "in-review".',
+      'Data cache for companies cleared.',
+    ],
+    Warning: [
+      'Database query took longer than expected (850ms).',
+      'API rate limit approaching for external service: GitHub.',
+      'Unusual login pattern detected for user-4.',
+      'Memory usage at 85%.',
+    ],
+    Error: [
+      'Failed to connect to database: Connection refused.',
+      'Unhandled exception in TaskQueue processor: TypeError: cannot read property "x" of undefined.',
+      'Third-party API "Stripe" returned status 503.',
+      'Authentication token expired for internal service communication.',
+      'Failed to write submission file to storage: Permission denied.',
+    ],
+  };
+
+  const severity = severities[i % severities.length];
+  const messageList = messages[severity];
+
+  return {
+    id: `syslog-${i + 1}`,
+    service: services[i % services.length],
+    severity: severity,
+    timestamp: new Date(Date.now() - i * 30 * 60 * 1000).toISOString(), // every 30 mins
+    message: messageList[i % messageList.length]
+  }
+});

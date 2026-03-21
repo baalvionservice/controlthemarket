@@ -336,3 +336,13 @@ export interface SystemMetric {
     errorRate: number; // percentage
     timestamp: string;
 }
+
+export type LogSeverity = 'Info' | 'Warning' | 'Error';
+
+export interface SystemLog {
+  id: string;
+  service: string; // e.g., 'API', 'Auth', 'Database'
+  severity: LogSeverity;
+  timestamp: string; // ISO 8601
+  message: string;
+}

@@ -19,8 +19,9 @@ import {
   mockIntegrationLogs,
   mockSystemMetrics,
   mockServiceStatus,
+  mockSystemLogs,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -159,4 +160,10 @@ export async function getSystemMetrics(): Promise<SystemMetric[]> {
 export async function getServiceStatus(): Promise<ServiceStatus[]> {
     await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
     return mockServiceStatus;
+}
+
+// --- System Log API ---
+export async function getSystemLogs(): Promise<SystemLog[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockSystemLogs;
 }

@@ -90,7 +90,7 @@ const adminNav = [
   { name: 'System Monitoring', href: '/admin/monitoring', icon: Monitor },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Real-Time Monitoring', href: '/admin/activity', icon: History },
-  { name: 'Execution Logs', href: '/admin/logs', icon: ScrollText },
+  { name: 'System Logs', href: '/admin/logs', icon: ScrollText },
   { name: 'Session Recordings', href: '/admin/recordings', icon: Video },
   { name: 'Security', href: '/admin/security', icon: Shield },
   { name: 'GitHub Integration', href: '/admin/integrations', icon: Github },

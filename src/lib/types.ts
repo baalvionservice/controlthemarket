@@ -300,3 +300,19 @@ export interface ApiIntegration {
   endpointUrl: string;
   subscribedEvents: WebhookEvent[];
 }
+
+export type IntegrationLogSource = 'GitHub' | 'Webhook' | 'Jira' | 'Slack' | 'Sentry' | 'Vercel';
+
+export interface IntegrationLog {
+  id: string;
+  source: IntegrationLogSource;
+  eventType: string; // e.g., 'push', 'submission.evaluated'
+  status: 'Success' | 'Warning' | 'Error';
+  timestamp: string;
+  description: string;
+  relatedEntity: {
+    type: 'Task' | 'Submission' | 'User' | 'Company' | 'System';
+    id: string;
+    name?: string;
+  };
+}

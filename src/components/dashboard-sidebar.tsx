@@ -44,6 +44,7 @@ import {
   Bell,
   Handshake,
   Plug,
+  ArrowLeftRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -94,8 +95,9 @@ const adminNav = [
   { name: 'GitHub Integration', href: '/admin/integrations', icon: Github },
   { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook },
   { name: '3rd-Party Integrations', href: '/admin/api-settings', icon: Plug },
+  { name: 'Integration Logs', href: '/admin/integration-logs', icon: ArrowLeftRight },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
-  { name: 'Activity Center', href: '/admin/alerts', icon: Bell },
+  { name: 'Notifications', href: '/admin/alerts', icon: Bell },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

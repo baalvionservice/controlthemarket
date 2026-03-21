@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1256,4 +1256,61 @@ export const mockApiIntegrations: ApiIntegration[] = [
     endpointUrl: 'https://api.vercel.com/v1/deployments',
     subscribedEvents: [],
   }
+];
+
+export const mockIntegrationLogs: IntegrationLog[] = [
+  {
+    id: 'int-log-1',
+    source: 'GitHub',
+    eventType: 'commit.pushed',
+    status: 'Success',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
+    description: 'Alice Candidate pushed a new commit to `responsive-navbar` repo.',
+    relatedEntity: { type: 'Submission', id: 'sub-1', name: 'sub-1' },
+  },
+  {
+    id: 'int-log-2',
+    source: 'Webhook',
+    eventType: 'submission.evaluated',
+    status: 'Success',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString(),
+    description: 'Sent "submission.evaluated" event to Zapier webhook.',
+    relatedEntity: { type: 'Submission', id: 'sub-1', name: 'sub-1' },
+  },
+  {
+    id: 'int-log-3',
+    source: 'Jira',
+    eventType: 'ticket.created',
+    status: 'Error',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 3)).toISOString(),
+    description: 'Failed to create Jira ticket for flagged submission sub-2. Reason: API Authentication Failed.',
+    relatedEntity: { type: 'Submission', id: 'sub-2', name: 'sub-2' },
+  },
+    {
+    id: 'int-log-4',
+    source: 'Slack',
+    eventType: 'notification.sent',
+    status: 'Success',
+    timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+    description: 'Posted notification for new submission to #hiring channel.',
+    relatedEntity: { type: 'Submission', id: 'sub-6', name: 'sub-6' },
+  },
+    {
+    id: 'int-log-5',
+    source: 'Sentry',
+    eventType: 'error.reported',
+    status: 'Warning',
+    timestamp: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    description: 'Reported a 500 Internal Server Error for GET /api/items/not-found.',
+    relatedEntity: { type: 'System', id: 'backend-api', name: 'Backend API' },
+  },
+   {
+    id: 'int-log-6',
+    source: 'Vercel',
+    eventType: 'deployment.created',
+    status: 'Success',
+    timestamp: new Date(new Date().setMinutes(new Date().getMinutes() - 30)).toISOString(),
+    description: 'New deployment triggered from main branch commit.',
+    relatedEntity: { type: 'System', id: 'frontend-app', name: 'Frontend App' },
+  },
 ];

@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert, TestCase } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -985,5 +985,56 @@ export const mockAlerts: Alert[] = [
     title: 'Task Deadline Approaching',
     description: 'Task "Create a Serverless API Endpoint" is due in 3 days.',
     relatedEntity: { type: 'Task', id: 'task-3', name: 'Create a Serverless API Endpoint' },
+  },
+];
+
+export const mockGitHubRepositories: GitHubRepository[] = [
+  {
+    id: 'repo-1',
+    name: 'alice-candidate/responsive-navbar',
+    url: 'https://github.com/alice-candidate/responsive-navbar',
+    ownerName: 'Alice Candidate',
+    ownerId: 'user-1',
+    status: 'Connected',
+    lastSync: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
+    commitCount: 15,
+    branchCount: 3,
+    lastCommitMessage: 'feat: add dark mode support',
+  },
+  {
+    id: 'repo-2',
+    name: 'diana-developer/navbar-project',
+    url: 'https://github.com/diana-developer/navbar-project',
+    ownerName: 'Diana Developer',
+    ownerId: 'user-4',
+    status: 'Error',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
+    commitCount: 8,
+    branchCount: 2,
+    lastCommitMessage: 'fix: resolve mobile layout bug',
+  },
+  {
+    id: 'repo-3',
+    name: 'shared-team/fullstack-challenge',
+    url: 'https://github.com/shared-team/fullstack-challenge',
+    ownerName: 'TechCorp Team',
+    ownerId: 'company-1',
+    status: 'Connected',
+    lastSync: new Date().toISOString(),
+    commitCount: 42,
+    branchCount: 5,
+    lastCommitMessage: 'refactor: update database schema',
+  },
+    {
+    id: 'repo-4',
+    name: 'innovate-inc/marketing-site',
+    url: 'https://github.com/innovate-inc/marketing-site',
+    ownerName: 'Innovate Inc.',
+    ownerId: 'company-2',
+    status: 'Pending',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
+    commitCount: 3,
+    branchCount: 1,
+    lastCommitMessage: 'Initial commit',
   },
 ];

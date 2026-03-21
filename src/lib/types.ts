@@ -241,3 +241,18 @@ export interface CompanyInsight {
   topSkills: string[];
   skillGaps: string[];
 }
+
+export type IntegrationStatus = 'Connected' | 'Pending' | 'Error';
+
+export interface GitHubRepository {
+  id: string;
+  name: string;
+  url: string;
+  ownerName: string; // Candidate or Team name
+  ownerId: string;
+  status: IntegrationStatus;
+  lastSync: string; // ISO date string
+  commitCount: number;
+  branchCount: number;
+  lastCommitMessage: string;
+}

@@ -39,6 +39,7 @@ import {
   ScrollText,
   Shield,
   Video,
+  Github,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -85,6 +86,7 @@ const adminNav = [
   { name: 'Execution Logs', href: '/admin/logs', icon: ScrollText },
   { name: 'Session Recordings', href: '/admin/recordings', icon: Video },
   { name: 'Security', href: '/admin/security', icon: Shield },
+  { name: 'GitHub Integration', href: '/admin/integrations', icon: Github },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },
   { name: 'Settings', href: '/admin/settings', icon: Settings },

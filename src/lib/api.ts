@@ -11,8 +11,9 @@ import {
   mockActivityLogs,
   mockAlerts,
   mockTestCases,
+  mockGitHubRepositories,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Alert, TestCase } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -105,4 +106,10 @@ export async function getAlerts(): Promise<Alert[]> {
 export async function getTestCasesBySubmission(submissionId: string): Promise<TestCase[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
   return mockTestCases.filter((tc) => tc.submissionId === submissionId);
+}
+
+// --- GitHub Integration API ---
+export async function getGitHubRepositories(): Promise<GitHubRepository[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockGitHubRepositories;
 }

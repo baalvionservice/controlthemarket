@@ -1,6 +1,6 @@
 
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, ApiIntegrationCategory } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, ApiIntegrationCategory } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1630,3 +1630,27 @@ export const mockUsageMetrics: UsageMetric[] = Array.from({ length: 30 }, (_, i)
   tasksCreated: 5 + Math.floor(Math.random() * 3),
   storageUsage: 15 + i * 0.1 + Math.random(),
 })).map(d => ({...d, apiCalls: Math.round(d.apiCalls), tasksCreated: Math.round(d.tasksCreated)}));
+
+
+export const mockRevenueMetrics: RevenueMetric[] = Array.from({ length: 12 }, (_, i) => {
+  const date = new Date(2023, i, 1);
+  const month = date.toLocaleString('default', { month: 'short' });
+  return {
+    month,
+    mrr: 15000 + i * 2000 + Math.random() * 1000,
+    newSubscriptions: 20 + i * 2 + Math.floor(Math.random() * 5),
+    churn: 5 + Math.floor(Math.random() * 3),
+  };
+});
+
+export const mockPlanDistribution: PlanDistribution[] = [
+    { plan: 'Basic', count: 85 },
+    { plan: 'Pro', count: 150 },
+    { plan: 'Enterprise', count: 25 },
+];
+
+export const mockRevenueSources: RevenueSource[] = [
+    { source: 'Subscriptions', amount: 52300 },
+    { source: 'Usage-based', amount: 8400 },
+    { source: 'Add-ons', amount: 3200 },
+];

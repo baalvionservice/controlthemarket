@@ -143,7 +143,7 @@ export default async function AdminAnalyticsPage() {
             <div className="flex items-center justify-between space-y-2">
                 <div>
                     <h2 className="font-headline text-3xl font-bold tracking-tight">
-                    Global Platform Analytics
+                    Platform Analytics
                     </h2>
                     <p className="text-muted-foreground">
                         An overview of all activity across the SkillMatch Pro platform.

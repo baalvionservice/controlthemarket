@@ -81,7 +81,7 @@ const companyNav = [
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
   { name: 'Subscription', href: '/company/subscription', icon: CreditCard },
   { name: 'Usage Metrics', href: '/company/usage', icon: PieChart },
-  { name: 'Billing', href: '/company/billing', icon: Banknote },
+  { name: 'Billing', href: '/company/billing', icon: Receipt },
   { name: 'Invoices', href: '/company/invoices', icon: Receipt },
   { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
@@ -111,7 +111,8 @@ const adminNav = [
   { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook },
   { name: '3rd-Party Integrations', href: '/admin/api-settings', icon: Plug },
   { name: 'Integration Logs', href: '/admin/integration-logs', icon: ArrowLeftRight },
-  { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
+  { name: 'Platform Analytics', href: '/admin/analytics', icon: AreaChart },
+  { name: 'Revenue Analytics', href: '/admin/revenue', icon: Banknote },
   { name: 'Notifications', href: '/admin/alerts', icon: Bell },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];

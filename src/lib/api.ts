@@ -28,8 +28,11 @@ import {
   mockInvoices,
   mockPlanUsage,
   mockUsageMetrics,
+  mockRevenueMetrics,
+  mockPlanDistribution,
+  mockRevenueSources,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, Invoice, InvoiceStatus, PlanUsage, UsageMetric } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -212,4 +215,20 @@ export async function getPlanUsage(): Promise<PlanUsage[]> {
 export async function getUsageMetrics(): Promise<UsageMetric[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
   return mockUsageMetrics;
+}
+
+// --- Revenue Analytics API ---
+export async function getRevenueMetrics(): Promise<RevenueMetric[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockRevenueMetrics;
+}
+
+export async function getPlanDistribution(): Promise<PlanDistribution[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockPlanDistribution;
+}
+
+export async function getRevenueSources(): Promise<RevenueSource[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockRevenueSources;
 }

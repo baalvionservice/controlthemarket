@@ -438,3 +438,20 @@ export interface PlanUsage {
     limit: number;
     unit: 'requests' | 'tasks' | 'GB';
 }
+
+export interface RevenueMetric {
+  month: string; // e.g., "Jan", "Feb"
+  mrr: number;
+  newSubscriptions: number;
+  churn: number;
+}
+
+export interface PlanDistribution {
+    plan: string;
+    count: number;
+}
+
+export interface RevenueSource {
+    source: 'Subscriptions' | 'Usage-based' | 'Add-ons';
+    amount: number;
+}

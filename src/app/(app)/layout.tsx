@@ -5,16 +5,12 @@ import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect } from 'react';
-import { useConsent } from '@/contexts/consent-context';
 import { ConsentModal } from '@/components/consent-modal';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading: authLoading } = useAuth();
-  const { isConsentGiven, loading: consentLoading } = useConsent();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
-  const loading = authLoading || consentLoading;
 
   useEffect(() => {
     if (loading) {
@@ -38,17 +34,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
     
     // If the user is on a path that does not belong to their role (and not in onboarding), redirect them.
-    if (!pathname.startsWith(`/${user.role}`)) {
+    if (!pathname.startsWith(`/${user.role}`) && !pathname.startsWith('/company/onboarding')) {
+      // Special case: if candidate has not consented, don't redirect them away from the page that triggers the modal
+      if (user.role === 'candidate' && !user.consentAccepted) {
+        return;
+      }
       router.replace(`/${user.role}/dashboard`);
     }
   }, [user, loading, pathname, router]);
 
-  if (user?.role === 'candidate' && !isConsentGiven && !loading) {
-    return <ConsentModal />;
-  }
-
-  // While loading or if no user is authenticated, show a loading spinner.
-  // The AuthProvider will handle redirecting unauthenticated users to the login page.
   if (loading || !user) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -57,9 +51,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  if (user.role === 'candidate' && !user.consentAccepted) {
+    return <ConsentModal />;
+  }
+  
   // To prevent content flashing while redirecting, we can show a loading state
   // if the current path is not yet the correct one for the user's role.
-  const isCorrectPath = pathname.startsWith(`/${user.role}`) || pathname === '/dashboard';
+  const isCorrectPath = pathname.startsWith(`/${user.role}`) || pathname === '/dashboard' || pathname.startsWith('/company/onboarding');
   if (!isCorrectPath) {
      return (
       <div className="flex h-screen items-center justify-center">

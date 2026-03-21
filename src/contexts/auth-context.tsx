@@ -34,6 +34,7 @@ interface AuthContextType {
   logout: () => void;
   loading: boolean;
   updateUser: (updates: Partial<User>) => void;
+  acceptConsent: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -66,6 +67,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(prevUser => {
         if (!prevUser) return null;
         const updatedUser = { ...prevUser, ...updates };
+        localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
+        return updatedUser;
+    });
+  };
+
+  const acceptConsent = () => {
+    setUser(prevUser => {
+        if (!prevUser || prevUser.role !== 'candidate') return prevUser;
+        const updatedUser = { 
+            ...prevUser, 
+            consentAccepted: true,
+            consentAcceptedAt: new Date().toISOString(),
+        };
         localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
         return updatedUser;
     });
@@ -104,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       createdAt: new Date().toISOString(),
       isActive: true,
       isVerified: true, // Auto-verify in mock
+      consentAccepted: details.role === 'candidate' ? false : undefined,
       profile: {
         avatarUrl: `https://picsum.photos/seed/${newUserId}/100/100`,
       },
@@ -163,7 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, loading, pathname, router]);
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateUser }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateUser, acceptConsent }}>
       {children}
     </AuthContext.Provider>
   );

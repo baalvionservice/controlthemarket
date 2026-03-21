@@ -26,67 +26,8 @@ export interface User {
   companyId?: string; // For users with the 'company' role
   companyName?: string; // For users with the 'company' role
   onboardingCompleted?: boolean;
-  profile?: {
-    avatarUrl: string;
-    bio?: string;
-    location?: string;
-    experienceLevel?: ExperienceLevel;
-    skills?: string[];
-    githubUrl?: string;
-    linkedinUrl?: string;
-    portfolioLinks?: string[];
-    badgeIds?: string[];
-  };
-  candidatePerformance?: {
-    completedTasks?: number;
-    averageScore?: number;
-    ranking?: number;
-  };
-}
-
-export interface Company {
-  id: string;
-  name: string;
-  description?: string;
-  ownerId: string; // The ID of the user who owns the company
-  website?: string;
-  logoUrl?: string;
-  industry?: string;
-  location?: string;
-  createdAt: string; // ISO 8601 date string
-  isActive?: boolean;
-  isVerified?: boolean;
-}
-
-export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
-export type TaskStatus = 'draft' | 'published' | 'closed' | 'archived';
-export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
-export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project' | 'UI' | 'Component' | 'Styling' | 'Feature Implementation' | 'Campaign Planning' | 'Content Creation' | 'Social![CDATA[
-
-export type UserRole = 'candidate' | 'company' | 'admin';
-export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
-
-export type BadgeRarity = 'Common' | 'Rare' | 'Elite';
-
-export interface Badge {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  rarity: BadgeRarity;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  createdAt: string; // ISO 8601 date string
-  isActive: boolean;
-  isVerified?: boolean;
-  companyId?: string; // For users with the 'company' role
-  companyName?: string; // For users with the 'company' role
-  onboardingCompleted?: boolean;
+  consentAccepted?: boolean;
+  consentAcceptedAt?: string;
   profile?: {
     avatarUrl: string;
     bio?: string;
@@ -558,5 +499,3 @@ export interface Subscription {
   paymentProvider?: PaymentProvider;
   externalSubscriptionId?: string;
 }
-
-```

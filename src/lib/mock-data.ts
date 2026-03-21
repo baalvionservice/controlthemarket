@@ -49,6 +49,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
     isActive: true,
     isVerified: true,
+    consentAccepted: false,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar1/100/100',
       bio: 'Aspiring frontend developer with a passion for React.',
@@ -101,6 +102,8 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     isActive: false, // Changed for testing
     isVerified: true,
+    consentAccepted: true,
+    consentAcceptedAt: new Date(new Date().setDate(new Date().getDate() - 9)).toISOString(),
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar4/100/100',
       bio: 'Full-stack engineer with 5 years of experience.',
@@ -185,6 +188,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString(),
     isActive: true,
     isVerified: true,
+    consentAccepted: false,
     profile: {
         avatarUrl: 'https://picsum.photos/seed/avatar9/100/100',
         bio: 'Creative designer focused on user experience.',

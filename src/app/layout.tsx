@@ -4,7 +4,6 @@ import { AuthProvider } from '@/contexts/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { SubmissionsProvider } from '@/contexts/submissions-context';
-import { ConsentProvider } from '@/contexts/consent-context';
 
 export const metadata: Metadata = {
   title: 'SkillMatch Pro',
@@ -33,10 +32,8 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <AuthProvider>
           <SubmissionsProvider>
-            <ConsentProvider>
               {children}
               <Toaster />
-            </ConsentProvider>
           </SubmissionsProvider>
         </AuthProvider>
       </body>

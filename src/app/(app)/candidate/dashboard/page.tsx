@@ -25,13 +25,11 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, FileText, CheckCircle, Clock, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
-import { useConsent } from '@/contexts/consent-context';
 import { format } from 'date-fns';
 
 export default function CandidateDashboard() {
   const { user } = useAuth();
   const { submissions: allSubmissions } = useSubmissions();
-  const { isConsentGiven, consentTimestamp } = useConsent();
   
   const submissions = useMemo(() => {
     if (!user) return [];
@@ -71,7 +69,7 @@ export default function CandidateDashboard() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {isConsentGiven && (
+        {user.consentAccepted && user.consentAcceptedAt && (
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -81,7 +79,7 @@ export default function CandidateDashboard() {
             </CardHeader>
             <CardContent className="pt-0">
               <div className="text-2xl font-bold text-green-500">Accepted</div>
-              {consentTimestamp && <p className="text-xs text-muted-foreground">on {format(new Date(consentTimestamp), 'PPP')}</p>}
+              {user.consentAcceptedAt && <p className="text-xs text-muted-foreground">on {format(new Date(user.consentAcceptedAt), 'PPP')}</p>}
             </CardContent>
           </Card>
         )}

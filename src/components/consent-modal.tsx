@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useConsent } from '@/contexts/consent-context';
+import { useAuth } from '@/contexts/auth-context';
 
 const consentText = `
 1. Candidate / Contributor retains full IP rights.
@@ -45,7 +45,7 @@ const consentText = `
 `.repeat(5); // Repeat to make it scrollable
 
 export function ConsentModal() {
-  const { giveConsent } = useConsent();
+  const { acceptConsent } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
@@ -58,7 +58,7 @@ export function ConsentModal() {
 
   const handleAccept = () => {
     if (isChecked && isScrolled) {
-      giveConsent();
+      acceptConsent();
     }
   };
 

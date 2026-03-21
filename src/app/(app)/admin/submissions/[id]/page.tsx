@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { ActivityLog } from '@/components/activity-log';
 import { ValidationResultPanel } from './validation-result-panel';
+import { TestCasePanel } from './test-case-panel';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -97,6 +98,7 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
         </div>
         <div className="space-y-6">
             <ValidationResultPanel submission={submission} />
+            <TestCasePanel submission={submission} />
             <ActivityLog submission={submission} evaluation={evaluation} isAdminOverride={true} />
         </div>
       </div>

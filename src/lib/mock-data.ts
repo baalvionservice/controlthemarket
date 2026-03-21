@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert, TestCase } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -493,6 +493,7 @@ export const mockSubmissions: Submission[] = [
     },
     status: 'shortlisted',
     validationStatus: 'Valid',
+    testCaseStatus: 'Passed',
     assignedAt: '2024-08-09T10:00:00Z',
     submittedAt: '2024-08-10T10:00:00Z',
     lastUpdated: '2024-08-12T09:00:00Z',
@@ -508,6 +509,7 @@ export const mockSubmissions: Submission[] = [
     },
     status: 'rejected',
     validationStatus: 'Invalid',
+    testCaseStatus: 'Failed',
     assignedAt: '2024-08-10T11:00:00Z',
     submittedAt: '2024-08-11T14:30:00Z',
     lastUpdated: '2024-08-12T11:00:00Z',
@@ -519,6 +521,7 @@ export const mockSubmissions: Submission[] = [
     companyId: 'company-1',
     status: 'resubmitted',
     validationStatus: 'Warning',
+    testCaseStatus: 'Warning',
     assignedAt: '2024-08-11T09:00:00Z',
     submittedAt: '2024-08-12T09:00:00Z',
     resubmittedAt: '2024-08-13T11:00:00Z',
@@ -536,6 +539,7 @@ export const mockSubmissions: Submission[] = [
     companyId: 'company-2',
     status: 'in-progress',
     validationStatus: 'Pending',
+    testCaseStatus: 'Pending',
     assignedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
     lastUpdated: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
     currentRound: 1,
@@ -548,6 +552,7 @@ export const mockSubmissions: Submission[] = [
     companyId: 'company-2',
     status: 'assigned',
     validationStatus: 'Pending',
+    testCaseStatus: 'Pending',
     assignedAt: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
     lastUpdated: new Date(new Date().setDate(new Date().getDate() - 2)).toISOString(),
     attemptsCount: 0,
@@ -565,6 +570,7 @@ export const mockSubmissions: Submission[] = [
     },
     status: 'pending',
     validationStatus: 'Valid',
+    testCaseStatus: 'Passed',
     assignedAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(),
     submittedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
     lastUpdated: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
@@ -580,6 +586,7 @@ export const mockSubmissions: Submission[] = [
     },
     status: 'evaluated',
     validationStatus: 'Warning',
+    testCaseStatus: 'Warning',
     assignedAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
     submittedAt: new Date(new Date().setDate(new Date().getDate() - 4)).toISOString(),
     lastUpdated: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
@@ -695,6 +702,72 @@ export const mockEvaluations: Evaluation[] = [
     evaluatedBy: 'user-5',
     evaluatedAt: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
   },
+];
+
+export const mockTestCases: (TestCase & { submissionId: string })[] = [
+    {
+        submissionId: 'sub-1',
+        id: 'tc-1-1',
+        name: 'Renders on Desktop',
+        description: 'Checks if all navbar elements are visible on viewport > 1024px.',
+        expectedOutcome: 'All elements (logo, links, button) are visible.',
+        actualOutcome: 'All elements rendered correctly.',
+        status: 'Passed'
+    },
+    {
+        submissionId: 'sub-1',
+        id: 'tc-1-2',
+        name: 'Renders on Mobile',
+        description: 'Checks for hamburger menu on viewport < 768px.',
+        expectedOutcome: 'Hamburger menu is visible, links are hidden.',
+        actualOutcome: 'Hamburger menu is visible, links are hidden.',
+        status: 'Passed'
+    },
+    {
+        submissionId: 'sub-1',
+        id: 'tc-1-3',
+        name: 'Mobile Menu Toggle',
+        description: 'Checks if clicking the hamburger menu opens and closes the mobile navigation.',
+        expectedOutcome: 'Menu opens on first click and closes on second click.',
+        actualOutcome: 'Menu toggles correctly.',
+        status: 'Passed'
+    },
+    {
+        submissionId: 'sub-2',
+        id: 'tc-2-1',
+        name: 'Renders on Desktop',
+        description: 'Checks if all navbar elements are visible on viewport > 1024px.',
+        expectedOutcome: 'All elements (logo, links, button) are visible.',
+        actualOutcome: 'All elements rendered correctly.',
+        status: 'Passed'
+    },
+    {
+        submissionId: 'sub-2',
+        id: 'tc-2-2',
+        name: 'Renders on Mobile',
+        description: 'Checks for hamburger menu on viewport < 768px.',
+        expectedOutcome: 'Hamburger menu is visible, links are hidden.',
+        actualOutcome: 'Hamburger menu is visible, but one link remains visible.',
+        status: 'Failed'
+    },
+     {
+        submissionId: 'sub-3',
+        id: 'tc-3-1',
+        name: 'Primary Keys',
+        description: 'Checks if all tables have a primary key defined.',
+        expectedOutcome: 'Each table has a primary key.',
+        actualOutcome: '`tags` table is missing a primary key.',
+        status: 'Warning'
+    },
+    {
+        submissionId: 'sub-3',
+        id: 'tc-3-2',
+        name: 'Foreign Keys',
+        description: 'Checks for correct foreign key relationships.',
+        expectedOutcome: 'Foreign keys link Users, Posts, and Comments.',
+        actualOutcome: 'All foreign keys are correctly defined.',
+        status: 'Passed'
+    },
 ];
 
 export const mockEvaluationSchemas: EvaluationSchema[] = [
@@ -872,5 +945,3 @@ export const mockAlerts: Alert[] = [
     relatedEntity: { type: 'Task', id: 'task-3', name: 'Create a Serverless API Endpoint' },
   },
 ];
-
-    

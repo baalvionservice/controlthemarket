@@ -113,6 +113,16 @@ export type SubmissionStatus =
   | 'flagged';
 
 export type ValidationStatus = 'Valid' | 'Invalid' | 'Warning' | 'Pending';
+export type TestCaseStatus = 'Passed' | 'Failed' | 'Warning' | 'Pending';
+
+export interface TestCase {
+  id: string;
+  name: string;
+  description: string;
+  expectedOutcome: string;
+  actualOutcome: string;
+  status: TestCaseStatus;
+}
 
 export interface Submission {
   id: string;
@@ -127,6 +137,7 @@ export interface Submission {
   };
   status: SubmissionStatus;
   validationStatus?: ValidationStatus;
+  testCaseStatus?: TestCaseStatus;
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string

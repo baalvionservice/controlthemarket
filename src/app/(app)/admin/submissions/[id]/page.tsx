@@ -23,6 +23,7 @@ import { AiEvaluationPanel } from './ai-evaluation-panel';
 import { SandboxWorkspacePanel } from './sandbox-workspace-panel';
 import { LiveCodingWorkspacePanel } from './live-coding-workspace-panel';
 import { AntiCheatingIndicatorPanel } from './anti-cheating-panel';
+import { RecordingPanel } from './recording-panel';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -100,6 +101,7 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
                 </CardContent>
             </Card>
             <LiveCodingWorkspacePanel submission={submission} />
+            <RecordingPanel submission={submission} />
         </div>
         <div className="space-y-6">
             <AiEvaluationPanel submission={submission} />

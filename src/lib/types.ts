@@ -145,6 +145,7 @@ export interface Submission {
   sandboxStatus?: SandboxStatus;
   liveSessionStatus?: LiveSessionStatus;
   plagiarismRisk?: PlagiarismRisk;
+  recordingStatus?: 'Recording' | 'Paused' | 'Completed' | 'Not Started';
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string

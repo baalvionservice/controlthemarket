@@ -108,7 +108,7 @@ export default function SubscriptionPage() {
                 </CardContent>
                 <CardFooter className="gap-2">
                     <Button asChild>
-                        <Link href="/pricing">Upgrade or Downgrade Plan</Link>
+                        <Link href="/pricing">Upgrade Plan</Link>
                     </Button>
                     <Button variant="destructive">Cancel Subscription</Button>
                 </CardFooter>

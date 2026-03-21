@@ -18,20 +18,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CreditCard, Download, Banknote } from 'lucide-react';
+import { CreditCard, Download, Banknote, History } from 'lucide-react';
 import { format } from 'date-fns';
 import { getInvoices } from '@/lib/api';
 import type { Invoice, InvoiceStatus } from '@/lib/types';
+import Link from 'next/link';
 
 const getStatusVariant = (status: InvoiceStatus): 'default' | 'destructive' | 'warning' | 'secondary' => {
   switch (status) {
     case 'Paid':
       return 'default';
     case 'Failed':
-    case 'Due':
+    case 'Overdue':
       return 'destructive';
-    case 'Pending':
+    case 'Due':
       return 'warning';
+    case 'Pending':
+      return 'secondary';
     default:
       return 'secondary';
   }
@@ -42,7 +45,7 @@ export default async function BillingPage() {
   
   // Mock data for the overview
   const nextBillingDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
-  const amountDue = 79.00;
+  const amountDue = invoices.find(inv => inv.status === 'Due')?.amount || 0;
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -55,14 +58,19 @@ export default async function BillingPage() {
             Manage your payment methods and view your billing history.
           </p>
         </div>
+        <Button asChild variant="outline">
+            <Link href="/company/invoices">
+                <History className="mr-2 h-4 w-4" /> View All Invoices
+            </Link>
+        </Button>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Payment History</CardTitle>
-              <CardDescription>A record of all your past invoices and payments.</CardDescription>
+              <CardTitle>Recent Invoices</CardTitle>
+              <CardDescription>A summary of your most recent invoices.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -70,18 +78,16 @@ export default async function BillingPage() {
                   <TableRow>
                     <TableHead>Invoice ID</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead>Plan</TableHead>
                     <TableHead>Amount</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {invoices.map((invoice) => (
+                  {invoices.slice(0,3).map((invoice) => (
                     <TableRow key={invoice.id}>
-                      <TableCell className="font-medium">{invoice.id.toUpperCase()}</TableCell>
+                      <TableCell className="font-medium uppercase">{invoice.id}</TableCell>
                       <TableCell>{format(new Date(invoice.date), 'PPP')}</TableCell>
-                      <TableCell>{invoice.planName}</TableCell>
                       <TableCell>${invoice.amount.toFixed(2)}</TableCell>
                       <TableCell>
                         <Badge variant={getStatusVariant(invoice.status)}>{invoice.status}</Badge>
@@ -114,11 +120,13 @@ export default async function BillingPage() {
                 <span className="font-bold text-2xl">${amountDue.toFixed(2)}</span>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button className="w-full">
-                <Banknote className="mr-2 h-4 w-4" /> Pay Now
-              </Button>
-            </CardFooter>
+            {amountDue > 0 && (
+                <CardFooter>
+                <Button className="w-full">
+                    <Banknote className="mr-2 h-4 w-4" /> Pay Now
+                </Button>
+                </CardFooter>
+            )}
           </Card>
 
           <Card>

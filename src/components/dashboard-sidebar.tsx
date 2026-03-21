@@ -67,6 +67,7 @@ const adminNav = [
   { name: 'Manage Tenants', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
+  { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },

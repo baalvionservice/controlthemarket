@@ -697,10 +697,10 @@ export const mockEvaluationSchemas: EvaluationSchema[] = [
         description: 'A balanced schema for evaluating core technical roles.',
         isActive: true,
         criteria: [
-            { id: 'crit-1-1', name: 'Technical Skills', description: 'Assesses mastery of required technologies and tools.', maxPoints: 10 },
-            { id: 'crit-1-2', name: 'Problem Solving', description: 'Evaluates the ability to analyze problems and devise effective solutions.', maxPoints: 10 },
-            { id: 'crit-1-3', name: 'Code Quality', description: 'Reviews code for readability, structure, and best practices.', maxPoints: 10 },
-            { id: 'crit-1-4', name: 'Communication', description: 'Judges the clarity of explanations and thought process.', maxPoints: 10 },
+            { id: 'crit-1-1', name: 'Technical Skills', description: 'Assesses mastery of required technologies and tools.', maxPoints: 10, weight: 0.3 },
+            { id: 'crit-1-2', name: 'Problem Solving', description: 'Evaluates the ability to analyze problems and devise effective solutions.', maxPoints: 10, weight: 0.3 },
+            { id: 'crit-1-3', name: 'Code Quality', description: 'Reviews code for readability, structure, and best practices.', maxPoints: 10, weight: 0.2 },
+            { id: 'crit-1-4', name: 'Communication', description: 'Judges the clarity of explanations and thought process.', maxPoints: 10, weight: 0.2 },
         ],
     },
     {
@@ -709,10 +709,10 @@ export const mockEvaluationSchemas: EvaluationSchema[] = [
         description: 'A schema focused on frontend-specific skills and user experience.',
         isActive: false,
         criteria: [
-            { id: 'crit-2-1', name: 'React Proficiency', description: 'Correct use of hooks, components, and state management.', maxPoints: 10 },
-            { id: 'crit-2-2', name: 'UI/UX Implementation', description: 'Attention to detail in implementing the design.', maxPoints: 10 },
-            { id: 'crit-2-3', name: 'Responsiveness', description: 'How well the solution adapts to different screen sizes.', maxPoints: 10 },
-            { id: 'crit-2-4', name: 'Performance', description: 'Efficiency of the code and awareness of rendering performance.', maxPoints: 10 },
+            { id: 'crit-2-1', name: 'React Proficiency', description: 'Correct use of hooks, components, and state management.', maxPoints: 10, weight: 0.4 },
+            { id: 'crit-2-2', name: 'UI/UX Implementation', description: 'Attention to detail in implementing the design.', maxPoints: 10, weight: 0.3 },
+            { id: 'crit-2-3', name: 'Responsiveness', description: 'How well the solution adapts to different screen sizes.', maxPoints: 10, weight: 0.2 },
+            { id: 'crit-2-4', name: 'Performance', description: 'Efficiency of the code and awareness of rendering performance.', maxPoints: 10, weight: 0.1 },
         ],
     },
     {
@@ -721,9 +721,9 @@ export const mockEvaluationSchemas: EvaluationSchema[] = [
         description: 'Focuses on non-technical aspects like communication and teamwork.',
         isActive: true,
         criteria: [
-            { id: 'crit-3-1', name: 'Clarity of Communication', description: 'How clearly ideas are presented.', maxPoints: 10 },
-            { id: 'crit-3-2', name: 'Proactiveness', description: 'Did the candidate ask clarifying questions or suggest improvements?', maxPoints: 10 },
-            { id: 'crit-3-3', name: 'Presentation', description: 'The overall quality and polish of the submission.', maxPoints: 10 },
+            { id: 'crit-3-1', name: 'Clarity of Communication', description: 'How clearly ideas are presented.', maxPoints: 10, weight: 0.5 },
+            { id: 'crit-3-2', name: 'Proactiveness', description: 'Did the candidate ask clarifying questions or suggest improvements?', maxPoints: 10, weight: 0.3 },
+            { id: 'crit-3-3', name: 'Presentation', description: 'The overall quality and polish of the submission.', maxPoints: 10, weight: 0.2 },
         ],
     },
 ];

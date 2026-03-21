@@ -30,12 +30,14 @@ import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import type { EvaluationSchema, EvaluationCriterion } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 const criterionSchema = z.object({
     id: z.string().optional(),
     name: z.string().min(3, 'Criterion name must be at least 3 characters.'),
     description: z.string().min(10, 'Description must be at least 10 characters.'),
     maxPoints: z.coerce.number().int().min(1).max(100).default(10),
+    weight: z.coerce.number().min(0).max(1).default(0.25),
 });
 
 const formSchema = z.object({
@@ -60,7 +62,7 @@ export function SchemaFormDialog({ isOpen, onOpenChange, onSave, schema }: Schem
       name: '',
       description: '',
       isActive: true,
-      criteria: [{ name: '', description: '', maxPoints: 10 }],
+      criteria: [{ name: '', description: '', maxPoints: 10, weight: 0.25 }],
     },
   });
 
@@ -82,12 +84,14 @@ export function SchemaFormDialog({ isOpen, onOpenChange, onSave, schema }: Schem
         name: '',
         description: '',
         isActive: true,
-        criteria: [{ name: '', description: '', maxPoints: 10 }],
+        criteria: [{ name: '', description: '', maxPoints: 10, weight: 0.25 }],
       });
     }
   }, [schema, isOpen, form]);
 
-  const totalPoints = form.watch('criteria').reduce((acc, crit) => acc + (crit.maxPoints || 0), 0);
+  const watchedCriteria = form.watch('criteria');
+  const totalPoints = watchedCriteria.reduce((acc, crit) => acc + (crit.maxPoints || 0), 0);
+  const totalWeight = watchedCriteria.reduce((acc, crit) => acc + (crit.weight || 0), 0);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     toast({
@@ -146,9 +150,15 @@ export function SchemaFormDialog({ isOpen, onOpenChange, onSave, schema }: Schem
                     <div className="space-y-4 rounded-md border p-4">
                         <div className="flex justify-between items-center">
                             <h3 className="font-medium">Criteria</h3>
-                             <div className="text-right">
-                                <p className="text-sm text-muted-foreground">Total Points</p>
-                                <p className="text-2xl font-bold text-primary">{totalPoints}</p>
+                             <div className="flex gap-4">
+                                <div className="text-right">
+                                    <p className="text-sm text-muted-foreground">Total Weight</p>
+                                    <p className={cn("text-2xl font-bold", totalWeight.toFixed(2) !== '1.00' ? 'text-destructive' : 'text-primary')}>{totalWeight.toFixed(2)}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm text-muted-foreground">Total Points</p>
+                                    <p className="text-2xl font-bold text-primary">{totalPoints}</p>
+                                </div>
                             </div>
                         </div>
                         {fields.map((field, index) => (
@@ -178,23 +188,36 @@ export function SchemaFormDialog({ isOpen, onOpenChange, onSave, schema }: Schem
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name={`criteria.${index}.maxPoints`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Max Points</FormLabel>
-                                            <FormControl><Input type="number" {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                               <div className="grid grid-cols-2 gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name={`criteria.${index}.maxPoints`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Max Points</FormLabel>
+                                                <FormControl><Input type="number" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name={`criteria.${index}.weight`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Weight</FormLabel>
+                                                <FormControl><Input type="number" step="0.05" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
                         ))}
                          <Button
                             type="button"
                             variant="outline"
-                            onClick={() => append({ name: '', description: '', maxPoints: 10 })}
+                            onClick={() => append({ name: '', description: '', maxPoints: 10, weight: 0.25 })}
                         >
                             <PlusCircle className="mr-2 h-4 w-4" /> Add Criterion
                         </Button>

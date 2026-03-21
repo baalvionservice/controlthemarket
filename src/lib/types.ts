@@ -198,3 +198,23 @@ export interface Alert {
     name?: string;
   };
 }
+
+export type PerformanceTrend = 'improving' | 'declining' | 'stable' | 'new';
+
+export interface CandidateInsight {
+  candidate: User;
+  aggregatedScore: number;
+  percentileRank: number;
+  evaluationCount: number;
+  trend: PerformanceTrend;
+  topSkill: string | null;
+  weakestSkill: string | null;
+}
+
+export interface CompanyInsight {
+  company: Company;
+  avgCandidateScore: number;
+  candidateCount: number;
+  topSkills: string[];
+  skillGaps: string[];
+}

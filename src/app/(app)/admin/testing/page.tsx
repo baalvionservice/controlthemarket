@@ -1,5 +1,4 @@
 
-
 import { getSubmissions, getUsers, getTasks, getCompanies } from "@/lib/api";
 import { TestCaseList } from "./test-case-list";
 import type { Submission, Task, User, Company, TestCaseStatus } from '@/lib/types';
@@ -59,7 +58,7 @@ export default async function BackendTestingDashboardPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Backend/API Testing
+                Backend Testing
             </h2>
             <p className="text-muted-foreground">
                 Overview of automated backend test case results across all submissions.

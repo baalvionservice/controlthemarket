@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1313,4 +1313,27 @@ export const mockIntegrationLogs: IntegrationLog[] = [
     description: 'New deployment triggered from main branch commit.',
     relatedEntity: { type: 'System', id: 'frontend-app', name: 'Frontend App' },
   },
+];
+
+// Mock system metrics for the last minute (30 data points, 2 seconds apart)
+export const mockSystemMetrics: SystemMetric[] = Array.from({ length: 30 }, (_, i) => {
+    const timestamp = new Date(Date.now() - (30 - i) * 2000).toISOString();
+    return {
+        id: `metric-${i}`,
+        activeUsers: 120 + Math.floor(Math.random() * 20) - 10,
+        activeSessions: 150 + Math.floor(Math.random() * 30) - 15,
+        systemLoad: 40 + Math.floor(Math.random() * 20) * (Math.sin(i / 5) + 1.5),
+        apiRequestsPerMinute: 2500 + Math.floor(Math.random() * 500) - 250,
+        errorRate: 1.5 + Math.random() * (i % 10 === 0 ? 3 : 1) - 0.5,
+        timestamp,
+    };
+});
+
+export const mockServiceStatus: ServiceStatus[] = [
+    { id: 'service-1', name: 'Authentication', status: 'Running', lastChecked: new Date().toISOString() },
+    { id: 'service-2', name: 'Database', status: 'Running', lastChecked: new Date().toISOString() },
+    { id: 'service-3', name: 'API Gateway', status: 'Degraded', lastChecked: new Date().toISOString() },
+    { id: 'service-4', name: 'Task Queue', status: 'Running', lastChecked: new Date().toISOString() },
+    { id: 'service-5', name: 'AI Assistant', status: 'Running', lastChecked: new Date().toISOString() },
+    { id: 'service-6', name: 'Notifications', status: Math.random() > 0.9 ? 'Down' : 'Running', lastChecked: new Date().toISOString() },
 ];

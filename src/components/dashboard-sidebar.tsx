@@ -45,6 +45,7 @@ import {
   Handshake,
   Plug,
   ArrowLeftRight,
+  Monitor,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -86,7 +87,7 @@ const adminNav = [
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
   { name: 'Execution Environment', href: '/admin/execution', icon: Terminal },
   { name: 'Live Coding', href: '/admin/live-coding', icon: Code },
-  { name: 'Backend/API Testing', href: '/admin/testing', icon: FlaskConical },
+  { name: 'System Monitoring', href: '/admin/monitoring', icon: Monitor },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Real-Time Monitoring', href: '/admin/activity', icon: History },
   { name: 'Execution Logs', href: '/admin/logs', icon: ScrollText },

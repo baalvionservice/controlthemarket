@@ -316,3 +316,23 @@ export interface IntegrationLog {
     name?: string;
   };
 }
+
+export type ServiceStatusName = 'Authentication' | 'Database' | 'API Gateway' | 'Task Queue' | 'AI Assistant' | 'Notifications';
+export type ServiceStatusState = 'Running' | 'Degraded' | 'Down';
+
+export interface ServiceStatus {
+    id: string;
+    name: ServiceStatusName;
+    status: ServiceStatusState;
+    lastChecked: string;
+}
+
+export interface SystemMetric {
+    id: string;
+    activeUsers: number;
+    activeSessions: number;
+    systemLoad: number; // percentage
+    apiRequestsPerMinute: number;
+    errorRate: number; // percentage
+    timestamp: string;
+}

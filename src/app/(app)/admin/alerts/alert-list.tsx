@@ -53,8 +53,8 @@ const getPriorityVariant = (priority: NotificationPriority) => {
 }
 const getStatusVariant = (status: NotificationStatus) => {
     switch(status) {
-        case 'Unread': return 'default';
-        case 'Read': return 'secondary';
+        case 'Unread': return 'secondary';
+        case 'Read': return 'outline';
         case 'Resolved': return 'outline';
         default: return 'outline';
     }
@@ -175,7 +175,7 @@ export function NotificationList({ initialData }: { initialData: NotificationWit
             <TableBody>
               {filteredData.length > 0 ? (
                 filteredData.map((item) => (
-                  <TableRow key={item.id} className={cn(item.status === 'Unread' && 'bg-accent/50')}>
+                  <TableRow key={item.id} className={cn(item.status === 'Unread' && 'bg-secondary/10')}>
                     <TableCell>
                         <p className="font-medium">{item.title}</p>
                         <p className="text-sm text-muted-foreground truncate max-w-sm">{item.description}</p>

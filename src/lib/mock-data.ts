@@ -130,6 +130,20 @@ export const mockUsers: User[] = [
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar8/100/100',
     },
+  },
+  {
+    id: 'user-9',
+    name: 'Ivy Innovator',
+    email: 'ivy@example.com',
+    role: 'candidate',
+    createdAt: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString(),
+    isActive: true,
+    isVerified: true,
+    profile: {
+        avatarUrl: 'https://picsum.photos/seed/avatar9/100/100',
+        bio: 'Creative designer focused on user experience.',
+        experienceLevel: 'Intermediate',
+    }
   }
 ];
 
@@ -1026,6 +1040,36 @@ export const mockNotifications: Notification[] = [
     title: 'Task Deadline Approaching',
     description: 'Task "Create a Serverless API Endpoint" is due in 3 days.',
     relatedEntity: { type: 'Task', id: 'task-3', name: 'Create a Serverless API Endpoint' },
+  },
+  {
+    id: 'alert-7',
+    type: 'system_warning',
+    priority: 'High',
+    status: 'Unread',
+    timestamp: new Date(new Date().setMinutes(new Date().getMinutes() - 15)).toISOString(),
+    title: 'Integration Error: Jira',
+    description: 'Failed to create a ticket for a flagged submission. The API returned a 401 Unauthorized error.',
+    relatedEntity: { type: 'System', id: 'api-2', name: 'Jira Cloud' },
+  },
+  {
+    id: 'alert-8',
+    type: 'user_signup',
+    priority: 'Low',
+    status: 'Read',
+    timestamp: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString(),
+    title: 'New Candidate Joined',
+    description: 'A new candidate, "Ivy Innovator", has signed up.',
+    relatedEntity: { type: 'User', id: 'user-9', name: 'Ivy Innovator' },
+  },
+  {
+    id: 'alert-9',
+    type: 'new_submission',
+    priority: 'Medium',
+    status: 'Unread',
+    timestamp: new Date(new Date().setMinutes(new Date().getMinutes() - 45)).toISOString(),
+    title: 'Multi-Round Task Advanced',
+    description: 'Alice Candidate has advanced to Round 2 for "Fullstack Project Challenge".',
+    relatedEntity: { type: 'Submission', id: 'sub-4', name: 'Fullstack Project Challenge' },
   },
 ];
 

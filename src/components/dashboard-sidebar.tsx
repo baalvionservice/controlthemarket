@@ -95,7 +95,7 @@ const adminNav = [
   { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook },
   { name: '3rd-Party Integrations', href: '/admin/api-settings', icon: Plug },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
-  { name: 'Notifications', href: '/admin/alerts', icon: Bell },
+  { name: 'Activity Center', href: '/admin/alerts', icon: Bell },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

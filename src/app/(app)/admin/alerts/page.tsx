@@ -56,18 +56,18 @@ export default async function NotificationsPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Notifications
+                Activity Notification Center
             </h2>
             <p className="text-muted-foreground">
-                A centralized hub for all platform warnings, deadlines, and activities.
+                Monitor all system and integration activity notifications.
             </p>
         </div>
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>Global Notification Stream</CardTitle>
+            <CardTitle>Activity Feed</CardTitle>
             <CardDescription>
-                Monitor user actions, system events, and administrative changes.
+                A real-time feed of user actions, system events, and integration alerts.
             </CardDescription>
         </CardHeader>
         <CardContent>

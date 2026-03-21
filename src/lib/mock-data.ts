@@ -1327,6 +1327,8 @@ export const mockSystemMetrics: SystemMetric[] = Array.from({ length: 30 }, (_, 
         apiRequestsPerMinute: 2500 + Math.floor(Math.random() * 500) - 250,
         errorRate: 1.5 + Math.random() * (i % 10 === 0 ? 3 : 1) - 0.5,
         timestamp,
+        avgApiResponseTime: 80 + Math.floor(Math.random() * 40) * (Math.cos(i / 4) + 1), // ms
+        dbQueryTime: 20 + Math.floor(Math.random() * 15) * (Math.sin(i / 3) + 1), // ms
     };
 });
 

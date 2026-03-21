@@ -335,6 +335,8 @@ export interface SystemMetric {
     apiRequestsPerMinute: number;
     errorRate: number; // percentage
     timestamp: string;
+    avgApiResponseTime: number;
+    dbQueryTime: number;
 }
 
 export type LogSeverity = 'Info' | 'Warning' | 'Error';

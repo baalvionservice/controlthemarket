@@ -26,6 +26,14 @@ const chartConfig = {
     label: 'API Requests',
     color: 'hsl(var(--chart-2))',
   },
+  avgApiResponseTime: {
+    label: 'Response Time',
+    color: 'hsl(var(--chart-3))',
+  },
+  dbQueryTime: {
+    label: 'DB Query Time',
+    color: 'hsl(var(--chart-4))',
+  },
 };
 
 export function SystemLoadChart({ data }: { data: SystemMetric[] }) {
@@ -87,6 +95,74 @@ export function ApiRequestChart({ data }: { data: SystemMetric[] }) {
               fill="var(--color-apiRequests)"
               fillOpacity={0.4}
               stroke="var(--color-apiRequests)"
+              stackId="a"
+            />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ApiResponseTimeChart({ data }: { data: SystemMetric[] }) {
+  const chartData = data.slice(-30).map(metric => ({
+    time: format(new Date(metric.timestamp), 'HH:mm:ss'),
+    avgApiResponseTime: metric.avgApiResponseTime,
+  }));
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Avg. API Response Time (ms)</CardTitle>
+        <CardDescription>Average API response time over the last minute.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+          <AreaChart data={chartData}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value} />
+            <YAxis />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+            <Area
+              dataKey="avgApiResponseTime"
+              type="natural"
+              fill="var(--color-avgApiResponseTime)"
+              fillOpacity={0.4}
+              stroke="var(--color-avgApiResponseTime)"
+              stackId="a"
+            />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function DatabaseQueryChart({ data }: { data: SystemMetric[] }) {
+  const chartData = data.slice(-30).map(metric => ({
+    time: format(new Date(metric.timestamp), 'HH:mm:ss'),
+    dbQueryTime: metric.dbQueryTime,
+  }));
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Avg. Database Query Time (ms)</CardTitle>
+        <CardDescription>Average database query time over the last minute.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+          <AreaChart data={chartData}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value} />
+            <YAxis />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+            <Area
+              dataKey="dbQueryTime"
+              type="natural"
+              fill="var(--color-dbQueryTime)"
+              fillOpacity={0.4}
+              stroke="var(--color-dbQueryTime)"
               stackId="a"
             />
           </AreaChart>

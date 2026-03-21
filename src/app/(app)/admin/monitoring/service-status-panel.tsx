@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/tooltip';
 import type { ServiceStatus, ServiceStatusState } from '@/lib/types';
 import { Server, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const getStatusInfo = (status: ServiceStatusState) => {
   switch (status) {
@@ -28,7 +29,7 @@ const getStatusInfo = (status: ServiceStatusState) => {
   }
 };
 
-export function ServiceStatusPanel({ services }: { services: ServiceStatus[] }) {
+export function ServiceStatusPanel({ services, className }: { services: ServiceStatus[], className?: string }) {
   const overallStatus = services.every(s => s.status === 'Running')
     ? 'All systems operational.'
     : services.some(s => s.status === 'Down')
@@ -36,7 +37,7 @@ export function ServiceStatusPanel({ services }: { services: ServiceStatus[] }) 
     : 'Some services are degraded.';
 
   return (
-    <Card className="lg:col-span-1">
+    <Card className={cn("lg:col-span-1", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium flex items-center justify-between">
           <span>Service Status</span>

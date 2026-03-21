@@ -1,6 +1,7 @@
 
 
 export type UserRole = 'candidate' | 'company' | 'admin';
+export type CompanyRole = 'owner' | 'admin' | 'member';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 
 export type BadgeRarity = 'Common' | 'Rare' | 'Elite';
@@ -18,6 +19,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  companyRole?: CompanyRole; // For users with the 'company' role
   createdAt: string; // ISO 8601 date string
   isActive: boolean;
   isVerified?: boolean;
@@ -556,3 +558,5 @@ export interface Subscription {
   paymentProvider?: PaymentProvider;
   externalSubscriptionId?: string;
 }
+
+```

@@ -1,15 +1,13 @@
 
+
 'use client';
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
     Building, 
-    Users, 
     Bell, 
     CreditCard,
-    Settings,
-    PlusCircle,
     Save
 } from "lucide-react";
 import {
@@ -18,59 +16,31 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { SchemaFormDialog } from "./schema-form-dialog";
-import { mockEvaluationSchemas, mockUsers, mockCompanies } from "@/lib/mock-data"; 
-import type { EvaluationSchema, User, Company } from "@/lib/types";
+import { mockCompanies } from "@/lib/mock-data"; 
+import type { Company } from "@/lib/types";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
+import { TeamManagementCard } from "./team-management-card";
 
 export default function CompanySettingsPage() {
     const { user } = useAuth();
     const { toast } = useToast();
     
-    // Mock state for Evaluation Schemas
-    const [schemas, setSchemas] = useState<EvaluationSchema[]>(mockEvaluationSchemas);
-    const [isSchemaDialogOpen, setIsSchemaDialogOpen] = useState(false);
-    const [selectedSchema, setSelectedSchema] = useState<EvaluationSchema | null>(null);
-
     // Mock company data - in a real app this would be fetched
     const companyData = mockCompanies.find(c => c.id === user?.companyId) || mockCompanies[0];
     const [company, setCompany] = useState(companyData);
     
-    // Mock users for the company
-    const companyUsers = mockUsers.filter(u => u.companyId === user?.companyId);
 
     const handleSaveChanges = () => {
         toast({
             title: "Settings Saved",
             description: "Your company settings have been updated.",
         });
-    };
-
-    const handleAddNewSchema = () => {
-        setSelectedSchema(null);
-        setIsSchemaDialogOpen(true);
-    };
-
-    const handleEditSchema = (schema: EvaluationSchema) => {
-        setSelectedSchema(schema);
-        setIsSchemaDialogOpen(true);
-    };
-    
-    const handleSaveSchema = (schemaData: EvaluationSchema) => {
-        if (selectedSchema) {
-            setSchemas(schemas.map(s => s.id === schemaData.id ? schemaData : s));
-        } else {
-            setSchemas([...schemas, { ...schemaData, id: `schema-${Date.now()}` }]);
-        }
-        toast({ title: 'Schema saved successfully!' });
     };
 
     return (
@@ -115,26 +85,7 @@ export default function CompanySettingsPage() {
             </Card>
 
              {/* User Management Card */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5" />User Management</CardTitle>
-                    <CardDescription>View users in your organization.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    {companyUsers.map(u => (
-                        <div key={u.id} className="flex items-center justify-between rounded-md border p-3">
-                            <div className="flex items-center gap-3">
-                                <p className="font-medium">{u.name}</p>
-                                <p className="text-sm text-muted-foreground">{u.email}</p>
-                            </div>
-                            <Badge variant={u.role === 'company' ? 'default' : 'secondary'}>{u.role === 'company' ? 'Admin' : 'Member'}</Badge>
-                        </div>
-                    ))}
-                </CardContent>
-                <CardFooter>
-                    <Button variant="outline">Invite User</Button>
-                </CardFooter>
-            </Card>
+            <TeamManagementCard />
 
             {/* Notification Settings Card */}
             <Card>

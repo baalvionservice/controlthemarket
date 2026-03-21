@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight, History, GitCompare } from 'lucide-react';
+import { Search, MoreHorizontal, ArrowUpDown, Calendar as CalendarIcon, Star, XCircle, Undo2, ChevronRight, History, GitCompare, FileWarning } from 'lucide-react';
 import type { SubmissionStatus, RoleCategory, User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
@@ -45,7 +45,7 @@ import { CandidateHistoryDialog } from './candidate-history-dialog';
 type SortKey = 'candidate.name' | 'score' | 'applicationDate';
 type SortDirection = 'asc' | 'desc';
 
-const statuses: (SubmissionStatus | 'All')[] = ["All", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round"];
+const statuses: (SubmissionStatus | 'All')[] = ["All", "pending", "in-review", "evaluated", "shortlisted", "rejected", "resubmitted", "moved-to-next-round", "flagged"];
 const roles: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 
 export const getStatusVariant = (status: SubmissionStatus): 'default' | 'secondary' | 'destructive' | 'outline' | 'warning' | 'purple' => {
@@ -61,6 +61,7 @@ export const getStatusVariant = (status: SubmissionStatus): 'default' | 'seconda
       case 'resubmitted':
         return 'warning';
       case 'rejected':
+      case 'flagged':
         return 'destructive';
       default:
         return 'outline';
@@ -169,7 +170,7 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
     setSelectedRows(new Set());
   }
 
-  const handleRowAction = (action: 'shortlist' | 'reject' | 'undo' | 'move-to-next-round', id: string) => {
+  const handleRowAction = (action: 'shortlist' | 'reject' | 'undo' | 'move-to-next-round' | 'flag', id: string) => {
     const candidateName = tableData.find(d => d.id === id)?.candidate.name;
     let newStatus: SubmissionStatus;
     let toastTitle: string;
@@ -183,6 +184,10 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
         newStatus = 'moved-to-next-round';
         toastTitle = 'Candidate Advanced';
         toastDescription = `${candidateName} has been moved to the next round.`;
+    } else if (action === 'flag') {
+        newStatus = 'flagged';
+        toastTitle = 'Submission Flagged';
+        toastDescription = `${candidateName}'s submission has been flagged for review.`;
     } else {
         newStatus = action === 'shortlist' ? 'shortlisted' : 'rejected';
         toastTitle = `Candidate ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`;
@@ -402,6 +407,10 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>Send Feedback</DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => handleRowAction('flag', item.id)} className="text-destructive focus:text-destructive">
+                            <FileWarning className="mr-2 h-4 w-4"/>
+                            Flag for Review
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

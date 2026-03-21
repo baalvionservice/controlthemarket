@@ -205,6 +205,8 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
             shortlisted: 'Congratulations! Your submission was shortlisted. No further action is needed.',
             rejected: 'Your submission did not meet the requirements. You are welcome to resubmit.',
             resubmitted: 'Your latest submission is awaiting review. You may resubmit again if you wish.',
+            flagged: 'This submission has been flagged for review. You cannot make changes at this time.',
+            'moved-to-next-round': 'You have advanced! No action needed here.',
         };
 
         return {
@@ -408,5 +410,3 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
        </Card>
     )
 }
-
-    

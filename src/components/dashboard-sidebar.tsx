@@ -36,6 +36,7 @@ import {
   Bot,
   Terminal,
   Code,
+  ScrollText,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -79,6 +80,7 @@ const adminNav = [
   { name: 'Backend/API Testing', href: '/admin/testing', icon: FlaskConical },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Real-Time Monitoring', href: '/admin/activity', icon: History },
+  { name: 'Execution Logs', href: '/admin/logs', icon: ScrollText },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },
   { name: 'Platform Settings', href: '/admin/settings', icon: Settings },

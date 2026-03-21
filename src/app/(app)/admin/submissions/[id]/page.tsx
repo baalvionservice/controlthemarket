@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { ActivityLog } from '@/components/activity-log';
+import { ExecutionLogsPanel } from '@/components/execution-logs-panel';
 import { ValidationResultPanel } from './validation-result-panel';
 import { TestCasePanel } from './test-case-panel';
 import { AiEvaluationPanel } from './ai-evaluation-panel';
@@ -105,7 +105,7 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
             <SandboxWorkspacePanel submission={submission} />
             <ValidationResultPanel submission={submission} />
             <TestCasePanel submission={submission} />
-            <ActivityLog submission={submission} evaluation={evaluation} isAdminOverride={true} />
+            <ExecutionLogsPanel submission={submission} evaluation={evaluation} isAdminOverride={true} />
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1333,12 +1333,12 @@ export const mockSystemMetrics: SystemMetric[] = Array.from({ length: 30 }, (_, 
 });
 
 export const mockServiceStatus: ServiceStatus[] = [
-    { id: 'service-1', name: 'Authentication', status: 'Running', lastChecked: new Date().toISOString() },
-    { id: 'service-2', name: 'Database', status: 'Running', lastChecked: new Date().toISOString() },
-    { id: 'service-3', name: 'API Gateway', status: 'Degraded', lastChecked: new Date().toISOString() },
-    { id: 'service-4', name: 'Task Queue', status: 'Running', lastChecked: new Date().toISOString() },
-    { id: 'service-5', name: 'AI Assistant', status: 'Running', lastChecked: new Date().toISOString() },
-    { id: 'service-6', name: 'Notifications', status: Math.random() > 0.9 ? 'Down' : 'Running', lastChecked: new Date().toISOString() },
+    { id: 'service-1', name: 'Authentication', status: 'Running', lastChecked: new Date().toISOString(), uptimePercentage: 99.98, lastDowntime: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString() },
+    { id: 'service-2', name: 'Database', status: 'Running', lastChecked: new Date().toISOString(), uptimePercentage: 100 },
+    { id: 'service-3', name: 'API Gateway', status: 'Degraded', lastChecked: new Date().toISOString(), uptimePercentage: 99.5, lastDowntime: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString() },
+    { id: 'service-4', name: 'Task Queue', status: 'Running', lastChecked: new Date().toISOString(), uptimePercentage: 99.99 },
+    { id: 'service-5', name: 'AI Assistant', status: 'Running', lastChecked: new Date().toISOString(), uptimePercentage: 100 },
+    { id: 'service-6', name: 'Notifications', status: Math.random() > 0.9 ? 'Down' : 'Running', lastChecked: new Date().toISOString(), uptimePercentage: 99.8, lastDowntime: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() },
 ];
 
 export const mockSystemLogs: SystemLog[] = Array.from({ length: 75 }, (_, i) => {
@@ -1441,4 +1441,39 @@ export const mockSystemErrors: SystemError[] = [
     status: 'Open',
     affectedUsers: 250,
   }
+];
+
+export const mockSystemIncidents: SystemIncident[] = [
+    {
+        id: 'inc-1',
+        serviceName: 'API Gateway',
+        status: 'Ongoing',
+        startTime: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
+        description: 'Increased API latency and 5xx error rates.',
+    },
+    {
+        id: 'inc-2',
+        serviceName: 'Notifications',
+        status: 'Resolved',
+        startTime: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+        endTime: new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(new Date().getHours() + 1)).toISOString(),
+        durationMinutes: 45,
+        description: 'Notification delivery was delayed due to a queue blockage.'
+    },
+    {
+        id: 'inc-3',
+        serviceName: 'Authentication',
+        status: 'Resolved',
+        startTime: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+        endTime: new Date(new Date(new Date().setDate(new Date().getDate() - 3)).setMinutes(new Date().getMinutes() + 15)).toISOString(),
+        durationMinutes: 15,
+        description: 'Login service was unavailable for a short period.'
+    },
+    {
+        id: 'inc-4',
+        serviceName: 'Database',
+        status: 'Investigating',
+        startTime: new Date(new Date().setHours(new Date().getHours() - 2)).toISOString(),
+        description: 'Investigating reports of slow database queries.'
+    },
 ];

@@ -325,6 +325,8 @@ export interface ServiceStatus {
     name: ServiceStatusName;
     status: ServiceStatusState;
     lastChecked: string;
+    uptimePercentage?: number;
+    lastDowntime?: string;
 }
 
 export interface SystemMetric {
@@ -362,4 +364,16 @@ export interface SystemError {
   lastOccurred: string; // ISO 8601
   status: 'Open' | 'Resolved' | 'Ignored';
   affectedUsers: number;
+}
+
+export type IncidentStatus = 'Resolved' | 'Ongoing' | 'Investigating';
+
+export interface SystemIncident {
+    id: string;
+    serviceName: ServiceStatusName;
+    status: IncidentStatus;
+    startTime: string; // ISO
+    endTime?: string; // ISO
+    durationMinutes?: number;
+    description: string;
 }

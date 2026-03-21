@@ -76,6 +76,15 @@ The following table shows how traditional REST API endpoints map to this modern,
 | `POST /companies/:companyId/members`      | An `inviteMember(companyId, email, role)` Server Action that creates a new document in the `memberships` collection.          |
 | `PUT /companies/:companyId/members/:userId` | An `updateMemberRole(membershipId, newRole)` Server Action that updates a document in the `memberships` collection.           |
 | `DELETE /companies/:companyId/members/:userId` | A `removeMember(membershipId)` Server Action that deletes a document from the `memberships` collection.                     |
+| `POST /tasks`                             | A `createTask(data)` Server Action.                                                                                         |
+| `GET /tasks`                              | A `useCollection()` hook on the `tasks` collection, with filters applied via Firestore queries. Security rules enforce visibility. |
+| `GET /tasks/:taskId`                      | A `useDocument()` hook to fetch a single document from the `tasks` collection.                                              |
+| `PUT /tasks/:taskId`                      | An `updateTask(taskId, data)` Server Action.                                                                                |
+| `DELETE /tasks/:taskId`                   | A `deleteTask(taskId)` Server Action (likely a soft delete by updating the `status` field).                                 |
+| `POST /tasks/:taskId/resources`           | A `createTaskResource(taskId, data)` Server Action that adds data to a `/tasks/{taskId}/resources` sub-collection.         |
+| `GET /tasks/:taskId/resources`            | A `useCollection()` hook on the `/tasks/{taskId}/resources` sub-collection.                                                 |
+| `DELETE /tasks/:taskId/resources/:resourceId`| A `deleteTaskResource(resourceId)` Server Action that deletes a resource from the sub-collection.                           |
+
 
 This structure provides a clean, secure, and highly performant architecture that is well-suited for a modern, real-time SaaS platform.
 

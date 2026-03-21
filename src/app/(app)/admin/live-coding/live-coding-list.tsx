@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -23,16 +22,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Play, Square, XCircle, Monitor, Calendar } from 'lucide-react';
+import { Search, Play, Square, XCircle, Monitor, Calendar, Pause } from 'lucide-react';
 import type { LiveSessionStatus } from '@/lib/types';
 import type { LiveCodingSessionData } from './page';
 import { useToast } from '@/hooks/use-toast';
+import { useSubmissions } from '@/contexts/submissions-context';
 
-const sessionStatuses: (LiveSessionStatus | 'All')[] = ["All", "Active", "Scheduled", "Completed", "Cancelled", "Not Started"];
+const sessionStatuses: (LiveSessionStatus | 'All')[] = ["All", "Active", "Scheduled", "Completed", "Cancelled", "Not Started", "Paused"];
 
 const getStatusVariant = (status: LiveSessionStatus): 'default' | 'destructive' | 'warning' | 'outline' | 'secondary' => {
     switch (status) {
         case 'Active': return 'default';
+        case 'Paused': return 'warning';
         case 'Cancelled': return 'destructive';
         case 'Scheduled': return 'warning';
         case 'Completed': return 'secondary';
@@ -42,44 +43,41 @@ const getStatusVariant = (status: LiveSessionStatus): 'default' | 'destructive' 
 };
 
 export function LiveCodingList({ initialData }: { initialData: LiveCodingSessionData[] }) {
-  const [data, setData] = useState<LiveCodingSessionData[]>(initialData);
+  const { submissions: data, updateSubmission } = useSubmissions();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<LiveSessionStatus | 'All'>('All');
   const { toast } = useToast();
 
+  const liveCodingData = useMemo(() => {
+    return initialData.map(session => {
+        const submission = data.find(s => s.id === session.submissionId);
+        return {
+            ...session,
+            status: submission?.liveSessionStatus || 'Not Started',
+            lastActivity: submission?.lastUpdated || new Date().toISOString(),
+        }
+    })
+  }, [data, initialData]);
+
   const filteredData = useMemo(() => {
-    return data.filter(item => {
+    return liveCodingData.filter(item => {
       const matchesSearch = item.candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             item.task.title.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     }).sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
-  }, [data, searchTerm, statusFilter]);
+  }, [liveCodingData, searchTerm, statusFilter]);
   
-  const handleSessionAction = (submissionId: string, action: 'start' | 'terminate' | 'schedule') => {
-    const session = data.find(d => d.submissionId === submissionId);
+  const handleSessionAction = (submissionId: string, action: LiveSessionStatus) => {
+    const session = filteredData.find(d => d.submissionId === submissionId);
     if (!session) return;
     
-    let newStatus: LiveSessionStatus;
-    let toastDescription: string;
-
-    if (action === 'start') {
-        newStatus = 'Active';
-        toastDescription = `Live session for ${session.candidate.name} has been started.`;
-    } else if (action === 'terminate') {
-        newStatus = 'Completed';
-        toastDescription = `Live session for ${session.candidate.name} has been terminated.`;
-    } else { // schedule
-        newStatus = 'Scheduled';
-        toastDescription = `Live session for ${session.candidate.name} has been scheduled.`;
-    }
+    updateSubmission(submissionId, { liveSessionStatus: action });
     
-    setData(prev => prev.map(item => 
-        item.submissionId === submissionId ? { ...item, status: newStatus, lastActivity: new Date().toISOString() } : item
-    ));
     toast({
         title: 'Action Successful',
-        description: toastDescription
+        description: `Session for ${session.candidate.name} is now ${action}.`
     });
   };
 
@@ -139,13 +137,13 @@ export function LiveCodingList({ initialData }: { initialData: LiveCodingSession
                   </TableCell>
                   <TableCell>{format(new Date(item.lastActivity), 'PPp')}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'schedule')} disabled={item.status === 'Scheduled' || item.status === 'Active'}>
+                    <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'Scheduled')} disabled={item.status === 'Scheduled' || item.status === 'Active'}>
                         <Calendar className="mr-2 h-4 w-4"/> Schedule
                     </Button>
-                     <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'start')} disabled={item.status === 'Active'}>
+                     <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'Active')} disabled={item.status === 'Active'}>
                         <Play className="mr-2 h-4 w-4"/> Start
                     </Button>
-                     <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'terminate')} disabled={!['Active', 'Scheduled'].includes(item.status)}>
+                     <Button variant="ghost" size="sm" onClick={() => handleSessionAction(item.submissionId, 'Completed')} disabled={!['Active', 'Scheduled', 'Paused'].includes(item.status)}>
                         <Square className="mr-2 h-4 w-4"/> Terminate
                     </Button>
                     <Button variant="ghost" size="sm" asChild>

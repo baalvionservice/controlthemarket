@@ -12,14 +12,15 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Play, RotateCw, Monitor, User, Radio, Code } from 'lucide-react';
+import { Play, RotateCw, Monitor, User, Radio, Code, Pause, Square } from 'lucide-react';
 import type { Submission, LiveSessionStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { useSubmissions } from '@/contexts/submissions-context';
 
 const getStatusVariant = (status?: LiveSessionStatus): 'default' | 'destructive' | 'warning' | 'outline' | 'secondary' => {
     switch (status) {
         case 'Active': return 'default';
+        case 'Paused': return 'warning';
         case 'Cancelled': return 'destructive';
         case 'Scheduled': return 'warning';
         case 'Completed': return 'secondary';
@@ -51,6 +52,7 @@ Result: "jumped"
 
 export function LiveCodingWorkspacePanel({ submission }: { submission: Submission }) {
   const { toast } = useToast();
+  const { updateSubmission } = useSubmissions();
   const [code, setCode] = useState(mockCode);
   const [output, setOutput] = useState('');
   const [isCandidateTyping, setIsCandidateTyping] = useState(false);
@@ -66,6 +68,11 @@ export function LiveCodingWorkspacePanel({ submission }: { submission: Submissio
   const handleReset = () => {
     setCode(mockCode);
     setOutput('');
+  };
+
+  const handleSessionControl = (status: LiveSessionStatus) => {
+    updateSubmission(submission.id, { liveSessionStatus: status });
+    toast({ title: `Session ${status}`, description: `The live session has been ${status.toLowerCase()}.`});
   };
 
   // Simulate candidate typing
@@ -88,19 +95,30 @@ export function LiveCodingWorkspacePanel({ submission }: { submission: Submissio
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border p-4">
-            <div>
+            <div className="flex flex-col">
                 <h4 className="font-semibold">Session Status</h4>
+                <div className="flex items-center gap-4">
+                  <Badge variant={getStatusVariant(submission.liveSessionStatus)} className="text-base capitalize">
+                      {submission.liveSessionStatus || 'Not Started'}
+                  </Badge>
+                  {submission.liveSessionStatus === 'Active' && (
+                      <div className="flex items-center gap-2 text-sm text-green-500 animate-pulse">
+                          <Radio className="h-4 w-4" />
+                          <span>Live</span>
+                      </div>
+                  )}
+                </div>
             </div>
-            <div className="flex items-center gap-4">
-              <Badge variant={getStatusVariant(submission.liveSessionStatus)} className="text-base capitalize">
-                  {submission.liveSessionStatus || 'Not Started'}
-              </Badge>
-              {submission.liveSessionStatus === 'Active' && (
-                  <div className="flex items-center gap-2 text-sm text-green-500 animate-pulse">
-                      <Radio className="h-4 w-4" />
-                      <span>Live</span>
-                  </div>
-              )}
+            <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => handleSessionControl('Active')} disabled={submission.liveSessionStatus === 'Active'}>
+                    <Play className="mr-2 h-4 w-4"/>Resume
+                </Button>
+                 <Button variant="outline" size="sm" onClick={() => handleSessionControl('Paused')} disabled={submission.liveSessionStatus !== 'Active'}>
+                    <Pause className="mr-2 h-4 w-4"/>Pause
+                </Button>
+                <Button variant="destructive" size="sm" onClick={() => handleSessionControl('Completed')}>
+                    <Square className="mr-2 h-4 w-4"/>Stop
+                </Button>
             </div>
         </div>
         

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -32,7 +31,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, MoreHorizontal, Check, Shield, AlertTriangle, User, Briefcase, Building, FileText, Eye, Reply, Forward } from 'lucide-react';
+import { Search, MoreHorizontal, Check, Shield, AlertTriangle, User, Briefcase, Building, FileText, Eye, Reply, Forward, Calendar as CalendarIcon } from 'lucide-react';
 import type { NotificationType, NotificationPriority, NotificationStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import type { NotificationWithDetails } from './page';

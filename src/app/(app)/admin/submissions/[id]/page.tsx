@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -19,6 +20,7 @@ import { ActivityLog } from '@/components/activity-log';
 import { ValidationResultPanel } from './validation-result-panel';
 import { TestCasePanel } from './test-case-panel';
 import { AiEvaluationPanel } from './ai-evaluation-panel';
+import { SandboxWorkspacePanel } from './sandbox-workspace-panel';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -98,6 +100,7 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
         </div>
         <div className="space-y-6">
             <AiEvaluationPanel submission={submission} />
+            <SandboxWorkspacePanel submission={submission} />
             <ValidationResultPanel submission={submission} />
             <TestCasePanel submission={submission} />
             <ActivityLog submission={submission} evaluation={evaluation} isAdminOverride={true} />

@@ -34,6 +34,7 @@ import {
   Lightbulb,
   FlaskConical,
   Bot,
+  Terminal,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -72,6 +73,7 @@ const adminNav = [
   { name: 'Manage Tenants', href: '/admin/companies', icon: Building },
   { name: 'Manage Tasks', href: '/admin/tasks', icon: Briefcase },
   { name: 'Global Submissions', href: '/admin/submissions', icon: FileCheck },
+  { name: 'Execution Environment', href: '/admin/execution', icon: Terminal },
   { name: 'Backend/API Testing', href: '/admin/testing', icon: FlaskConical },
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Activity Logs', href: '/admin/activity', icon: History },

@@ -114,6 +114,7 @@ export type SubmissionStatus =
 
 export type ValidationStatus = 'Valid' | 'Invalid' | 'Warning' | 'Pending';
 export type TestCaseStatus = 'Passed' | 'Failed' | 'Warning' | 'Pending';
+export type SandboxStatus = 'Active' | 'Idle' | 'Completed' | 'Error' | 'Not Started';
 
 export interface TestCase {
   id: string;
@@ -140,6 +141,7 @@ export interface Submission {
   testCaseStatus?: TestCaseStatus;
   autoScore?: number;
   autoScoringStatus?: 'Pending' | 'Completed' | 'Failed';
+  sandboxStatus?: SandboxStatus;
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string

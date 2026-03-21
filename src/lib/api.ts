@@ -15,8 +15,9 @@ import {
   mockWebhooks,
   mockWebhookTriggerLogs,
   mockTeams,
+  mockApiIntegrations,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -132,4 +133,10 @@ export async function getWebhookTriggerLogs(webhookId: string): Promise<WebhookT
 export async function getTeams(): Promise<Team[]> {
     await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
     return mockTeams;
+}
+
+// --- API Integration API ---
+export async function getApiIntegrations(): Promise<ApiIntegration[]> {
+    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+    return mockApiIntegrations;
 }

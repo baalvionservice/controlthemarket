@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1142,5 +1142,48 @@ export const mockTeams: Team[] = [
     companyId: 'company-1',
     memberIds: ['user-2', 'user-6', 'user-7'],
     leadId: 'user-2',
+  },
+];
+
+export const mockApiIntegrations: ApiIntegration[] = [
+  {
+    id: 'api-1',
+    name: 'Greenhouse API',
+    description: 'Syncs shortlisted candidates with Greenhouse jobs.',
+    status: 'Active',
+    lastSync: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
+    apiKey: 'GR_key_******************',
+    endpointUrl: 'https://harvest.greenhouse.io/v1/candidates',
+    subscribedEvents: ['submission.evaluated'],
+  },
+  {
+    id: 'api-2',
+    name: 'Jira Cloud',
+    description: 'Creates a Jira ticket for flagged submissions.',
+    status: 'Active',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
+    apiKey: 'jira_pat_******************',
+    endpointUrl: 'https://your-domain.atlassian.net/rest/api/3/issue',
+    subscribedEvents: ['submission.evaluated'],
+  },
+  {
+    id: 'api-3',
+    name: 'Slack Notifications',
+    description: 'Sends notifications to a Slack channel for new submissions.',
+    status: 'Inactive',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
+    apiKey: 'xoxb-******************',
+    endpointUrl: 'https://slack.com/api/chat.postMessage',
+    subscribedEvents: ['submission.created'],
+  },
+  {
+    id: 'api-4',
+    name: 'Internal HR System',
+    description: 'Syncs new user data with the internal HR database.',
+    status: 'Error',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 3)).toISOString(),
+    apiKey: 'hr_api_******************',
+    endpointUrl: 'https://hr.internal/api/users',
+    subscribedEvents: ['user.created'],
   },
 ];

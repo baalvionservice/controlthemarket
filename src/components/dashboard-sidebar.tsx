@@ -92,6 +92,7 @@ const adminNav = [
   { name: 'Security', href: '/admin/security', icon: Shield },
   { name: 'GitHub Integration', href: '/admin/integrations', icon: Github },
   { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook },
+  { name: 'API Settings', href: '/admin/api-settings', icon: Settings },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'Notifications', href: '/admin/alerts', icon: Bell },
   { name: 'Settings', href: '/admin/settings', icon: Settings },

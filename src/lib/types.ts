@@ -284,3 +284,16 @@ export interface Team {
   memberIds: string[];
   leadId: string; // The user ID of the team lead
 }
+
+export type ApiIntegrationStatus = 'Active' | 'Inactive' | 'Error';
+
+export interface ApiIntegration {
+  id: string;
+  name: string;
+  description: string;
+  status: ApiIntegrationStatus;
+  lastSync: string; // ISO date string
+  apiKey: string;
+  endpointUrl: string;
+  subscribedEvents: WebhookEvent[];
+}

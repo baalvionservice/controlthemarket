@@ -1,20 +1,38 @@
+
 import { getCompanies, getSubmissions, getTasks, getUsers } from "@/lib/api";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription
 } from "@/components/ui/card";
 import { Users, Building, Briefcase, FileText } from "lucide-react";
+import { AdminCompanyOverview } from "./company-overview";
+import type { AdminCompanyData } from '../companies/page';
 
 export default async function AdminDashboard() {
-  const users = await getUsers();
-  const companies = await getCompanies();
-  const tasks = await getTasks();
-  const submissions = await getSubmissions();
+  const [users, companies, tasks, submissions] = await Promise.all([
+      getUsers(),
+      getCompanies(),
+      getTasks(),
+      getSubmissions(),
+  ]);
+
+  const companyData: AdminCompanyData[] = companies.map(company => {
+    const owner = users.find(u => u.id === company.ownerId);
+    
+    return {
+      ...company,
+      userCount: users.filter(user => user.companyId === company.id).length,
+      taskCount: tasks.filter(task => task.companyId === company.id).length,
+      submissionCount: submissions.filter(sub => sub.companyId === company.id).length,
+      ownerName: owner?.name || 'N/A',
+    };
+  });
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-headline text-3xl font-bold tracking-tight">
           Admin Dashboard
@@ -64,10 +82,15 @@ export default async function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="text-center text-muted-foreground pt-10">
-        <p>Admin management tables for Users, Companies, and Tasks would be displayed here.</p>
-      </div>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Multi-Company Overview</CardTitle>
+          <CardDescription>A summary of all tenants on the platform.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AdminCompanyOverview data={companyData} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

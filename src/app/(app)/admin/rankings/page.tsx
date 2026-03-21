@@ -20,6 +20,7 @@ export type CandidateRanking = {
   aggregatedScore: number;
   evaluationCount: number;
   criteriaScores: Record<string, number>;
+  percentileRank: number;
 };
 
 // This is a mock aggregation logic for the front-end simulation
@@ -90,7 +91,7 @@ export default async function AdminRankingsPage() {
 
   const candidates = allUsers.filter((u) => u.role === 'candidate');
 
-  const rankingData: CandidateRanking[] = candidates
+  const unsortedRankingData: Omit<CandidateRanking, 'percentileRank'>[] = candidates
     .map((candidate) => {
       const candidateSubmissions = allSubmissions.filter(
         (sub) => sub.userId === candidate.id
@@ -113,8 +114,20 @@ export default async function AdminRankingsPage() {
         criteriaScores: criteria,
       };
     })
-    .filter((r): r is CandidateRanking => r !== null)
-    .sort((a, b) => b.aggregatedScore - a.aggregatedScore);
+    .filter((r): r is Omit<CandidateRanking, 'percentileRank'> => r !== null);
+
+  const sortedData = unsortedRankingData.sort((a, b) => b.aggregatedScore - a.aggregatedScore);
+  const totalCandidates = sortedData.length;
+
+  const rankingData: CandidateRanking[] = sortedData.map((candidate, index) => {
+    const rank = index + 1;
+    const percentileRank = totalCandidates > 0 ? Math.ceil((rank / totalCandidates) * 100) : 0;
+    return {
+      ...candidate,
+      percentileRank,
+    }
+  });
+
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -124,7 +137,7 @@ export default async function AdminRankingsPage() {
             Candidate Rankings
           </h2>
           <p className="text-muted-foreground">
-            Global leaderboard based on aggregated evaluation scores.
+            Global leaderboard based on aggregated evaluation scores and percentile ranks.
           </p>
         </div>
       </div>

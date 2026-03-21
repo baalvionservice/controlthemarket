@@ -13,10 +13,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Award } from 'lucide-react';
+import { Award, TrendingUp } from 'lucide-react';
 import type { CandidateRanking } from './page';
 import type { EvaluationSchema } from '@/lib/types';
 import { AggregationLogicPanel } from './aggregation-logic-panel';
+import { cn } from '@/lib/utils';
 
 interface RankingListProps {
   data: CandidateRanking[];
@@ -39,6 +40,19 @@ export function RankingList({ data, schemas }: RankingListProps) {
     return 'bg-muted';
   };
 
+  const getPercentileInfo = (percentileRank: number): { label: string; className: string } => {
+    if (percentileRank <= 10) {
+      return { label: 'Top 10%', className: 'bg-yellow-400/20 text-yellow-700 border-yellow-300' };
+    }
+    if (percentileRank <= 25) {
+      return { label: 'Top 25%', className: 'bg-slate-300/40 text-slate-700 border-slate-300' };
+    }
+    if (percentileRank <= 50) {
+      return { label: 'Top 50%', className: 'bg-orange-400/20 text-orange-700 border-orange-300' };
+    }
+    return { label: 'Bottom 50%', className: '' };
+  };
+
   return (
     <>
       <div className="rounded-md border">
@@ -48,6 +62,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
               <TableHead className="w-[80px]">Rank</TableHead>
               <TableHead>Candidate</TableHead>
               <TableHead>Avg. Score</TableHead>
+              <TableHead>Percentile</TableHead>
               {allCriteriaNames.map(name => <TableHead key={name}>{name}</TableHead>)}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -58,7 +73,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
                 <TableRow key={item.candidate.id}>
                   <TableCell className="text-center font-bold text-lg text-muted-foreground">
                     <div className="flex items-center justify-center gap-2">
-                        {index < 3 && <Award className={`h-5 w-5 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : 'text-yellow-700'}`} />}
+                        {index < 3 && <Award className={`h-5 w-5 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : 'text-orange-500'}`} />}
                         <span>{index + 1}</span>
                     </div>
                   </TableCell>
@@ -76,6 +91,12 @@ export function RankingList({ data, schemas }: RankingListProps) {
                   </TableCell>
                   <TableCell>
                     <Badge className={getScoreColor(item.aggregatedScore)}>{item.aggregatedScore}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={cn(getPercentileInfo(item.percentileRank).className)}>
+                        <TrendingUp className="mr-2 h-4 w-4" />
+                        {getPercentileInfo(item.percentileRank).label}
+                    </Badge>
                   </TableCell>
                   {allCriteriaNames.map(name => (
                     <TableCell key={name}>
@@ -95,7 +116,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={allCriteriaNames.length + 4} className="h-24 text-center">
+                <TableCell colSpan={allCriteriaNames.length + 5} className="h-24 text-center">
                   No candidates with evaluations found.
                 </TableCell>
               </TableRow>
@@ -108,6 +129,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
         isOpen={!!selectedCandidate}
         onOpenChange={() => setSelectedCandidate(null)}
         rankingData={selectedCandidate}
+        allRankings={data}
         schema={schemas[0]} // Pass first schema for simulation
       />
     </>

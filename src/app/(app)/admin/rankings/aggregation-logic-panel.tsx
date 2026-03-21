@@ -18,18 +18,20 @@ import { Badge } from '@/components/ui/badge';
 import type { CandidateRanking } from './page';
 import type { EvaluationCriterion, EvaluationSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Calculator } from 'lucide-react';
+import { Calculator, TrendingUp } from 'lucide-react';
 
 interface AggregationLogicPanelProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   rankingData: CandidateRanking | null;
+  allRankings: CandidateRanking[];
   schema: EvaluationSchema;
 }
 
-export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, schema }: AggregationLogicPanelProps) {
+export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, allRankings, schema }: AggregationLogicPanelProps) {
   const [weights, setWeights] = useState<Record<string, number>>({});
   const [recalculatedScore, setRecalculatedScore] = useState<number | null>(null);
+  const [recalculatedPercentileRank, setRecalculatedPercentileRank] = useState<number | null>(null);
 
   useEffect(() => {
     if (rankingData && schema) {
@@ -38,7 +40,8 @@ export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, schem
         return acc;
       }, {} as Record<string, number>);
       setWeights(initialWeights);
-      setRecalculatedScore(null); // Reset on new data
+      setRecalculatedScore(null);
+      setRecalculatedPercentileRank(null);
     }
   }, [rankingData, schema]);
   
@@ -56,7 +59,6 @@ export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, schem
         const score = rankingData.criteriaScores[criterionName];
         const weight = weights[criterionName] || 1;
         
-        // Find maxPoints from schema for normalization
         const criterion = schema.criteria.find(c => c.name === criterionName);
         if (criterion) {
             totalWeightedScore += (score / criterion.maxPoints) * weight;
@@ -66,16 +68,23 @@ export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, schem
     
     const finalScore = totalWeight > 0 ? Math.round((totalWeightedScore / totalWeight) * 100) : 0;
     setRecalculatedScore(finalScore);
+
+    // Recalculate percentile
+    const otherScores = allRankings.filter(r => r.candidate.id !== rankingData.candidate.id).map(r => r.aggregatedScore);
+    const newScores = [...otherScores, finalScore].sort((a,b) => b - a);
+    const newRank = newScores.indexOf(finalScore) + 1;
+    const newPercentileRank = allRankings.length > 0 ? Math.ceil((newRank / allRankings.length) * 100) : 0;
+    setRecalculatedPercentileRank(newPercentileRank);
   };
   
   const handleReset = () => {
       if (schema) {
          const initialWeights = schema.criteria.reduce((acc, crit) => {
             acc[crit.name] = crit.weight || 1;
-            return acc;
         }, {} as Record<string, number>);
         setWeights(initialWeights);
         setRecalculatedScore(null);
+        setRecalculatedPercentileRank(null);
       }
   }
 
@@ -83,13 +92,21 @@ export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, schem
   
   const totalWeightValue = Object.values(weights).reduce((sum, w) => sum + w, 0);
 
+  const getPercentileInfo = (percentileRank: number | null): { label: string; className: string } => {
+    if (percentileRank === null) return { label: '-', className: '' };
+    if (percentileRank <= 10) return { label: 'Top 10%', className: 'bg-yellow-400/20 text-yellow-700' };
+    if (percentileRank <= 25) return { label: 'Top 25%', className: 'bg-slate-300/40 text-slate-700' };
+    if (percentileRank <= 50) return { label: 'Top 50%', className: 'bg-orange-400/20 text-orange-700' };
+    return { label: 'Bottom 50%', className: 'bg-muted text-muted-foreground' };
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Score Aggregation Logic: {rankingData.candidate.name}</DialogTitle>
           <DialogDescription>
-            Adjust weights to simulate their impact on the aggregated score.
+            Adjust weights to simulate their impact on the aggregated score and percentile rank.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -122,8 +139,8 @@ export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, schem
              <Separator />
              <div className="flex justify-end font-medium">
                 Total Weight: 
-                <span className={cn(totalWeightValue.toFixed(1) === '1.0' ? 'text-primary' : 'text-destructive', 'ml-2')}>
-                    {Object.values(weights).reduce((s, w) => s + w, 0).toFixed(1)}
+                <span className={cn(totalWeightValue.toFixed(2) === '1.00' ? 'text-primary' : 'text-destructive', 'ml-2')}>
+                    {Object.values(weights).reduce((s, w) => s + w, 0).toFixed(2)}
                 </span>
              </div>
           </div>
@@ -131,28 +148,34 @@ export function AggregationLogicPanel({ isOpen, onOpenChange, rankingData, schem
           <div className="flex items-center justify-between gap-4">
              <div className="flex gap-2">
                 <Button onClick={handleRecalculate}>
-                    <Calculator className="mr-2 h-4 w-4" /> Recalculate Score
+                    <Calculator className="mr-2 h-4 w-4" /> Recalculate
                 </Button>
                 <Button variant="ghost" onClick={handleReset}>Reset</Button>
             </div>
 
-            <div className="flex items-center gap-4">
-                 <div className="text-right">
-                    <p className="text-sm text-muted-foreground">Original Score</p>
+            <div className="flex items-center gap-4 text-right">
+                 <div>
+                    <p className="text-sm text-muted-foreground">Original</p>
                     <p className="text-2xl font-bold">{rankingData.aggregatedScore}</p>
+                    <Badge variant="outline" className={cn('mt-1', getPercentileInfo(rankingData.percentileRank).className)}>
+                        {getPercentileInfo(rankingData.percentileRank).label}
+                    </Badge>
                  </div>
-                 <div className="text-right">
-                    <p className="text-sm text-muted-foreground">Recalculated Score</p>
+                 <div>
+                    <p className="text-sm text-muted-foreground">Recalculated</p>
                     <p className={cn("text-2xl font-bold", recalculatedScore !== null ? 'text-primary' : '')}>
                         {recalculatedScore ?? '-'}
                     </p>
+                     <Badge variant="outline" className={cn('mt-1', getPercentileInfo(recalculatedPercentileRank).className)}>
+                        {getPercentileInfo(recalculatedPercentileRank).label}
+                    </Badge>
                  </div>
             </div>
           </div>
           
           <div className="text-center p-4 bg-muted/50 rounded-md">
                 <code className="text-sm text-muted-foreground">
-                    Aggregated Score = Σ (Criterion Score / Max Points) × Weightage
+                    Aggregated Score = Σ (Criterion Score / Max Points) × Weight
                 </code>
           </div>
         </div>

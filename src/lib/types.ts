@@ -187,7 +187,7 @@ export interface EvaluationCriterion {
   name: string;
   description: string;
   maxPoints: number;
-  weight?: number;
+  weight: number;
 }
 
 export interface EvaluationSchema {

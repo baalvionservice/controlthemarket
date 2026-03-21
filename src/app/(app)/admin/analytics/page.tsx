@@ -117,6 +117,7 @@ export default async function AdminAnalyticsPage() {
             const submission = submissions.find(s => s.id === ev.submissionId);
             const candidate = users.find(u => u.id === submission?.userId);
             return {
+                candidateId: candidate?.id || ev.id,
                 candidateName: candidate?.name || 'Unknown',
                 score: ev.score,
                 avatarUrl: candidate?.profile?.avatarUrl,

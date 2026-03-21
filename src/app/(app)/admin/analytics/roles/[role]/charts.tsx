@@ -26,6 +26,7 @@ import { format, subDays, startOfDay } from 'date-fns';
 // --- Types ---
 interface LeaderboardProps {
     data: {
+        candidateId: string;
         candidateName: string;
         score: number;
         avatarUrl?: string;
@@ -209,7 +210,7 @@ export function RoleLeaderboard({ data }: LeaderboardProps) {
                     </TableHeader>
                     <TableBody>
                         {data.map((candidate, index) => (
-                            <TableRow key={candidate.candidateName}>
+                            <TableRow key={candidate.candidateId}>
                                 <TableCell className="font-bold text-lg text-muted-foreground w-[50px] text-center">{index + 1}</TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-3">

@@ -1,3 +1,4 @@
+
 import { getCompanies, getSubmissions, getTasks, getUsers, getEvaluations } from "@/lib/api";
 import {
   Card,
@@ -66,6 +67,7 @@ export default async function RoleAnalyticsPage({ params }: { params: { role: st
             const submission = roleSubmissions.find(s => s.id === ev.submissionId);
             const candidate = roleCandidates.find(u => u.id === submission?.userId);
             return {
+                candidateId: candidate?.id || ev.id,
                 candidateName: candidate?.name || 'Unknown',
                 score: ev.score,
                 avatarUrl: candidate?.profile?.avatarUrl,

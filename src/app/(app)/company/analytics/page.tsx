@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -42,6 +43,7 @@ export default async function AnalyticsPage() {
       const submission = companySubmissions.find(s => s.id === ev.submissionId);
       const candidate = allUsers.find(u => u.id === submission?.userId);
       return {
+        candidateId: candidate?.id || ev.id,
         candidateName: candidate?.name || 'Unknown',
         score: ev.score,
         avatarUrl: candidate?.profile?.avatarUrl,
@@ -91,7 +93,7 @@ export default async function AnalyticsPage() {
           <CardContent className="pt-0">
             <div className="text-2xl font-bold">{shortlistedCount}</div>
              <p className="text-xs text-muted-foreground">
-              Top performers from evaluations
+              Top performers from your tasks
             </p>
           </CardContent>
         </Card>

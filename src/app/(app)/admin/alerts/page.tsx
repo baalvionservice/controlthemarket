@@ -1,6 +1,7 @@
-import { getAlerts, getUsers, getTasks, getCompanies, getSubmissions } from "@/lib/api";
-import { AlertList } from "./alert-list";
-import type { Alert, User, Task, Company, Submission } from '@/lib/types';
+
+import { getNotifications, getUsers, getTasks, getCompanies, getSubmissions } from "@/lib/api";
+import { NotificationList } from "./alert-list";
+import type { Notification, User, Task, Company, Submission } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -9,19 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export type AlertWithDetails = Alert & {
+export type NotificationWithDetails = Notification & {
   relatedEntityData?: User | Company | Task | Submission | { id: string; name?: string };
 };
 
-export default async function SystemAlertsPage() {
+export default async function NotificationsPage() {
   const [
-    allAlerts,
+    allNotifications,
     allUsers,
     allTasks,
     allCompanies,
     allSubmissions
   ] = await Promise.all([
-    getAlerts(),
+    getNotifications(),
     getUsers(),
     getTasks(),
     getCompanies(),
@@ -36,16 +37,16 @@ export default async function SystemAlertsPage() {
     System: new Map(),
   };
 
-  const alertData: AlertWithDetails[] = allAlerts.map(alert => {
+  const notificationData: NotificationWithDetails[] = allNotifications.map(notification => {
     let relatedEntityData;
-    if (alert.relatedEntity.type !== 'System') {
-      relatedEntityData = entityMaps[alert.relatedEntity.type]?.get(alert.relatedEntity.id);
+    if (notification.relatedEntity.type !== 'System') {
+      relatedEntityData = entityMaps[notification.relatedEntity.type]?.get(notification.relatedEntity.id);
     } else {
-      relatedEntityData = { id: alert.relatedEntity.id, name: alert.relatedEntity.name };
+      relatedEntityData = { id: notification.relatedEntity.id, name: notification.relatedEntity.name };
     }
     
     return {
-      ...alert,
+      ...notification,
       relatedEntityData,
     };
   });
@@ -55,7 +56,7 @@ export default async function SystemAlertsPage() {
       <div className="flex items-center justify-between space-y-2">
          <div>
             <h2 className="font-headline text-3xl font-bold tracking-tight">
-                System Alerts & Notifications
+                Notifications
             </h2>
             <p className="text-muted-foreground">
                 A centralized hub for all platform warnings, deadlines, and activities.
@@ -64,13 +65,13 @@ export default async function SystemAlertsPage() {
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>Global Alert Stream</CardTitle>
+            <CardTitle>Global Notification Stream</CardTitle>
             <CardDescription>
                 Monitor user actions, system events, and administrative changes.
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <AlertList initialData={alertData} />
+            <NotificationList initialData={notificationData} />
         </CardContent>
       </Card>
     </div>

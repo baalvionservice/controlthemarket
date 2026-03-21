@@ -41,6 +41,7 @@ import {
   Video,
   Github,
   Webhook,
+  Bell,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -90,7 +91,7 @@ const adminNav = [
   { name: 'GitHub Integration', href: '/admin/integrations', icon: Github },
   { name: 'Webhooks', href: '/admin/webhooks', icon: Webhook },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
-  { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },
+  { name: 'Notifications', href: '/admin/alerts', icon: Bell },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

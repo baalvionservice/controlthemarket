@@ -1,5 +1,5 @@
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -925,12 +925,12 @@ export const mockActivityLogs: Activity[] = [
   },
 ];
 
-export const mockAlerts: Alert[] = [
+export const mockNotifications: Notification[] = [
   {
     id: 'alert-1',
     type: 'task_deadline',
     priority: 'High',
-    status: 'New',
+    status: 'Unread',
     timestamp: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
     title: 'Task Deadline Approaching',
     description: 'Task "Build a Responsive Navbar Component" is due in less than 24 hours.',
@@ -940,7 +940,7 @@ export const mockAlerts: Alert[] = [
     id: 'alert-2',
     type: 'new_submission',
     priority: 'Medium',
-    status: 'New',
+    status: 'Unread',
     timestamp: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
     title: 'New Submission Received',
     description: 'A new submission was received from Diana Developer for "Database Schema Design".',
@@ -950,7 +950,7 @@ export const mockAlerts: Alert[] = [
     id: 'alert-3',
     type: 'user_signup',
     priority: 'Low',
-    status: 'Acknowledged',
+    status: 'Read',
     timestamp: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
     title: 'New Company Signed Up',
     description: 'A new company, "Innovate Inc.", has joined the platform.',
@@ -970,7 +970,7 @@ export const mockAlerts: Alert[] = [
     id: 'alert-5',
     type: 'flagged_submission',
     priority: 'High',
-    status: 'New',
+    status: 'Unread',
     timestamp: new Date(new Date().setHours(new Date().getHours() - 3)).toISOString(),
     title: 'Submission Flagged for Review',
     description: 'Submission from a candidate was flagged for potential plagiarism.',
@@ -980,7 +980,7 @@ export const mockAlerts: Alert[] = [
     id: 'alert-6',
     type: 'task_deadline',
     priority: 'Medium',
-    status: 'New',
+    status: 'Read',
     timestamp: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(),
     title: 'Task Deadline Approaching',
     description: 'Task "Create a Serverless API Endpoint" is due in 3 days.',

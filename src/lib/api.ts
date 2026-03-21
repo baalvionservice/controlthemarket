@@ -9,13 +9,13 @@ import {
   mockEvaluations,
   mockEvaluationSchemas,
   mockActivityLogs,
-  mockAlerts,
+  mockNotifications,
   mockTestCases,
   mockGitHubRepositories,
   mockWebhooks,
   mockWebhookTriggerLogs,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Alert, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -98,10 +98,10 @@ export async function getActivityLogs(): Promise<Activity[]> {
   return mockActivityLogs;
 }
 
-// --- Alert API ---
-export async function getAlerts(): Promise<Alert[]> {
+// --- Notification API ---
+export async function getNotifications(): Promise<Notification[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockAlerts;
+  return mockNotifications;
 }
 
 // --- Test Case API ---

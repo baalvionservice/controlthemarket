@@ -203,15 +203,15 @@ export interface Activity {
   description: string;
 }
 
-export type AlertType = 'task_deadline' | 'new_submission' | 'user_signup' | 'system_warning' | 'flagged_submission';
-export type AlertPriority = 'High' | 'Medium' | 'Low';
-export type AlertStatus = 'New' | 'Acknowledged' | 'Resolved';
+export type NotificationType = 'task_deadline' | 'new_submission' | 'user_signup' | 'system_warning' | 'flagged_submission';
+export type NotificationPriority = 'High' | 'Medium' | 'Low';
+export type NotificationStatus = 'Unread' | 'Read' | 'Resolved';
 
-export interface Alert {
+export interface Notification {
   id: string;
-  type: AlertType;
-  priority: AlertPriority;
-  status: AlertStatus;
+  type: NotificationType;
+  priority: NotificationPriority;
+  status: NotificationStatus;
   timestamp: string; // ISO 8601
   title: string;
   description: string;

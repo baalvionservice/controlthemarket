@@ -1,5 +1,4 @@
 
-
 export type UserRole = 'candidate' | 'company' | 'admin';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 
@@ -116,6 +115,7 @@ export type ValidationStatus = 'Valid' | 'Invalid' | 'Warning' | 'Pending';
 export type TestCaseStatus = 'Passed' | 'Failed' | 'Warning' | 'Pending';
 export type SandboxStatus = 'Active' | 'Idle' | 'Completed' | 'Error' | 'Not Started';
 export type LiveSessionStatus = 'Not Started' | 'Scheduled' | 'Active' | 'Completed' | 'Cancelled';
+export type PlagiarismRisk = 'High' | 'Medium' | 'Low' | 'None';
 
 export interface TestCase {
   id: string;
@@ -144,6 +144,7 @@ export interface Submission {
   autoScoringStatus?: 'Pending' | 'Completed' | 'Failed';
   sandboxStatus?: SandboxStatus;
   liveSessionStatus?: LiveSessionStatus;
+  plagiarismRisk?: PlagiarismRisk;
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string

@@ -37,6 +37,7 @@ import {
   Terminal,
   Code,
   ScrollText,
+  Shield,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -81,9 +82,10 @@ const adminNav = [
   { name: 'Candidate Rankings', href: '/admin/rankings', icon: Trophy },
   { name: 'Real-Time Monitoring', href: '/admin/activity', icon: History },
   { name: 'Execution Logs', href: '/admin/logs', icon: ScrollText },
+  { name: 'Security', href: '/admin/security', icon: Shield },
   { name: 'Global Analytics', href: '/admin/analytics', icon: AreaChart },
   { name: 'System Alerts', href: '/admin/alerts', icon: AlertTriangle },
-  { name: 'Platform Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export function DashboardSidebar({ children }: { children: React.ReactNode }) {

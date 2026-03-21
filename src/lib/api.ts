@@ -26,8 +26,10 @@ import {
   mockServiceLoad,
   mockScalingEvents,
   mockInvoices,
+  mockPlanUsage,
+  mockUsageMetrics,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, SystemError, SystemIncident, ServiceLoad, ScalingEvent, Invoice, InvoiceStatus } from './types';
+import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, Invoice, InvoiceStatus, PlanUsage, UsageMetric } from './types';
 
 const ARTIFICIAL_DELAY = 500;
 
@@ -199,4 +201,15 @@ export async function getSystemIncidents(): Promise<SystemIncident[]> {
 export async function getInvoices(): Promise<Invoice[]> {
   await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
   return mockInvoices;
+}
+
+// --- Usage API ---
+export async function getPlanUsage(): Promise<PlanUsage[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockPlanUsage;
+}
+
+export async function getUsageMetrics(): Promise<UsageMetric[]> {
+  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
+  return mockUsageMetrics;
 }

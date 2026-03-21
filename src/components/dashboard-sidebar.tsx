@@ -50,6 +50,7 @@ import {
   HeartPulse,
   CreditCard,
   Receipt,
+  PieChart,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -77,6 +78,7 @@ const companyNav = [
   { name: 'Compare', href: '/company/compare', icon: GitCompare },
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
   { name: 'Subscription', href: '/company/subscription', icon: CreditCard },
+  { name: 'Usage Metrics', href: '/company/usage', icon: PieChart },
   { name: 'Billing', href: '/company/billing', icon: Receipt },
   { name: 'Settings', href: '/company/settings', icon: Settings },
 ];

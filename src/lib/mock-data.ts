@@ -1,6 +1,6 @@
 
 
-import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus } from './types';
+import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -1504,3 +1504,16 @@ export const mockInvoices: Invoice[] = [
   { id: 'inv-004', amount: 29.00, date: new Date(new Date().setMonth(new Date().getMonth() - 4)).toISOString(), status: 'Failed', planName: 'Basic Plan' },
   { id: 'inv-005', amount: 29.00, date: new Date(new Date().setMonth(new Date().getMonth() - 5)).toISOString(), status: 'Paid', planName: 'Basic Plan' },
 ];
+
+export const mockPlanUsage: PlanUsage[] = [
+  { feature: 'API Calls', usage: 12500, limit: 50000, unit: 'requests' },
+  { feature: 'Tasks', usage: 42, limit: 100, unit: 'tasks' },
+  { feature: 'Storage', usage: 15, limit: 50, unit: 'GB' },
+];
+
+export const mockUsageMetrics: UsageMetric[] = Array.from({ length: 30 }, (_, i) => ({
+  date: new Date(new Date().setDate(new Date().getDate() - (29 - i))).toISOString().split('T')[0],
+  apiCalls: 10000 + Math.floor(Math.random() * 5000) * (Math.sin(i / 5) + 1.2),
+  tasksCreated: 5 + Math.floor(Math.random() * 3),
+  storageUsage: 15 + i * 0.1 + Math.random(),
+})).map(d => ({...d, apiCalls: Math.round(d.apiCalls), tasksCreated: Math.round(d.tasksCreated)}));

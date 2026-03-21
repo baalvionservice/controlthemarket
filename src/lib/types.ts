@@ -407,3 +407,17 @@ export interface Invoice {
   planName: string;
   pdfUrl?: string; // link to mock pdf
 }
+
+export interface UsageMetric {
+  date: string;
+  apiCalls: number;
+  tasksCreated: number;
+  storageUsage: number;
+}
+
+export interface PlanUsage {
+    feature: 'API Calls' | 'Tasks' | 'Storage';
+    usage: number;
+    limit: number;
+    unit: 'requests' | 'tasks' | 'GB';
+}

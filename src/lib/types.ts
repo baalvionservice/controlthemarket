@@ -169,6 +169,10 @@ export interface Submission {
   timeSpentMinutes?: number;
   attemptsCount?: number;
   currentRound?: number;
+  skillMatchResult?: {
+    result: 'pass' | 'fail';
+    skillBadge: string;
+  };
 }
 
 export interface Evaluation {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -22,6 +23,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useAuth } from '@/contexts';
 import { ActivityLog } from '@/components/activity-log';
 import type { SubmissionStatus } from '@/lib/types';
+import { SkillMatchResultPanel } from './skill-match-result-panel';
 
 
 const statusSteps = ['assigned', 'in-progress', 'pending', 'in-review', 'evaluated'];
@@ -214,6 +216,8 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
                     </CardContent>
                 </Card>
             )}
+
+             <SkillMatchResultPanel submission={submission} />
 
         </div>
         <div className="space-y-6">

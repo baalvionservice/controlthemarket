@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -22,6 +23,7 @@ import type { Submission, Task, User as Candidate, Evaluation, SubmissionContent
 import { ActivityLog } from '@/components/activity-log';
 import { Progress } from '@/components/ui/progress';
 import { AiEvaluationPanel } from './ai-evaluation-panel';
+import { SkillMatchResultPanel } from './skill-match-result-panel';
 
 
 type SubmissionWithRelations = Submission & {
@@ -203,6 +205,7 @@ export default function SubmissionReviewPage({ params }: { params: { id: string 
                     </Button>
                 </CardContent>
             </Card>
+            <SkillMatchResultPanel submission={submission} />
             <AiEvaluationPanel submission={submission} />
             <Card>
                 <CardHeader>

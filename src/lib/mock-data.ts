@@ -608,6 +608,10 @@ export const mockSubmissions: Submission[] = [
     submittedAt: '2024-08-10T10:00:00Z',
     lastUpdated: '2024-08-12T09:00:00Z',
     timeSpentMinutes: 115,
+    skillMatchResult: {
+      result: 'pass',
+      skillBadge: 'Frontend Pro'
+    }
   },
   {
     id: 'sub-2',
@@ -631,6 +635,10 @@ export const mockSubmissions: Submission[] = [
     submittedAt: '2024-08-11T14:30:00Z',
     lastUpdated: '2024-08-12T11:00:00Z',
     timeSpentMinutes: 130,
+    skillMatchResult: {
+      result: 'fail',
+      skillBadge: 'Needs Improvement'
+    }
   },
   {
     id: 'sub-3',

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -24,6 +25,7 @@ import { SandboxWorkspacePanel } from './sandbox-workspace-panel';
 import { LiveCodingWorkspacePanel } from './live-coding-workspace-panel';
 import { AntiCheatingIndicatorPanel } from './anti-cheating-panel';
 import { RecordingPanel } from './recording-panel';
+import { SkillMatchResultPanel } from './skill-match-result-panel';
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -104,6 +106,7 @@ export default function AdminManageSubmissionPage({ params }: { params: { id: st
             <RecordingPanel submission={submission} />
         </div>
         <div className="space-y-6">
+            <SkillMatchResultPanel submission={submission} />
             <AiEvaluationPanel submission={submission} />
             <AntiCheatingIndicatorPanel submission={submission} />
             <SandboxWorkspacePanel submission={submission} />

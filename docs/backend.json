@@ -82,11 +82,11 @@
         },
         "candidatePerformance": {
             "type": "object",
-            "description": "Performance metrics specific to candidates. This field is only relevant for users with the 'candidate' role.",
+            "description": "Aggregated performance metrics for a candidate, updated via background jobs.",
             "properties": {
                 "completedTasks": {
                     "type": "number",
-                    "description": "Total number of tasks completed by the candidate."
+                    "description": "Total number of tasks completed and evaluated."
                 },
                 "averageScore": {
                     "type": "number",
@@ -94,7 +94,7 @@
                 },
                 "ranking": {
                     "type": "number",
-                    "description": "The candidate's overall ranking on the platform."
+                    "description": "The candidate's overall ranking on the platform, recalculated periodically."
                 }
             }
         }

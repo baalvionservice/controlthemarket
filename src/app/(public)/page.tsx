@@ -77,7 +77,7 @@ export default function PlatformLandingPage() {
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
           <h1 className="font-headline text-4xl font-extrabold tracking-tighter md:text-6xl lg:text-7xl">
             Hire by Skill, <br className="md:hidden" />
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <span className="text-primary">
               Not by Resume.
             </span>
           </h1>

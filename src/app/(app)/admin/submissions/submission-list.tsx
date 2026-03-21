@@ -324,12 +324,12 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
               </TableHead>
               <TableHead className="hidden md:table-cell">Task / Company</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="hidden lg:table-cell">Validation</TableHead>
+              <TableHead className="hidden md:table-cell">Validation</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('score')}>Score<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
               </TableHead>
-              <TableHead className="hidden lg:table-cell">Auto Score</TableHead>
-              <TableHead className="hidden xl:table-cell">
+              <TableHead className="hidden md:table-cell">Auto Score</TableHead>
+              <TableHead className="hidden lg:table-cell">
                 <Button variant="ghost" onClick={() => handleSort('applicationDate')}>Submitted<ArrowUpDown className="ml-2 h-4 w-4" /></Button>
               </TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -355,7 +355,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                   <TableCell>
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell">
+                  <TableCell className="hidden md:table-cell">
                     {item.validationStatus ? (
                         <Badge variant={getValidationStatusVariant(item.validationStatus)}>{item.validationStatus}</Badge>
                     ) : (
@@ -363,7 +363,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                     )}
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
-                  <TableCell className="hidden lg:table-cell">
+                  <TableCell className="hidden md:table-cell">
                     <div className="flex flex-col gap-1 items-start">
                         {item.autoScore ? (
                             <span className="font-semibold">{item.autoScore}/100</span>
@@ -375,7 +375,7 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                         )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden xl:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

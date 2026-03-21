@@ -347,8 +347,8 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead className="hidden lg:table-cell">Time Spent</TableHead>
-              <TableHead className="hidden lg:table-cell">
+              <TableHead className="hidden md:table-cell">Time Spent</TableHead>
+              <TableHead className="hidden md:table-cell">
                 <Button variant="ghost" onClick={() => handleSort('applicationDate')}>
                     Submitted
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -384,8 +384,8 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
                     <Badge variant={getStatusVariant(item.status)} className="capitalize">{item.status.replace('-', ' ')}</Badge>
                   </TableCell>
                   <TableCell>{item.score ? `${item.score}/100` : 'N/A'}</TableCell>
-                   <TableCell className="hidden lg:table-cell">{renderTimeSpent(item.timeSpentMinutes, item.task.timeLimitMinutes)}</TableCell>
-                  <TableCell className="hidden lg:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
+                   <TableCell className="hidden md:table-cell">{renderTimeSpent(item.timeSpentMinutes, item.task.timeLimitMinutes)}</TableCell>
+                  <TableCell className="hidden md:table-cell">{format(new Date(item.applicationDate), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

@@ -88,7 +88,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
               <TableHead className="w-[80px]">Rank</TableHead>
               <TableHead>Candidate</TableHead>
               <TableHead className="hidden md:table-cell">Primary Role</TableHead>
-              <TableHead className="hidden lg:table-cell">Skill Level</TableHead>
+              <TableHead className="hidden md:table-cell">Skill Level</TableHead>
               <TableHead>Avg. Score</TableHead>
               <TableHead>Percentile</TableHead>
               {allCriteriaNames.map(name => <TableHead key={name} className="hidden lg:table-cell">{name}</TableHead>)}
@@ -124,7 +124,7 @@ export function RankingList({ data, schemas }: RankingListProps) {
                         <span className="text-muted-foreground">-</span>
                     )}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell">
+                  <TableCell className="hidden md:table-cell">
                     {item.candidate.profile?.experienceLevel ? (
                       <Badge variant={getLevelVariant(item.candidate.profile.experienceLevel)}>
                         {item.candidate.profile.experienceLevel}

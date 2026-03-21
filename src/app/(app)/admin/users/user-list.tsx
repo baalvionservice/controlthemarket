@@ -163,7 +163,7 @@ export function AdminUsersList({ initialData }: { initialData: AdminUserData[] }
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="hidden md:table-cell">Activity</TableHead>
-              <TableHead className="hidden lg:table-cell">Joined</TableHead>
+              <TableHead className="hidden md:table-cell">Joined</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -206,7 +206,7 @@ export function AdminUsersList({ initialData }: { initialData: AdminUserData[] }
                       {user.role === 'company' && `${user.taskCount} tasks`}
                       {user.role === 'admin' && '-'}
                     </TableCell>
-                  <TableCell className="hidden lg:table-cell">{format(new Date(user.createdAt), 'PPP')}</TableCell>
+                  <TableCell className="hidden md:table-cell">{format(new Date(user.createdAt), 'PPP')}</TableCell>
                   <TableCell className="text-right">
                      <Button variant="ghost" size="sm" onClick={() => handleEditUser(user)}>Edit</Button>
                   </TableCell>

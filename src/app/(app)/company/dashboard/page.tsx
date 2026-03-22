@@ -1,6 +1,6 @@
 
 
-import { getTasksByCompany, getSubmissions, getEvaluations, getTask, getUser } from '@/lib/api';
+import { getTasksByCompany, getSubmissions, getEvaluations, getTask, getUser, getUsers } from '@/lib/api';
 import { mockUsers, mockCompanies } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,9 @@ import {
 } from '@/components/ui/table';
 import { ArrowRight, Briefcase, PlusCircle, Clock, Star, Monitor, Users, XCircle, FileCheck } from 'lucide-react';
 import Link from 'next/link';
+import { TopCandidates } from './top-candidates';
+import type { User } from '@/lib/types';
+
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
 const CURRENT_USER_ID = 'user-2';
@@ -31,14 +34,17 @@ export default async function CompanyDashboard() {
 
   const company = mockCompanies.find(c => c.id === user.companyId);
 
-  const [tasks, allSubmissions, allEvaluations] = await Promise.all([
+  const [tasks, allSubmissions, allEvaluations, allUsers] = await Promise.all([
       getTasksByCompany(user.companyId),
       getSubmissions(),
-      getEvaluations()
+      getEvaluations(),
+      getUsers(),
   ]);
   
   const companyTaskIds = new Set(tasks.map(task => task.id));
   const companySubmissions = allSubmissions.filter(sub => companyTaskIds.has(sub.taskId));
+  const companySubmissionIds = new Set(companySubmissions.map(s => s.id));
+  const companyEvaluations = allEvaluations.filter(ev => companySubmissionIds.has(ev.submissionId));
   
   // Metrics calculation
   const totalAssignedCandidates = new Set(companySubmissions.map(s => s.userId)).size;
@@ -58,6 +64,33 @@ export default async function CompanyDashboard() {
         return { ...submission, task, candidate };
       })
   );
+
+  // Calculate top candidates
+  const candidatesInCompany = allUsers.filter(u => 
+    companySubmissions.some(s => s.userId === u.id)
+  );
+
+  const topCandidates = candidatesInCompany
+    .map(candidate => {
+      const candidateSubmissions = companySubmissions.filter(s => s.userId === candidate.id);
+      const candidateSubmissionIds = new Set(candidateSubmissions.map(s => s.id));
+      const evaluations = companyEvaluations.filter(ev => candidateSubmissionIds.has(ev.submissionId));
+
+      if (evaluations.length === 0) {
+        return null;
+      }
+      
+      const totalScore = evaluations.reduce((acc, curr) => acc + curr.score, 0);
+      const averageScore = Math.round(totalScore / evaluations.length);
+
+      return {
+        candidate,
+        score: averageScore,
+      };
+    })
+    .filter((c): c is { candidate: User; score: number } => c !== null)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -113,7 +146,7 @@ export default async function CompanyDashboard() {
         </Card>
       </div>
 
-      <div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Action Required: Pending Reviews</CardTitle>
@@ -162,6 +195,7 @@ export default async function CompanyDashboard() {
               </Table>
             </CardContent>
           </Card>
+          <TopCandidates candidates={topCandidates} />
         </div>
     </div>
   );

@@ -102,6 +102,17 @@ export default async function CompanyProfilePage({ params }: { params: { id: str
                                 <CardDescription>Explore open roles and prove your skills by completing one of these tasks.</CardDescription>
                             </CardHeader>
                             <CardContent>
+                                {company.id === 'company-3' && (
+                                    <div className="mb-8 rounded-lg border border-primary/20 bg-primary/5 p-6 text-center">
+                                        <h3 className="font-headline text-xl font-semibold">Senior Backend Engineer Opportunity</h3>
+                                        <p className="mt-2 text-muted-foreground">Baalvion Inc. is seeking expert backend developers for a unique virtual job simulation. Prove your skills by building core modules for our next-gen investor platform.</p>
+                                        <Button asChild className="mt-4">
+                                            <Link href="/demos/baalvion/hiring-portal">
+                                                Start the Simulation <ArrowRight className="ml-2 h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                )}
                                 {activeTasks.length > 0 ? (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {activeTasks.map(task => (

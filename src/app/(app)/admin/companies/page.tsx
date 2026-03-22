@@ -1,5 +1,5 @@
 
-import { getCompanies, getUsers, getTasks, getSubmissions, getSubscriptions, getPlans } from "@/lib/api";
+import { getCompanies, getUsers, getTasks, getSubmissions, getSubscriptions, getAllPlans } from "@/lib/api";
 import { AdminCompaniesList } from "./company-list";
 import type { Company, Subscription, Plan } from '@/lib/types';
 import {
@@ -28,7 +28,7 @@ export default async function ManageCompaniesPage() {
     getTasks(),
     getSubmissions(),
     getSubscriptions(),
-    getPlans(),
+    getAllPlans(),
   ]);
 
   const companyData: AdminCompanyData[] = allCompanies.map(company => {

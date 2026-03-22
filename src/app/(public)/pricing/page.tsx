@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -15,6 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useAuth } from '@/contexts/auth-context';
+import { useRouter } from 'next/navigation';
 
 type Plan = {
   name: string;
@@ -71,6 +74,21 @@ const featureComparison = [
 
 export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleChoosePlan = (planName: string) => {
+    if (planName === 'Enterprise') {
+      router.push('/contact');
+      return;
+    }
+
+    if (user && user.role === 'company') {
+      router.push('/company/billing');
+    } else {
+      router.push('/signup/company');
+    }
+  };
 
   return (
     <div className="container py-12 md:py-20">
@@ -134,7 +152,11 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" variant={plan.name === 'Enterprise' ? 'outline' : 'default'}>
+              <Button 
+                className="w-full" 
+                variant={plan.name === 'Enterprise' ? 'outline' : 'default'}
+                onClick={() => handleChoosePlan(plan.name)}
+              >
                 {plan.name === 'Enterprise' ? 'Contact Sales' : 'Choose Plan'}
               </Button>
             </CardFooter>

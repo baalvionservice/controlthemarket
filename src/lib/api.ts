@@ -1,4 +1,3 @@
-
 'use server';
 
 import * as api from './mock-api';
@@ -103,6 +102,8 @@ export const createPayment = api.createPayment;
 export const getInvoicesByUserId = api.getInvoicesByUserId;
 export const createSubscription = api.createSubscription;
 export const getAllPlans = api.getAllPlans;
+export const getSubscriptionByCompany = api.getSubscriptionByCompany;
+export const updateSubscription = api.updateSubscription;
 export const getAllSubscriptions = api.getAllSubscriptions;
 export const getAllInvoices = api.getAllInvoices;
 
@@ -122,13 +123,9 @@ export const getSystemMetrics = async () => mockSystemMetrics;
 export const getServiceStatus = async () => mockServiceStatus;
 export const getServiceLoad = async () => mockServiceLoad;
 export const getScalingEvents = async () => mockScalingEvents;
-export const getSystemLogs = async () => (await import('./mock-data')).mockSystemLogs;
-export const getSystemErrors = async () => (await import('./mock-data')).mockSystemErrors;
 export const getSystemIncidents = async () => mockSystemIncidents;
 export const getPlanUsage = async () => mockPlanUsage;
 export const getUsageMetrics = async () => mockUsageMetrics;
 export const getRevenueMetrics = async () => mockRevenueMetrics;
 export const getPlanDistribution = async () => mockPlanDistribution;
 export const getRevenueSources = async () => mockRevenueSources;
-
-

@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'candidate' | 'company' | 'admin';
 export type CompanyRole = 'owner' | 'admin' | 'member';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
@@ -526,10 +527,10 @@ export interface UsageMetric {
 }
 
 export interface PlanUsage {
-    feature: 'API Calls' | 'Tasks' | 'Storage';
+    feature: 'API Calls' | 'Tasks' | 'Storage' | 'Submissions';
     usage: number;
     limit: number;
-    unit: 'requests' | 'tasks' | 'GB';
+    unit: string;
 }
 
 export interface RevenueMetric {
@@ -555,9 +556,9 @@ export interface Plan {
   priceMonthly: number;
   priceYearly: number;
   limits: {
-    tasks: number;
-    submissions: number;
-    teamMembers: number;
+    tasks: number; // -1 for unlimited
+    submissions: number; // -1 for unlimited
+    teamMembers: number; // -1 for unlimited
   };
   features: string[];
 }
@@ -576,5 +577,8 @@ export interface Subscription {
   billingCycle: BillingCycle;
   paymentProvider?: PaymentProvider;
   externalSubscriptionId?: string;
+  usage: {
+    tasksCreated: number;
+    submissionsReceived: number;
+  };
 }
-

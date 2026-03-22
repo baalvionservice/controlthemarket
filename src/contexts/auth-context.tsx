@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import type { User, UserRole, Company } from '@/lib/types';
+import type { User, UserRole, Company, Plan, Subscription } from '@/lib/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import * as api from '@/lib/api';
@@ -30,6 +31,8 @@ interface AuthResult {
 
 interface AuthContextType {
   user: User | null;
+  plan: Plan | null;
+  subscription: Subscription | null;
   login: (credentials: LoginCredentials) => Promise<AuthResult>;
   signup: (details: SignupDetails) => Promise<AuthResult>;
   logout: () => void;
@@ -43,15 +46,67 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [plan, setPlan] = useState<Plan | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+
+  const fetchCompanyData = async (companyId: string) => {
+      const [subRes, plansRes] = await Promise.all([
+          api.getSubscriptionByCompany(companyId),
+          api.getAllPlans(),
+      ]);
+      const activeSub = subRes.data;
+      const allPlans = plansRes.data;
+
+      if (activeSub) {
+          const currentPlan = allPlans.find(p => p.id === activeSub.planId) || null;
+          setSubscription(activeSub);
+          setPlan(currentPlan);
+          
+          // Handle expired subscription
+          if (new Date(activeSub.endDate) < new Date()) {
+              const freePlan = allPlans.find(p => p.name === 'Free')!;
+              await api.updateSubscription(activeSub.id, { status: 'EXPIRED' });
+              const { data: newFreeSub } = await api.createSubscription({
+                  companyId: companyId,
+                  planId: freePlan.id,
+                  status: 'ACTIVE',
+                  startDate: new Date().toISOString(),
+                  endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+                  billingCycle: 'YEARLY',
+                  usage: { tasksCreated: 0, submissionsReceived: 0 }
+              });
+              setSubscription(newFreeSub);
+              setPlan(freePlan);
+          }
+      } else {
+          // If no subscription, assign a free one
+          const freePlan = allPlans.find(p => p.name === 'Free')!;
+           const { data: newFreeSub } = await api.createSubscription({
+              companyId: companyId,
+              planId: freePlan.id,
+              status: 'ACTIVE',
+              startDate: new Date().toISOString(),
+              endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 99)).toISOString(), // Long expiry for free plan
+              billingCycle: 'YEARLY',
+              usage: { tasksCreated: 0, submissionsReceived: 0 }
+            });
+            setSubscription(newFreeSub);
+            setPlan(freePlan);
+      }
+  }
 
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('skillmatch-user');
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        if (parsedUser.role === 'company' && parsedUser.companyId) {
+          fetchCompanyData(parsedUser.companyId);
+        }
       }
     } catch (error) {
       console.error('Failed to parse user from localStorage', error);
@@ -100,6 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (company) {
             foundUser.companyName = company.name;
         }
+        await fetchCompanyData(foundUser.companyId);
       }
       setUser(foundUser);
       localStorage.setItem('skillmatch-user', JSON.stringify(foundUser));
@@ -156,6 +212,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
+    setPlan(null);
+    setSubscription(null);
     localStorage.removeItem('skillmatch-user');
   };
 
@@ -178,7 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, loading, pathname, router]);
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateUser, acceptConsent, completeCandidateOnboarding }}>
+    <AuthContext.Provider value={{ user, plan, subscription, login, signup, logout, loading, updateUser, acceptConsent, completeCandidateOnboarding }}>
       {children}
     </AuthContext.Provider>
   );

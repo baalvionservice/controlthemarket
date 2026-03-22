@@ -291,6 +291,12 @@ export const getAllSubscriptions = async (): Promise<{ success: true; data: Subs
     return simulateApiCall(db.subscriptions);
 }
 
+export const getSubscriptionByCompany = async (companyId: string): Promise<{ success: true; data: Subscription | undefined }> => {
+    const db = getDB();
+    const subscription = db.subscriptions.find(s => s.companyId === companyId && s.status === 'ACTIVE');
+    return simulateApiCall(subscription);
+};
+
 export const createSubscription = async (subData: Omit<Subscription, 'id'>): Promise<{ success: true; data: Subscription }> => {
   const db = getDB();
   const newSub: Subscription = {
@@ -300,13 +306,27 @@ export const createSubscription = async (subData: Omit<Subscription, 'id'>): Pro
   // Deactivate old subscription for that company if it exists
   const updatedSubscriptions = db.subscriptions.map(s => {
       if (s.companyId === subData.companyId) {
-          return { ...s, status: 'CANCELED' as SubscriptionStatus };
+          return { ...s, status: 'CANCELED' as 'ACTIVE' | 'CANCELED' | 'EXPIRED' | 'TRIAL' };
       }
       return s;
   });
   
   setDB({ ...db, subscriptions: [...updatedSubscriptions, newSub] });
   return simulateApiCall(newSub);
+};
+
+export const updateSubscription = async (subscriptionId: string, updates: Partial<Subscription>): Promise<{ success: true; data: Subscription | undefined }> => {
+    const db = getDB();
+    let updatedSubscription: Subscription | undefined;
+    const newSubscriptions = db.subscriptions.map(s => {
+        if (s.id === subscriptionId) {
+            updatedSubscription = { ...s, ...updates };
+            return updatedSubscription;
+        }
+        return s;
+    });
+    setDB({ ...db, subscriptions: newSubscriptions });
+    return simulateApiCall(updatedSubscription);
 };
 
 

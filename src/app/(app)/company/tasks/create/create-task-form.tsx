@@ -32,7 +32,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
-import { CalendarIcon, Sparkles, Trash2, Paperclip } from 'lucide-react';
+import { CalendarIcon, Sparkles, Trash2, Paperclip, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -102,7 +102,13 @@ export function CreateTaskForm() {
   const [templates] = useState<TaskTemplate[]>(mockTemplates);
   const { toast } = useToast();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, subscription, plan } = useAuth();
+  
+  const canCreateTask = useMemo(() => {
+    if (!subscription || !plan) return false;
+    if (plan.limits.tasks === -1) return true; // Unlimited
+    return subscription.usage.tasksCreated < plan.limits.tasks;
+  }, [subscription, plan]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -173,6 +179,14 @@ export function CreateTaskForm() {
         toast({ title: "Error", description: "You must be associated with a company to create a task.", variant: "destructive" });
         return;
     }
+     if (!canCreateTask && status === 'published') {
+      toast({
+        title: "Task Limit Reached",
+        description: "You have reached the maximum number of active tasks for your current plan. Please upgrade your plan to publish more tasks.",
+        variant: "destructive",
+      });
+      return;
+    }
     const taskData = {
         ...values,
         deadline: values.deadline.toISOString(),
@@ -197,6 +211,18 @@ export function CreateTaskForm() {
     <>
       <Form {...form}>
         <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+           {!canCreateTask && (
+            <div className="flex items-center gap-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-yellow-700">
+                <AlertTriangle className="h-6 w-6"/>
+                <div>
+                    <h4 className="font-semibold">Task Limit Reached</h4>
+                    <p className="text-sm">You have created {subscription?.usage.tasksCreated}/{plan?.limits.tasks} tasks. You can save new tasks as drafts, but you must upgrade your plan to publish them.</p>
+                     <Button variant="link" className="p-0 h-auto text-yellow-700" asChild>
+                        <Link href="/company/subscription">Upgrade Plan</Link>
+                    </Button>
+                </div>
+            </div>
+          )}
           <div className="space-y-6 rounded-md border p-6">
             <h3 className="text-lg font-medium">Task Information</h3>
             <FormField
@@ -619,7 +645,7 @@ export function CreateTaskForm() {
           <div className="flex justify-end gap-4 pt-4">
             <Button type="button" variant="ghost">Cancel</Button>
             <Button type="button" variant="secondary" onClick={form.handleSubmit((values) => onSubmit(values, 'draft'))}>Save Draft</Button>
-            <Button type="button" onClick={form.handleSubmit((values) => onSubmit(values, 'published'))}>Publish Task</Button>
+            <Button type="button" onClick={form.handleSubmit((values) => onSubmit(values, 'published'))} disabled={!canCreateTask}>Publish Task</Button>
           </div>
         </form>
       </Form>

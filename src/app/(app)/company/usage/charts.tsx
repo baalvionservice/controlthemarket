@@ -80,6 +80,7 @@ export function UsageTrendsChart({ data }: { data: UsageMetric[] }) {
 export function UsageBreakdownPanel({ data }: { data: PlanUsage[] }) {
     
     const getUsageColor = (usage: number, limit: number) => {
+        if (limit === -1) return 'bg-primary'; // unlimited
         const percentage = (usage / limit) * 100;
         if (percentage > 90) return 'bg-destructive';
         if (percentage > 75) return 'bg-yellow-500';
@@ -97,10 +98,14 @@ export function UsageBreakdownPanel({ data }: { data: PlanUsage[] }) {
                     <div key={item.feature}>
                         <div className="flex justify-between text-sm mb-1">
                             <span className="font-medium text-muted-foreground">{item.feature}</span>
-                            <span><strong>{item.usage.toLocaleString()}</strong> / {item.limit.toLocaleString()} {item.unit}</span>
+                            <span>
+                                <strong>{item.usage.toLocaleString()}</strong> 
+                                {item.limit !== -1 ? ` / ${item.limit.toLocaleString()}` : ' / Unlimited'}
+                                <span className="ml-1 text-xs">{item.unit}</span>
+                            </span>
                         </div>
                         <Progress 
-                            value={(item.usage / item.limit) * 100}
+                            value={item.limit !== -1 ? (item.usage / item.limit) * 100 : 100}
                             indicatorClassName={getUsageColor(item.usage, item.limit)}
                         />
                     </div>
@@ -114,3 +119,4 @@ export function UsageBreakdownPanel({ data }: { data: PlanUsage[] }) {
         </Card>
     );
 }
+```

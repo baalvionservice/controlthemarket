@@ -1753,7 +1753,7 @@ export const mockRevenueSources: RevenueSource[] = [
 ];
 
 export const mockPlans: Plan[] = [
-  { id: 'plan-free', name: 'Free', priceMonthly: 0, priceYearly: 0, limits: { tasks: 5, submissions: 50, teamMembers: 3 }, features: ['Basic Analytics'] },
+  { id: 'plan-basic', name: 'Basic', priceMonthly: 29, priceYearly: 290, limits: { tasks: 50, submissions: 100, teamMembers: 5 }, features: ['50 Active Tasks', '100 Candidates per month', 'Basic Analytics', 'Email Support'] },
   { id: 'plan-pro', name: 'Pro', priceMonthly: 79, priceYearly: 790, limits: { tasks: 50, submissions: 1000, teamMembers: 10 }, features: ['Advanced Analytics', 'AI Task Assistant'] },
   { id: 'plan-ent', name: 'Enterprise', priceMonthly: 0, priceYearly: 0, limits: { tasks: -1, submissions: -1, teamMembers: -1 }, features: ['Custom Integrations', 'Dedicated Support'] },
 ];
@@ -1773,7 +1773,7 @@ export const mockSubscriptions: Subscription[] = [
   {
     id: 'sub-comp-2',
     companyId: 'company-2',
-    planId: 'plan-free',
+    planId: 'plan-basic',
     status: 'TRIAL',
     startDate: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     endDate: new Date(new Date().setDate(new Date().getDate() + 20)).toISOString(),

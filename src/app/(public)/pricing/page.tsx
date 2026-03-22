@@ -38,7 +38,7 @@ const plans: Plan[] = [
       monthly: 29,
       yearly: 290,
     },
-    features: ['5 Active Tasks', '100 Candidates per month', 'Basic Analytics', 'Email Support'],
+    features: ['50 Active Tasks', '100 Candidates per month', 'Basic Analytics', 'Email Support'],
   },
   {
     name: 'Pro',
@@ -62,7 +62,7 @@ const plans: Plan[] = [
 ];
 
 const featureComparison = [
-    { feature: 'Active Tasks', basic: '5', pro: '50', enterprise: 'Unlimited' },
+    { feature: 'Active Tasks', basic: '50', pro: '50', enterprise: 'Unlimited' },
     { feature: 'Candidates per month', basic: '100', pro: '1,000', enterprise: 'Unlimited' },
     { feature: 'AI Task Assistant', basic: false, pro: true, enterprise: true },
     { feature: 'Advanced Analytics', basic: false, pro: true, enterprise: true },

@@ -1,4 +1,5 @@
 
+
 import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, Plan, Subscription, Badge } from './types';
 
 export const mockBadges: Badge[] = [
@@ -597,7 +598,7 @@ export const mockTasks: Task[] = [
   <li><strong>Project Structure</strong>: Organize your code in a clean, modular fashion (e.g., controllers, services, routes, middleware, models).</li>
   <li><strong>API Response</strong>: All endpoints must return a standardized JSON object: <code>{ success: boolean, data: any, error: string | null }</code>.</li>
   <li><strong>Authentication</strong>: All protected routes must validate a JWT or session token. Create middleware for this.</li>
-  <li><strong>Role-Based Access Control (RBAC)</strong>: Implement middleware to restrict access based on user roles. The three roles are <code>Public</code>, <code>Investor</code>, and <code>Admin</code>.</li>
+  <li><strong>Role-Based Access Control (RBAC)</strong>: Implement middleware to restrict access based on user roles (Public, Investor, Admin).</li>
   <li><strong>Input Validation</strong>: Sanitize and validate all incoming data from API requests.</li>
   <li><strong>Security Best Practices</strong>: Passwords must be hashed using a strong algorithm like bcrypt. Never store plaintext secrets; use environment variables.</li>
   <li><strong>Error Handling</strong>: Implement comprehensive error handling to prevent crashes and provide meaningful error messages.</li>
@@ -700,6 +701,71 @@ GET    /api/tasks/logs                (Admin, Company)</code></pre>
     multiRound: false,
     imageUrl: 'https://picsum.photos/seed/rbac/600/400',
     imageHint: 'database schema',
+  },
+  {
+    id: 'task-19',
+    title: 'Build a Secure Data Room Module for an Investor Platform (Baalvion)',
+    description: "As a senior backend developer, you are tasked with building the secure Data Room module for 'Baalvion', a next-generation institutional Investor Relations Platform. This module is responsible for providing controlled access to sensitive investor documents such as financial reports, legal files, and governance records. It must ensure strict access control and full audit tracking of all document interactions.",
+    instructions: `<h3>Project Goal</h3>
+<p>Your primary objective is to build a secure backend module that enables role-based document access and tracks every document interaction. This module will ensure that only authorized investors and admins can view or download specific documents, maintaining full transparency and auditability.</p>
+<h3>Core Architectural & Security Requirements</h3>
+<ul>
+  <li><strong>Project Structure</strong>: Organize your code in a clean, modular fashion (e.g., controllers, services, routes, middleware, models).</li>
+  <li><strong>API Response</strong>: All endpoints must return a standardized JSON object: <code>{ success: boolean, data: any, error: string | null }</code>.</li>
+  <li><strong>Authentication</strong>: All protected routes must validate a JWT or session token using middleware.</li>
+  <li><strong>Role-Based Access Control (RBAC)</strong>: Implement middleware to restrict access based on user roles (Public, Investor, Admin).</li>
+  <li><strong>Input Validation</strong>: Sanitize and validate all incoming data from API requests.</li>
+  <li><strong>Security Best Practices</strong>: Ensure secure document handling. Validate file access permissions before serving any document.</li>
+  <li><strong>Error Handling</strong>: Implement comprehensive error handling to prevent crashes and provide meaningful error messages.</li>
+  <li><strong>Logging</strong>: Log all document-related actions including viewing and downloading with user ID, document ID, and timestamp.</li>
+</ul>
+<h3>Features to Implement</h3>
+<h4>1. Data Room Document System:</h4>
+<ul>
+  <li><strong>Document Listing</strong>: Create an endpoint that returns a list of available documents filtered based on the user’s role.</li>
+  <li><strong>Role-Based Access</strong>: Each document must define which roles can access it (Investor/Admin).</li>
+  <li><strong>Secure Access</strong>: Ensure unauthorized users cannot access restricted documents.</li>
+</ul>
+<h4>2. Document Download System:</h4>
+<ul>
+  <li><strong>Secure Download</strong>: Allow authorized users to download documents via a protected endpoint.</li>
+  <li><strong>Access Validation</strong>: Before download, validate user role and permissions.</li>
+</ul>
+<h4>3. Audit Logging System:</h4>
+<ul>
+  <li>Track every document interaction including:
+    <ul>
+        <li>Document viewed</li>
+        <li>Document downloaded</li>
+        <li>User performing the action</li>
+        <li>Timestamp</li>
+    </ul>
+  </li>
+</ul>
+<h4>4. Mock Data Handling:</h4>
+<ul>
+  <li>Use mock data for documents (no real file storage required).</li>
+  <li>Simulate document metadata such as: id, title, description, allowedRoles, createdAt</li>
+</ul>
+<h3>API Endpoints to Build</h3>
+<p>The following is a list of endpoints you must create:</p>
+<pre><code>GET    /api/data-room/documents        (Protected: Investor, Admin)
+GET    /api/data-room/download/:id     (Protected: Investor, Admin)
+GET    /api/audit/logs                 (Protected: Admin)</code></pre>`,
+    expectedOutputs: '<p>A public GitHub repository containing the complete, runnable Node.js backend module. The repository must include a README.md with clear setup instructions, environment configuration (.env.example), and steps to run the server. All endpoints must be functional, secure, and follow the required architecture. The system should run without errors and demonstrate proper role-based access and audit logging.</p>',
+    roleCategory: 'Backend',
+    taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
+    difficulty: 'Expert',
+    priority: 'High',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 21)).toISOString(),
+    companyId: 'company-3',
+    createdBy: 'user-10',
+    status: 'published',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/dataroom/600/400',
+    imageHint: 'data vault',
   },
 ];
 
@@ -1684,9 +1750,8 @@ export const mockSystemErrors: SystemError[] = [
     service: 'API',
     type: 'Unhandled Exception',
     severity: 'Critical',
-    message: 'TypeError: Cannot read properties of undefined (reading \'id\')',
-    stackTrace: `at /app/src/services/userService.ts:42:15
-at processTicksAndRejections (node:internal/process/task_queues:95:5)`,
+    message: "TypeError: Cannot read properties of undefined (reading 'id')",
+    stackTrace: "at /app/src/services/userService.ts:42:15\nat processTicksAndRejections (node:internal/process/task_queues:95:5)",
     frequency: 125,
     lastOccurred: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
     status: 'Open',
@@ -1933,3 +1998,4 @@ export const mockSubscriptions: Subscription[] = [
 ];
 
     
+

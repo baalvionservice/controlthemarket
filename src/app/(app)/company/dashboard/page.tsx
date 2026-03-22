@@ -19,10 +19,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRight, Briefcase, PlusCircle, Clock, Star, Monitor, Users, XCircle, FileCheck } from 'lucide-react';
+import { ArrowRight, Briefcase, PlusCircle, Clock, Star, Monitor, Users, XCircle, FileCheck, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { TopCandidates } from './top-candidates';
 import type { User } from '@/lib/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
@@ -47,10 +48,10 @@ export default async function CompanyDashboard() {
   const companyEvaluations = allEvaluations.filter(ev => companySubmissionIds.has(ev.submissionId));
   
   // Metrics calculation
-  const totalAssignedCandidates = new Set(companySubmissions.map(s => s.userId)).size;
+  const publishedTasksCount = tasks.filter(t => t.status === 'published').length;
   const pendingReviewCount = companySubmissions.filter(s => ['pending', 'in-review', 'resubmitted'].includes(s.status)).length;
   const shortlistedCount = companySubmissions.filter(s => s.status === 'shortlisted').length;
-  const rejectedCount = companySubmissions.filter(s => s.status === 'rejected').length;
+  const evaluatedCount = companyEvaluations.length;
 
 
   const submissionsWithDetails = await Promise.all(
@@ -94,14 +95,28 @@ export default async function CompanyDashboard() {
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="font-headline text-3xl font-bold tracking-tight">
-            {company?.name || 'Company'} Dashboard
-          </h2>
-          <p className="text-muted-foreground">
-            Manage your company's tasks, review submissions, and track candidate performance.
-          </p>
+      <div className="flex items-start justify-between space-y-2">
+        <div className="flex items-center gap-4">
+            <Avatar className="h-14 w-14 hidden sm:flex">
+                <AvatarImage src={company?.logoUrl} />
+                <AvatarFallback>{company?.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div>
+                <div className="flex items-center gap-3">
+                    <h2 className="font-headline text-3xl font-bold tracking-tight">
+                        {company?.name || 'Company'} Dashboard
+                    </h2>
+                    {company?.isVerified && (
+                        <Badge variant="default" className="gap-1.5 pl-2 pr-3 text-base">
+                            <ShieldCheck className="h-4 w-4" />
+                            Verified
+                        </Badge>
+                    )}
+                </div>
+                <p className="text-muted-foreground">
+                    Manage your company's tasks, review submissions, and track candidate performance.
+                </p>
+            </div>
         </div>
         <div className="flex items-center space-x-2">
           <Button asChild>
@@ -115,11 +130,11 @@ export default async function CompanyDashboard() {
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Assigned Candidates</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Published Tasks</CardTitle>
+            <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">{totalAssignedCandidates}</div>
+            <div className="text-2xl font-bold">{publishedTasksCount}</div>
           </CardContent>
         </Card>
         <Card>
@@ -133,7 +148,7 @@ export default async function CompanyDashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Approved Candidates</CardTitle>
+            <CardTitle className="text-sm font-medium">Shortlisted Candidates</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
@@ -142,11 +157,11 @@ export default async function CompanyDashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rejected Candidates</CardTitle>
-            <XCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Evaluations Completed</CardTitle>
+            <FileCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">{rejectedCount}</div>
+            <div className="text-2xl font-bold">{evaluatedCount}</div>
           </CardContent>
         </Card>
       </div>

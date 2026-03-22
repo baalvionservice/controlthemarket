@@ -127,6 +127,7 @@ As the platform scales, these logical services can be extracted into independent
 
 -   `/users/{userId}`: Stores all user profiles (candidates, company members, admins).
 -   `/companies/{companyId}`: Stores company profiles and tenant-specific information.
+-   `/memberships/{membershipId}`: Stores the many-to-many relationship between users and companies, defining roles within a company.
 -   `/tasks/{taskId}`: Contains all tasks created by companies.
 -   `/submissions/{submissionId}`: All candidate submissions for tasks.
 -   `/evaluations/{evaluationId}`: Stores evaluation feedback and scores for submissions.
@@ -136,24 +137,24 @@ As the platform scales, these logical services can be extracted into independent
 Relationships are managed via stored IDs in documents, representing foreign keys.
 
 `
-  Company (1) --< (M) User      // A company has multiple users (employees)
-  Company (1) --< (M) Task      // A company creates multiple tasks
-  User (1)    --< (M) Submission  // A candidate makes multiple submissions
-  Task (1)    --< (M) Submission  // A task receives multiple submissions
-  Submission (1) -- (1) Evaluation // Each submission gets one evaluation
+  Company (1) --< (M) User (via Membership) // A company has multiple users (employees)
+  Company (1) --< (M) Task                  // A company creates multiple tasks
+  User (1)    --< (M) Submission              // A candidate makes multiple submissions
+  Task (1)    --< (M) Submission              // A task receives multiple submissions
+  Submission (1) -- (1) Evaluation             // Each submission gets one evaluation
 `
 
 ### 4.3. Data Integrity
 
 Data integrity and constraints are enforced primarily through **Firestore Security Rules**. This is a critical component of the architecture.
--   **Example:** A `Task` can only be created by a user whose `auth.uid` is associated with a 'company' role, and the `companyId` on the new task must match their own.
+-   **Example:** A `Task` can only be created by a user whose `auth.uid` is a member of the task's `companyId` with an 'owner' or 'admin' role.
 -   **Example:** A `Submission` can only be read by the candidate who submitted it or by a user belonging to the company that owns the task.
 
 ## 5. Role-Based Access Control (RBAC)
 
 -   **Primary Enforcement: Firestore Security Rules**
     -   This is the most critical layer of security, securing data at its source. Rules are written in a `firestore.rules` file and deployed to Firebase.
-    -   **Example Rule:** `allow read: if request.auth.uid == resource.data.userId;`
+    -   **Example Rule:** `allow read: if request.auth.uid == resource.data.userId || get(/databases/$(database)/documents/memberships/$(request.auth.uid)_$(resource.data.companyId)).data.role in ['owner', 'admin'];`
 -   **Client-Side UI Control:** The frontend uses the authenticated user's role (from the `AuthContext`) to conditionally render UI elements (e.g., an "Admin Panel" link is only shown to admins).
 -   **Server-Side Logic (Server Actions):** Every Server Action re-validates the user's role and permissions before executing an operation, providing a second layer of defense.
 
@@ -170,5 +171,3 @@ The system uses status fields to manage the lifecycle of key entities.
 -   **DevOps:**
     -   **Containerization:** While the core is serverless, any future standalone services (e.g., a dedicated analytics processor) would be containerized using Docker and orchestrated with Kubernetes or managed services like Cloud Run.
     -   **CI/CD:** A CI/CD pipeline (e.g., GitHub Actions) is used to automate testing, linting, and deployment to staging and production environments on Vercel/Firebase.
-
-    

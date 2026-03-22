@@ -1,5 +1,4 @@
 
-
 import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, Plan, Subscription, Badge } from './types';
 
 export const mockBadges: Badge[] = [
@@ -111,6 +110,7 @@ export const mockUsers: User[] = [
       experienceLevel: 'Advanced',
       skills: ['Node.js', 'Python', 'GraphQL', 'AWS'],
       githubUrl: 'https://github.com/diana-dev',
+      linkedinUrl: 'https://linkedin.com/in/diana-dev',
       badgeIds: ['badge-2', 'badge-4'],
     },
     candidatePerformance: {

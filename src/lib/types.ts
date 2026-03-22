@@ -1,5 +1,4 @@
 
-
 export type UserRole = 'candidate' | 'company' | 'admin';
 export type CompanyRole = 'owner' | 'admin' | 'member';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
@@ -502,6 +501,7 @@ export interface InvoiceLineItem {
 
 export interface Invoice {
   id: string;
+  companyId: string;
   amount: number;
   date: string; // ISO date string
   dueDate: string; // ISO date string
@@ -577,5 +577,4 @@ export interface Subscription {
   paymentProvider?: PaymentProvider;
   externalSubscriptionId?: string;
 }
-
 

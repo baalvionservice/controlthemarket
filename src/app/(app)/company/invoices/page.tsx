@@ -1,5 +1,6 @@
 
-import { getInvoices } from "@/lib/api";
+'use client';
+import { getInvoicesByUserId } from "@/lib/api";
 import { InvoiceList } from "./invoice-list";
 import {
   Card,
@@ -9,10 +10,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
+import { useEffect, useState } from "react";
+import type { Invoice } from "@/lib/types";
 
-export default async function InvoicesPage() {
-  const invoices = await getInvoices();
+export default function InvoicesPage() {
+  const { user } = useAuth();
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      getInvoicesByUserId(user.id).then(res => {
+        setInvoices(res.data);
+        setLoading(false);
+      });
+    } else {
+        setLoading(false);
+    }
+  }, [user]);
+
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -37,7 +55,13 @@ export default async function InvoicesPage() {
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <InvoiceList initialData={invoices} />
+            {loading ? (
+                <div className="flex justify-center p-8">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+            ) : (
+                <InvoiceList initialData={invoices} />
+            )}
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,6 @@
 
 import { getDB, setDB } from './mock-db';
-import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription } from './types';
+import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle } from './types';
 
 const ARTIFICIAL_DELAY = 300;
 
@@ -40,7 +40,7 @@ export const updateUser = async (userId: string, updates: Partial<User>): Promis
                 ...u,
                 ...updates,
                 profile: {
-                    ...u.profile,
+                    ...(u.profile || {}),
                     ...updates.profile
                 }
             };
@@ -246,19 +246,40 @@ export const getAllEvaluations = async (): Promise<{ success: true, data: Evalua
 
 
 // --- PAYMENT APIs (MOCK) ---
-
-export const createPayment = async (data: any): Promise<{ success: true, data: any }> => {
-    const newPayment = { ...data, id: generateId('pay'), createdAt: new Date().toISOString() };
-    // In a real scenario, you'd add this to a 'payments' collection in the DB.
-    return simulateApiCall(newPayment);
+export const createPayment = async (data: { companyId: string, amount: number, planName: string, billingCycle: BillingCycle }): Promise<{ success: true, data: Invoice }> => {
+    const db = getDB();
+    const now = new Date();
+    const newInvoice: Invoice = {
+        id: generateId('inv'),
+        companyId: data.companyId,
+        amount: data.amount,
+        date: now.toISOString(),
+        dueDate: new Date(new Date(now).setDate(now.getDate() + 15)).toISOString(),
+        status: 'Paid',
+        planName: data.planName,
+        billingPeriod: {
+            start: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(),
+            end: new Date().toISOString(),
+        },
+        lineItems: [{ id: generateId('item'), description: `${data.planName} (${data.billingCycle})`, quantity: 1, unitPrice: data.amount, total: data.amount }],
+        subtotal: data.amount,
+        tax: 0,
+    };
+    setDB({ ...db, invoices: [...db.invoices, newInvoice] });
+    return simulateApiCall(newInvoice);
 }
 
-export const getUserPayments = async (userId: string): Promise<{ success: true, data: any[] }> => {
-    // Mock implementation returns an empty array
-    return simulateApiCall([]);
+export const getInvoicesByUserId = async (userId: string): Promise<{ success: true, data: Invoice[] }> => {
+    const db = getDB();
+    const user = db.users.find(u => u.id === userId);
+    if (!user || !user.companyId) {
+        return simulateApiCall([]);
+    }
+    const invoices = db.invoices.filter(inv => inv.companyId === user.companyId);
+    return simulateApiCall(invoices);
 }
 
-// --- Other API mocks that might be needed ---
+// --- Subscription & Plan APIs ---
 
 export const getAllPlans = async (): Promise<{ success: true; data: Plan[] }> => {
     const db = getDB();
@@ -269,6 +290,25 @@ export const getAllSubscriptions = async (): Promise<{ success: true; data: Subs
     const db = getDB();
     return simulateApiCall(db.subscriptions);
 }
+
+export const createSubscription = async (subData: Omit<Subscription, 'id'>): Promise<{ success: true; data: Subscription }> => {
+  const db = getDB();
+  const newSub: Subscription = {
+    ...subData,
+    id: generateId('sub'),
+  };
+  // Deactivate old subscription for that company if it exists
+  const updatedSubscriptions = db.subscriptions.map(s => {
+      if (s.companyId === subData.companyId) {
+          return { ...s, status: 'CANCELED' as SubscriptionStatus };
+      }
+      return s;
+  });
+  
+  setDB({ ...db, subscriptions: [...updatedSubscriptions, newSub] });
+  return simulateApiCall(newSub);
+};
+
 
 export const getAllInvoices = async (): Promise<{ success: true; data: Invoice[] }> => {
     const db = getDB();

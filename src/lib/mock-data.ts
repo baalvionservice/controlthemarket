@@ -1,5 +1,4 @@
 
-
 import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, Plan, Subscription, Badge } from './types';
 
 export const mockBadges: Badge[] = [
@@ -2182,6 +2181,7 @@ export const mockSystemIncidents: SystemIncident[] = [
 export const mockInvoices: Invoice[] = [
   {
     id: 'inv-001',
+    companyId: 'company-1',
     amount: 85.32,
     date: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(),
     dueDate: new Date(new Date().setMonth(new Date().getMonth() - 1, 15)).toISOString(),
@@ -2199,6 +2199,7 @@ export const mockInvoices: Invoice[] = [
   },
   {
     id: 'inv-002',
+    companyId: 'company-1',
     amount: 79.00,
     date: new Date().toISOString(),
     dueDate: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
@@ -2216,6 +2217,7 @@ export const mockInvoices: Invoice[] = [
   },
   {
     id: 'inv-003',
+    companyId: 'company-2',
     amount: 31.32,
     date: new Date(new Date().setMonth(new Date().getMonth() - 2)).toISOString(),
     dueDate: new Date(new Date().setMonth(new Date().getMonth() - 2, 15)).toISOString(),
@@ -2233,6 +2235,7 @@ export const mockInvoices: Invoice[] = [
   },
   {
     id: 'inv-004',
+    companyId: 'company-2',
     amount: 31.32,
     date: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(),
     dueDate: new Date(new Date().setMonth(new Date().getMonth() - 3, 15)).toISOString(),
@@ -2250,6 +2253,7 @@ export const mockInvoices: Invoice[] = [
   },
    {
     id: 'inv-005',
+    companyId: 'company-1',
     amount: 853.20,
     date: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
     dueDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1, new Date().getMonth(), 15)).toISOString(),
@@ -2306,7 +2310,7 @@ export const mockRevenueSources: RevenueSource[] = [
 ];
 
 export const mockPlans: Plan[] = [
-  { id: 'plan-basic', name: 'Basic', priceMonthly: 29, priceYearly: 290, limits: { tasks: 50, submissions: 100, teamMembers: 5 }, features: ['50 Active Tasks', '100 Candidates per month', 'Basic Analytics', 'Email Support'] },
+  { id: 'plan-basic', name: 'Basic', priceMonthly: 29, priceYearly: 290, limits: { tasks: 5, submissions: 20, teamMembers: 1 }, features: ['5 Active Tasks', '100 Candidates per month', 'Basic Analytics', 'Email Support'] },
   { id: 'plan-pro', name: 'Pro', priceMonthly: 79, priceYearly: 790, limits: { tasks: 50, submissions: 1000, teamMembers: 10 }, features: ['Advanced Analytics', 'AI Task Assistant'] },
   { id: 'plan-ent', name: 'Enterprise', priceMonthly: 0, priceYearly: 0, limits: { tasks: -1, submissions: -1, teamMembers: -1 }, features: ['Custom Integrations', 'Dedicated Support'] },
 ];
@@ -2335,6 +2339,7 @@ export const mockSubscriptions: Subscription[] = [
 ];
 
     
+
 
 
 

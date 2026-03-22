@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import * as api from './mock-api';
@@ -20,7 +19,6 @@ import {
   mockServiceLoad,
   mockScalingEvents,
   mockSystemIncidents,
-  mockInvoices,
   mockPlanUsage,
   mockUsageMetrics,
   mockRevenueMetrics,
@@ -100,6 +98,15 @@ export const getAllEvaluations = dataLayer.getHybridEvaluations;
 export const createEvaluation = api.createEvaluation;
 
 
+// --- Payment APIs ---
+export const createPayment = api.createPayment;
+export const getInvoicesByUserId = api.getInvoicesByUserId;
+export const createSubscription = api.createSubscription;
+export const getAllPlans = api.getAllPlans;
+export const getAllSubscriptions = api.getAllSubscriptions;
+export const getAllInvoices = api.getAllInvoices;
+
+
 // --- Remaining data is still from mock-data.ts as API functions were not requested for them ---
 export const getEvaluationSchemas = async () => mockEvaluationSchemas;
 export const getActivityLogs = async () => mockActivityLogs;
@@ -118,12 +125,10 @@ export const getScalingEvents = async () => mockScalingEvents;
 export const getSystemLogs = async () => (await import('./mock-data')).mockSystemLogs;
 export const getSystemErrors = async () => (await import('./mock-data')).mockSystemErrors;
 export const getSystemIncidents = async () => mockSystemIncidents;
-export const getInvoices = async () => (await api.getAllInvoices()).data;
 export const getPlanUsage = async () => mockPlanUsage;
 export const getUsageMetrics = async () => mockUsageMetrics;
 export const getRevenueMetrics = async () => mockRevenueMetrics;
 export const getPlanDistribution = async () => mockPlanDistribution;
 export const getRevenueSources = async () => mockRevenueSources;
-export const getPlans = async () => (await api.getAllPlans()).data;
-export const getSubscriptions = async () => (await api.getAllSubscriptions()).data;
+
 

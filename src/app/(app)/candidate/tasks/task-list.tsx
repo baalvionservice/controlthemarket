@@ -9,18 +9,20 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { TaskCard } from './task-card';
 import type { Task, RoleCategory, TaskDifficulty, TaskType, TaskPriority } from '@/lib/types';
 import { Search } from 'lucide-react';
+import { groupedRoles } from '@/lib/roles';
 
 export type TaskWithCompany = Task & {
   companyName: string;
   companyLogo?: string;
 };
 
-const roleCategories: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 const difficulties: (TaskDifficulty | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
 const taskTypes: (TaskType | 'All')[] = ["All", "Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation", "Data Cleaning", "Visualization", "Statistical Analysis", "Reporting"];
 const priorities: (TaskPriority | 'All')[] = ["All", "High", "Medium", "Low"];
@@ -37,7 +39,20 @@ export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
     return tasks.filter((task) => {
       if (task.status !== 'published') return false;
       const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) || task.companyName.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesRole = roleFilter === 'All' || task.roleCategory === roleFilter;
+      
+      const matchesRole = (() => {
+          if (roleFilter === 'All') return true;
+          if (task.roleCategory === roleFilter) return true;
+
+          // Check if the selected filter is a parent category
+          const parentGroup = groupedRoles.find(g => g.label === roleFilter);
+          if (parentGroup && task.roleCategory && parentGroup.subRoles.includes(task.roleCategory)) {
+              return true;
+          }
+          
+          return false;
+      })();
+
       const matchesDifficulty = difficultyFilter === 'All' || task.difficulty === difficultyFilter;
       const matchesTaskType = taskTypeFilter === 'All' || (task.taskTypes || []).includes(taskTypeFilter);
       const matchesPriority = priorityFilter === 'All' || task.priority === priorityFilter;
@@ -63,7 +78,16 @@ export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
               <SelectContent>
-                {roleCategories.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}
+                <SelectItem value="All">All Roles</SelectItem>
+                {groupedRoles.map(group => (
+                  <SelectGroup key={group.label}>
+                    <SelectLabel>{group.label}</SelectLabel>
+                    <SelectItem value={group.label}>{group.label} (All)</SelectItem>
+                    {group.subRoles.map(role => (
+                      <SelectItem key={role} value={role} className="pl-8">{role}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))}
               </SelectContent>
             </Select>
             <Select value={difficultyFilter} onValueChange={(value) => setDifficultyFilter(value as TaskDifficulty | 'All')}>

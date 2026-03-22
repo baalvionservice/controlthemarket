@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -8,14 +9,16 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel,
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 import type { PublicCandidateRanking } from './page';
 import type { RoleCategory, ExperienceLevel } from '@/lib/types';
 import { LeaderboardTopPerformers } from './leaderboard-top-performers';
 import { LeaderboardTable } from './leaderboard-table';
+import { groupedRoles } from '@/lib/roles';
 
-const roleCategories: (RoleCategory | 'All')[] = ["All", "Engineering", "Design", "Marketing", "Business", "Data"];
 const timeRanges: ('All-Time' | 'Monthly' | 'Weekly')[] = ["All-Time", "Monthly", "Weekly"];
 const skillLevels: (ExperienceLevel | 'All')[] = ["All", "Beginner", "Intermediate", "Advanced", "Expert"];
 
@@ -28,7 +31,20 @@ export function LeaderboardClientPage({ initialData }: { initialData: PublicCand
     const filteredData = useMemo(() => {
         return initialData.filter((item) => {
             const matchesSearch = item.candidate.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesRole = roleFilter === 'All' || item.primaryRole === roleFilter;
+            
+            const matchesRole = (() => {
+                if (roleFilter === 'All') return true;
+                if (item.primaryRole === roleFilter) return true;
+
+                // Check if the selected filter is a parent category
+                const parentGroup = groupedRoles.find(g => g.label === roleFilter);
+                if (parentGroup && item.primaryRole && parentGroup.subRoles.includes(item.primaryRole)) {
+                    return true;
+                }
+                
+                return false;
+            })();
+            
             const matchesSkill = skillFilter === 'All' || item.candidate.profile?.experienceLevel === skillFilter;
             // Time filter is mocked, so it doesn't do anything
             return matchesSearch && matchesRole && matchesSkill;
@@ -64,7 +80,16 @@ export function LeaderboardClientPage({ initialData }: { initialData: PublicCand
                         <SelectValue placeholder="Filter by role" />
                     </SelectTrigger>
                     <SelectContent>
-                        {roleCategories.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}
+                        <SelectItem value="All">All Roles</SelectItem>
+                        {groupedRoles.map(group => (
+                        <SelectGroup key={group.label}>
+                            <SelectLabel>{group.label}</SelectLabel>
+                            <SelectItem value={group.label}>{group.label} (All)</SelectItem>
+                            {group.subRoles.map(role => (
+                            <SelectItem key={role} value={role} className="pl-8">{role}</SelectItem>
+                            ))}
+                        </SelectGroup>
+                        ))}
                     </SelectContent>
                 </Select>
                  <Select value={skillFilter} onValueChange={(value) => setSkillFilter(value as ExperienceLevel | 'All')}>

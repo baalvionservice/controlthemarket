@@ -77,7 +77,6 @@ export default function BlogPage() {
             '</div>' +
             '<h2>Why Degrees and Certifications Are Not Enough</h2>' +
             '<p>Education and certifications have their place. They signal foundational knowledge, discipline, and commitment. But they do not predict performance. A candidate with a computer science degree from a top university may be outperformed by a self-taught developer who has never set foot in a lecture hall.</p>' +
-            '<p>The most innovative companies in the world — Apple, Google, IBM, Tesla — have all publicly removed degree requirements from their hiring processes. Why? Because they discovered that the correlation between credentials and job performance is far weaker than previously assumed.</p>' +
             '<p>What actually predicts performance is the ability to perform the specific tasks required by the role. And the only reliable way to measure that ability is to give candidates those tasks and measure the results.</p>' +
             '<h2>How SkillMatch Pro Makes Skill Verification Scalable</h2>' +
             '<p>The challenge with skills-based hiring has always been scale. Testing every candidate individually is time-consuming and expensive. SkillMatch Pro solves this by automating the evaluation process without sacrificing quality.</p>' +

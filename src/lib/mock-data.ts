@@ -627,7 +627,28 @@ POST   /api/auth/login         (Public)
 GET    /api/auth/me            (Protected: Investor, Admin)
 POST   /api/kyc/submit         (Protected: Investor)
 GET    /api/kyc/status         (Protected: Investor, Admin)
-POST   /api/nda/accept         (Protected: Investor)</code></pre>`,
+POST   /api/nda/accept         (Protected: Investor)</code></pre><h3>WORKLOAD EXPECTATION & INTEGRATION REQUIREMENT</h3>
+<p><strong>Estimated Effort:</strong> This task is expected to require approximately 4–6 hours of focused development work. Candidates are expected to complete the implementation within a minimum of 2 days to ensure proper code quality, testing, and documentation.</p>
+<p><strong>Note:</strong> Submissions that appear rushed, incomplete, or lacking proper structure may be rejected regardless of completion.</p>
+
+<h3>ADMIN PANEL INTEGRATION (MANDATORY)</h3>
+<p>All modules must be designed to integrate with the central Admin & Compliance System.</p>
+<p>Developers must ensure:</p>
+<ul>
+  <li>All critical actions are logged and accessible via admin APIs</li>
+  <li>Data structures are compatible with admin-level review</li>
+  <li>Any approval-based flow (KYC, investments, etc.) is visible to admin endpoints</li>
+  <li>No isolated or standalone logic — system must be integration-ready</li>
+</ul>
+<p><strong>Failure to ensure admin integration compatibility may result in rejection.</strong></p>
+
+<h3>IMPORTANT</h3>
+<ul>
+  <li>This is not an isolated task — it is part of a larger system</li>
+  <li>Code must be modular, scalable, and integration-ready</li>
+  <li>Final system ownership and integration will be handled centrally</li>
+</ul>
+`,
     expectedOutputs: '<p>A public GitHub repository containing the complete, runnable Node.js application. The repository must include a <code>README.md</code> with clear, step-by-step instructions for local setup, environment configuration (<code>.env.example</code>), and how to run the server. The application should start without errors and all endpoints should be functional as per the requirements.</p>',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
@@ -751,7 +772,28 @@ GET    /api/tasks/logs                (Admin, Company)</code></pre>
 <p>The following is a list of endpoints you must create:</p>
 <pre><code>GET    /api/data-room/documents        (Protected: Investor, Admin)
 GET    /api/data-room/download/:id     (Protected: Investor, Admin)
-GET    /api/audit/logs                 (Protected: Admin)</code></pre>`,
+GET    /api/audit/logs                 (Protected: Admin)</code></pre><h3>WORKLOAD EXPECTATION & INTEGRATION REQUIREMENT</h3>
+<p><strong>Estimated Effort:</strong> This task is expected to require approximately 4–6 hours of focused development work. Candidates are expected to complete the implementation within a minimum of 2 days to ensure proper code quality, testing, and documentation.</p>
+<p><strong>Note:</strong> Submissions that appear rushed, incomplete, or lacking proper structure may be rejected regardless of completion.</p>
+
+<h3>ADMIN PANEL INTEGRATION (MANDATORY)</h3>
+<p>All modules must be designed to integrate with the central Admin & Compliance System.</p>
+<p>Developers must ensure:</p>
+<ul>
+  <li>All critical actions are logged and accessible via admin APIs</li>
+  <li>Data structures are compatible with admin-level review</li>
+  <li>Any approval-based flow (KYC, investments, etc.) is visible to admin endpoints</li>
+  <li>No isolated or standalone logic — system must be integration-ready</li>
+</ul>
+<p><strong>Failure to ensure admin integration compatibility may result in rejection.</strong></p>
+
+<h3>IMPORTANT</h3>
+<ul>
+  <li>This is not an isolated task — it is part of a larger system</li>
+  <li>Code must be modular, scalable, and integration-ready</li>
+  <li>Final system ownership and integration will be handled centrally</li>
+</ul>
+`,
     expectedOutputs: '<p>A public GitHub repository containing the complete, runnable Node.js backend module. The repository must include a README.md with clear setup instructions, environment configuration (.env.example), and steps to run the server. All endpoints must be functional, secure, and follow the required architecture. The system should run without errors and demonstrate proper role-based access and audit logging.</p>',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
@@ -803,7 +845,28 @@ GET    /api/audit/logs                 (Protected: Admin)</code></pre>`,
 <pre><code>POST   /api/investment/term-sheet     (Investor)
 POST   /api/investment/execute        (Investor)
 GET    /api/investment/status         (Investor, Admin)
-POST   /api/investment/verify         (Admin)</code></pre>`,
+POST   /api/investment/verify         (Admin)</code></pre><h3>WORKLOAD EXPECTATION & INTEGRATION REQUIREMENT</h3>
+<p><strong>Estimated Effort:</strong> This task is expected to require approximately 4–6 hours of focused development work. Candidates are expected to complete the implementation within a minimum of 2 days to ensure proper code quality, testing, and documentation.</p>
+<p><strong>Note:</strong> Submissions that appear rushed, incomplete, or lacking proper structure may be rejected regardless of completion.</p>
+
+<h3>ADMIN PANEL INTEGRATION (MANDATORY)</h3>
+<p>All modules must be designed to integrate with the central Admin & Compliance System.</p>
+<p>Developers must ensure:</p>
+<ul>
+  <li>All critical actions are logged and accessible via admin APIs</li>
+  <li>Data structures are compatible with admin-level review</li>
+  <li>Any approval-based flow (KYC, investments, etc.) is visible to admin endpoints</li>
+  <li>No isolated or standalone logic — system must be integration-ready</li>
+</ul>
+<p><strong>Failure to ensure admin integration compatibility may result in rejection.</strong></p>
+
+<h3>IMPORTANT</h3>
+<ul>
+  <li>This is not an isolated task — it is part of a larger system</li>
+  <li>Code must be modular, scalable, and integration-ready</li>
+  <li>Final system ownership and integration will be handled centrally</li>
+</ul>
+`,
     expectedOutputs: '<p>Complete backend module with working APIs, clean structure, and lifecycle tracking. Must run without errors.</p>',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'System Architecture'],
@@ -851,7 +914,28 @@ POST   /api/investment/verify         (Admin)</code></pre>`,
 <pre><code>POST   /api/spv/create        (Admin)
 GET    /api/spv/:id           (Investor, Admin)
 POST   /api/spv/allocate      (Admin)
-GET    /api/spv/profit        (Investor, Admin)</code></pre>`,
+GET    /api/spv/profit        (Investor, Admin)</code></pre><h3>WORKLOAD EXPECTATION & INTEGRATION REQUIREMENT</h3>
+<p><strong>Estimated Effort:</strong> This task is expected to require approximately 4–6 hours of focused development work. Candidates are expected to complete the implementation within a minimum of 2 days to ensure proper code quality, testing, and documentation.</p>
+<p><strong>Note:</strong> Submissions that appear rushed, incomplete, or lacking proper structure may be rejected regardless of completion.</p>
+
+<h3>ADMIN PANEL INTEGRATION (MANDATORY)</h3>
+<p>All modules must be designed to integrate with the central Admin & Compliance System.</p>
+<p>Developers must ensure:</p>
+<ul>
+  <li>All critical actions are logged and accessible via admin APIs</li>
+  <li>Data structures are compatible with admin-level review</li>
+  <li>Any approval-based flow (KYC, investments, etc.) is visible to admin endpoints</li>
+  <li>No isolated or standalone logic — system must be integration-ready</li>
+</ul>
+<p><strong>Failure to ensure admin integration compatibility may result in rejection.</strong></p>
+
+<h3>IMPORTANT</h3>
+<ul>
+  <li>This is not an isolated task — it is part of a larger system</li>
+  <li>Code must be modular, scalable, and integration-ready</li>
+  <li>Final system ownership and integration will be handled centrally</li>
+</ul>
+`,
     expectedOutputs: '<p>Fully functional SPV module with capital tracking and profit logic. Clean and scalable code.</p>',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'Financial Modeling'],
@@ -902,7 +986,28 @@ GET    /api/spv/profit        (Investor, Admin)</code></pre>`,
 <h3>API Endpoints to Build</h3>
 <pre><code>POST   /api/equity/grant      (Admin)
 GET    /api/equity/vesting    (Admin, Investor)
-GET    /api/cap-table         (Admin)</code></pre>`,
+GET    /api/cap-table         (Admin)</code></pre><h3>WORKLOAD EXPECTATION & INTEGRATION REQUIREMENT</h3>
+<p><strong>Estimated Effort:</strong> This task is expected to require approximately 4–6 hours of focused development work. Candidates are expected to complete the implementation within a minimum of 2 days to ensure proper code quality, testing, and documentation.</p>
+<p><strong>Note:</strong> Submissions that appear rushed, incomplete, or lacking proper structure may be rejected regardless of completion.</p>
+
+<h3>ADMIN PANEL INTEGRATION (MANDATORY)</h3>
+<p>All modules must be designed to integrate with the central Admin & Compliance System.</p>
+<p>Developers must ensure:</p>
+<ul>
+  <li>All critical actions are logged and accessible via admin APIs</li>
+  <li>Data structures are compatible with admin-level review</li>
+  <li>Any approval-based flow (KYC, investments, etc.) is visible to admin endpoints</li>
+  <li>No isolated or standalone logic — system must be integration-ready</li>
+</ul>
+<p><strong>Failure to ensure admin integration compatibility may result in rejection.</strong></p>
+
+<h3>IMPORTANT</h3>
+<ul>
+  <li>This is not an isolated task — it is part of a larger system</li>
+  <li>Code must be modular, scalable, and integration-ready</li>
+  <li>Final system ownership and integration will be handled centrally</li>
+</ul>
+`,
     expectedOutputs: '<p>Complete equity management system with vesting logic and cap table tracking. Must be audit-ready.</p>',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'Financial Modeling'],
@@ -952,7 +1057,28 @@ GET    /api/cap-table         (Admin)</code></pre>`,
 <pre><code>GET    /api/admin/approvals       (Admin)
 POST   /api/admin/approve         (Admin)
 GET    /api/admin/audit           (Admin)
-POST   /api/notifications/send    (Admin)</code></pre>`,
+POST   /api/notifications/send    (Admin)</code></pre><h3>WORKLOAD EXPECTATION & INTEGRATION REQUIREMENT</h3>
+<p><strong>Estimated Effort:</strong> This task is expected to require approximately 4–6 hours of focused development work. Candidates are expected to complete the implementation within a minimum of 2 days to ensure proper code quality, testing, and documentation.</p>
+<p><strong>Note:</strong> Submissions that appear rushed, incomplete, or lacking proper structure may be rejected regardless of completion.</p>
+
+<h3>ADMIN PANEL INTEGRATION (MANDATORY)</h3>
+<p>All modules must be designed to integrate with the central Admin & Compliance System.</p>
+<p>Developers must ensure:</p>
+<ul>
+  <li>All critical actions are logged and accessible via admin APIs</li>
+  <li>Data structures are compatible with admin-level review</li>
+  <li>Any approval-based flow (KYC, investments, etc.) is visible to admin endpoints</li>
+  <li>No isolated or standalone logic — system must be integration-ready</li>
+</ul>
+<p><strong>Failure to ensure admin integration compatibility may result in rejection.</strong></p>
+
+<h3>IMPORTANT</h3>
+<ul>
+  <li>This is not an isolated task — it is part of a larger system</li>
+  <li>Code must be modular, scalable, and integration-ready</li>
+  <li>Final system ownership and integration will be handled centrally</li>
+</ul>
+`,
     expectedOutputs: '<p>Fully functional admin backend module with approval system, notifications, and audit tracking. Must be secure and scalable.</p>',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
@@ -1951,8 +2077,8 @@ export const mockSystemErrors: SystemError[] = [
     service: 'API',
     type: 'Unhandled Exception',
     severity: 'Critical',
-    message: "TypeError: Cannot read properties of undefined (reading 'id')",
-    stackTrace: "at /app/src/services/userService.ts:42:15\nat processTicksAndRejections (node:internal/process/task_queues:95:5)",
+    message: 'TypeError: Cannot read properties of undefined (reading \'id\')',
+    stackTrace: 'at /app/src/services/userService.ts:42:15\nat processTicksAndRejections (node:internal/process/task_queues:95:5)',
     frequency: 125,
     lastOccurred: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
     status: 'Open',
@@ -2199,5 +2325,6 @@ export const mockSubscriptions: Subscription[] = [
 ];
 
     
+
 
 

@@ -1,4 +1,5 @@
 
+'use client';
       
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,9 +13,12 @@ import {
   FileText,
   ShieldCheck,
   Trophy,
-  Award
+  Award,
+  ArrowUp,
+  TrendingUp,
 } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect } from 'react';
 
 
 const ShopifyLogo = () => (
@@ -66,7 +70,103 @@ const AmazonLogo = () => (
     </svg>
 );
 
+
 export default function PlatformLandingPage() {
+    useEffect(() => {
+        /* === SCROLL REVEAL ANIMATIONS === */
+        const revealObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                    }
+                });
+            },
+            { threshold: 0.12 }
+        );
+        document.querySelectorAll('.reveal').forEach((el) => {
+            revealObserver.observe(el);
+        });
+
+        /* === STICKY NAV SHADOW === */
+        const handleScroll = () => {
+            const header = document.querySelector('header');
+            if (header) {
+                if (window.scrollY > 10) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        /* === ANIMATED BAR CHARTS === */
+        const chartObserver = new IntersectionObserver(
+            (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.querySelectorAll('.bar-item').forEach((bar) => {
+                            bar.classList.add('animated');
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.2 }
+        );
+        document.querySelectorAll('.data-chart-wrap').forEach((chart) => {
+            chartObserver.observe(chart);
+        });
+
+        /* === ANIMATED NUMBER COUNTERS === */
+        const counterObserver = new IntersectionObserver(
+            (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const counters = entry.target.querySelectorAll('.counter-num');
+                        counters.forEach((counter) => {
+                            const target = +counter.getAttribute('data-target');
+                            counter.innerHTML = '0';
+                            const duration = 1800;
+                            const frameDuration = 1000 / 60;
+                            const totalFrames = Math.round(duration / frameDuration);
+                            let frame = 0;
+
+                            const interval = setInterval(() => {
+                                frame++;
+                                const progress = frame / totalFrames;
+                                const currentCount = Math.round(target * progress);
+
+                                if (parseInt(counter.innerHTML, 10) !== currentCount) {
+                                    counter.innerHTML = currentCount.toLocaleString();
+                                }
+
+                                if (frame === totalFrames) {
+                                    clearInterval(interval);
+                                    counter.innerHTML = target.toLocaleString();
+                                }
+                            }, frameDuration);
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+        document.querySelectorAll('.counter-section').forEach((section) => {
+            counterObserver.observe(section);
+        });
+
+        // Cleanup function
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            revealObserver.disconnect();
+            chartObserver.disconnect();
+            counterObserver.disconnect();
+        };
+    }, []);
+
   const features = [
     {
       icon: <Briefcase className="h-8 w-8 text-primary" />,
@@ -121,16 +221,26 @@ export default function PlatformLandingPage() {
       }
   ];
 
+  const marqueeItems = [
+    { "company": "TechCorp", "text": "hired 12 engineers in 6 days" },
+    { "company": "Innovate Inc.", "text": "reduced hiring cost by 68%" },
+    { "company": "BuildFast", "text": "found their CTO in 4 days" },
+    { "company": "ScaleUp AI", "text": "tripled candidate quality" },
+    { "company": "DevStudio", "text": "saved 40 hours per hire" },
+    { "company": "CloudBase", "text": "now hires 5x faster" },
+    { "company": "DataFlow", "text": "cut bad hires by 92%" },
+    { "company": "NexGen", "text": "promoted 8 SkillMatch hires internally" }
+  ];
+
   return (
+    <>
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="container flex flex-col items-center justify-center gap-6 pb-8 pt-12 text-center md:py-24">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tighter animate-in fade-in slide-in-from-top-4 duration-1000 md:text-6xl lg:text-7xl">
-            Hire by Skill, <br className="md:hidden" />
-            <span className="text-primary">
-              Not by Resume.
-            </span>
+          <h1 className="hero-headline font-headline text-4xl font-extrabold tracking-tighter animate-in fade-in slide-in-from-top-4 duration-1000 md:text-6xl lg:text-7xl">
+            Hire by <span className="highlight-word">Skill</span>, <br className="md:hidden" />
+            Not by Resume.
           </h1>
           <p className="max-w-[700px] text-lg text-muted-foreground animate-in fade-in slide-in-from-top-6 duration-1000 delay-200 md:text-xl">
             SkillMatch Pro is the proof-of-skill ecosystem where top companies discover and hire verified talent based on real-world performance.
@@ -144,28 +254,36 @@ export default function PlatformLandingPage() {
             <Link href="/signup/candidate">Prove Your Skills</Link>
           </Button>
         </div>
+        <div className="relative mt-8 w-full max-w-5xl reveal reveal-scale delay-4">
+          <Image
+            src="https://picsum.photos/seed/hero-dash/1200/750"
+            alt="SkillMatch Pro Dashboard Preview"
+            width={1200}
+            height={750}
+            className="hero-preview rounded-xl border-8 border-muted shadow-2xl"
+            priority
+          />
+        </div>
       </section>
 
-      {/* "Trusted By" Section */}
-      <section className="container py-12 animate-in fade-in duration-1000 delay-500">
-          <h2 className="text-center text-sm font-semibold text-muted-foreground tracking-wider uppercase">
-              Trusted by the world's best companies
-          </h2>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-6 md:gap-x-12 lg:gap-x-16">
-              <ShopifyLogo />
-              <DecathlonLogo />
-              <BookingLogo />
-              <PGLogo />
-              <SamsungLogo />
-              <FedExLogo />
-              <AmazonLogo />
-          </div>
+      {/* Marquee Ticker Section */}
+      <section className="marquee-bar">
+        <div className="marquee-track">
+          {[...marqueeItems, ...marqueeItems].map((item, index) => (
+            <div key={index} className="marquee-item">
+              <span className="marquee-dot"></span>
+              <span className="marquee-text">
+                <strong>{item.company}</strong> {item.text}
+              </span>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* How It Works Section */}
        <section className="bg-muted/50 py-12 md:py-20">
         <div className="container">
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-3xl text-center reveal">
             <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
               A New Standard in Hiring
             </h2>
@@ -174,21 +292,21 @@ export default function PlatformLandingPage() {
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div className="text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            <div className="text-center reveal delay-1">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <FileText className="h-8 w-8 text-primary" />
               </div>
               <h3 className="mt-4 text-xl font-semibold">1. Take the Test</h3>
               <p className="mt-2 text-muted-foreground">Candidates choose from real-world tasks created by companies and submit their best work.</p>
             </div>
-             <div className="text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
+             <div className="text-center reveal delay-2">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <CheckCircle className="h-8 w-8 text-primary" />
               </div>
               <h3 className="mt-4 text-xl font-semibold">2. Get Evaluated</h3>
               <p className="mt-2 text-muted-foreground">Submissions are scored against objective criteria, providing clear, unbiased performance data.</p>
             </div>
-             <div className="text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-600">
+             <div className="text-center reveal delay-3">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <Trophy className="h-8 w-8 text-primary" />
               </div>
@@ -199,9 +317,132 @@ export default function PlatformLandingPage() {
         </div>
       </section>
 
+      {/* Bar Chart Section */}
+      <section className="container py-12 md:py-20 reveal">
+        <div className="data-chart-wrap">
+          <div className="chart-title">Average time to hire <span>↓ 85% faster</span></div>
+          <div className="bar-chart">
+            <div className="bar-item" data-width="97%">
+              <div className="bar-label">Traditional</div>
+              <div className="bar-track"><div className="bar-fill" style={{ '--target': '97%', background: 'hsl(220,10%,78%)' } as React.CSSProperties}></div></div>
+              <div className="bar-value">41 days</div>
+            </div>
+            <div className="bar-item" data-width="29%">
+              <div className="bar-label">Resume-based</div>
+              <div className="bar-track"><div className="bar-fill" style={{ '--target': '29%', background: 'hsl(221,83%,70%)' } as React.CSSProperties}></div></div>
+              <div className="bar-value">12 days</div>
+            </div>
+            <div className="bar-item" data-width="15%">
+              <div className="bar-label">SkillMatch Pro</div>
+              <div className="bar-track"><div className="bar-fill" style={{ '--target': '15%', background: 'hsl(142,76%,36%)' } as React.CSSProperties}></div></div>
+              <div className="bar-value">6 days</div>
+            </div>
+          </div>
+          <div className="metric-cards">
+            <div className="metric-card">
+              <div className="metric-value" style={{ color: 'hsl(142,76%,36%)' }}>85%</div>
+              <div className="metric-label">Faster than industry avg.</div>
+              <div className="metric-trend"><ArrowUp size={14} /> vs traditional</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-value" style={{ color: 'hsl(221,83%,53%)' }}>$8,200</div>
+              <div className="metric-label">Saved per hire avg.</div>
+              <div className="metric-trend"><TrendingUp size={14} /> per role filled</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+       {/* Comparison Table Section */}
+       <section className="container py-12 md:py-20 reveal">
+         <div className="mx-auto max-w-4xl text-center">
+            <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
+                The SkillMatch Pro Difference
+            </h2>
+            <p className="mt-4 text-muted-foreground md:text-lg">
+                See how we stack up against traditional, resume-based hiring methods.
+            </p>
+          </div>
+          <div className="table-responsive-wrapper mt-12">
+            <table className="comparison-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th className="highlight-col">SkillMatch Pro</th>
+                  <th>Traditional Hiring</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Real-world skill tasks</td>
+                  <td className="highlight-col"><span>✓</span> Always included</td>
+                  <td><span>✗</span> Resume only</td>
+                </tr>
+                <tr>
+                  <td>Objective performance scoring</td>
+                  <td className="highlight-col"><span>✓</span> AI-powered</td>
+                  <td><span>✗</span> Gut-feel interviews</td>
+                </tr>
+                <tr>
+                  <td>Verified skills & badges</td>
+                  <td className="highlight-col"><span>✓</span> Auto-verified</td>
+                  <td><span>✗</span> Self-reported only</td>
+                </tr>
+                <tr>
+                  <td>Live competitive leaderboard</td>
+                  <td className="highlight-col"><span>✓</span> Real-time</td>
+                  <td><span>✗</span> Not available</td>
+                </tr>
+                <tr>
+                  <td>Average time to hire</td>
+                  <td className="highlight-col"><span>✓</span> 6 days</td>
+                  <td className="bad-metric">41 days</td>
+                </tr>
+                <tr>
+                  <td>Average cost per hire</td>
+                  <td className="highlight-col"><span>✓</span> $2,900</td>
+                  <td className="bad-metric">$11,000+</td>
+                </tr>
+                <tr>
+                  <td>Bias-free candidate discovery</td>
+                  <td className="highlight-col"><span>✓</span> Data-driven</td>
+                  <td><span>✗</span> Name/school bias</td>
+                </tr>
+                <tr>
+                  <td>Analytics dashboard</td>
+                  <td className="highlight-col"><span>✓</span> Full insights</td>
+                  <td><span>✗</span> Spreadsheets only</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+       </section>
+
+      {/* Counters Section */}
+      <section className="bg-muted/50 py-12 md:py-20">
+        <div className="container counter-section reveal grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="counter-item">
+            <span className="counter-num" data-target="2400">0</span><span>+</span>
+            <div>Companies hiring</div>
+          </div>
+          <div className="counter-item">
+            <span className="counter-num" data-target="48000">0</span><span>+</span>
+            <div>Verified candidates</div>
+          </div>
+          <div className="counter-item">
+            <span className="counter-num" data-target="6">0</span><span> days</span>
+            <div>Average time to hire</div>
+          </div>
+          <div className="counter-item">
+            <span className="counter-num" data-target="94">0</span><span>%</span>
+            <div>Hiring satisfaction</div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="container py-12 md:py-20">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-3xl text-center reveal">
           <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
             A Platform Built on Trust and Performance
           </h2>
@@ -211,10 +452,10 @@ export default function PlatformLandingPage() {
         </div>
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
-            <div key={feature.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: `${200 + index * 100}ms`}}>
-              <Card>
+            <div key={feature.title} className="reveal" style={{ transitionDelay: `${index * 100}ms`}}>
+              <Card className="feature-card h-full">
                 <CardHeader>
-                  {feature.icon}
+                  <div className="feature-icon">{feature.icon}</div>
                   <CardTitle className="mt-2">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -228,7 +469,7 @@ export default function PlatformLandingPage() {
       
       {/* Testimonials Section */}
       <section className="bg-muted/50 py-12 md:py-20">
-        <div className="container">
+        <div className="container reveal">
             <div className="mx-auto max-w-3xl text-center">
                 <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
                     Loved by Top Companies & Candidates
@@ -236,12 +477,12 @@ export default function PlatformLandingPage() {
             </div>
             <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
                 {testimonials.map((testimonial, index) => (
-                  <div key={testimonial.name} className="animate-in fade-in slide-in-from-bottom-10 duration-1000" style={{ animationDelay: `${300 + index * 150}ms` }}>
-                    <Card>
+                  <div key={testimonial.name} className="reveal" style={{ transitionDelay: `${index * 150}ms` }}>
+                    <Card className="testimonial-card">
                         <CardContent className="pt-6">
                              <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
                              <div className="mt-4 flex items-center gap-3">
-                                <Avatar>
+                                <Avatar className="team-avatar">
                                     <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
                                     <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
@@ -260,7 +501,7 @@ export default function PlatformLandingPage() {
 
       {/* Final CTA Section */}
       <section className="container py-12 text-center md:py-20">
-         <div className="mx-auto max-w-2xl animate-in fade-in duration-1000 delay-500">
+         <div className="mx-auto max-w-2xl reveal">
            <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
                 Ready to Join the Future of Hiring?
             </h2>
@@ -278,7 +519,144 @@ export default function PlatformLandingPage() {
          </div>
       </section>
     </div>
+    <style jsx global>{`
+        /* === SCROLL ANIMATIONS === */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal-scale { opacity: 0; transform: scale(0.94); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.in-view { opacity: 1; transform: none; }
+        .reveal.delay-1 { transition-delay: 0.1s; }
+        .reveal.delay-2 { transition-delay: 0.18s; }
+        .reveal.delay-3 { transition-delay: 0.26s; }
+        .reveal.delay-4 { transition-delay: 0.34s; }
+
+        /* === NAV SHADOW === */
+        header.scrolled {
+          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+          border-bottom-color: transparent;
+        }
+
+        /* === HEADLINE UNDERLINE === */
+        .hero-headline .highlight-word {
+            position: relative;
+            display: inline-block;
+        }
+        .hero-headline .highlight-word::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background-color: hsl(var(--primary));
+            border-radius: 4px;
+            animation: draw-underline 0.8s 0.4s ease-out forwards;
+        }
+        @keyframes draw-underline {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* === HERO FLOAT === */
+        @keyframes float-anim {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .hero-preview {
+            animation: float-anim 4s ease-in-out infinite;
+        }
+
+        /* === MARQUEE === */
+        .marquee-bar {
+            background-color: hsl(220,15%,20%);
+            padding: 18px 0;
+            overflow: hidden;
+            width: 100%;
+        }
+        .marquee-track {
+            display: flex;
+            flex-shrink: 0;
+            animation: marquee-scroll 28s linear infinite;
+        }
+        .marquee-item {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            padding: 0 2rem;
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+        }
+        .marquee-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: hsl(142,76%,36%);
+            margin-right: 0.75rem;
+        }
+        .marquee-text strong {
+            color: rgba(255,255,255,0.9);
+            font-weight: 600;
+        }
+        @keyframes marquee-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* === BAR CHARTS === */
+        .data-chart-wrap { max-width: 800px; margin: 0 auto; background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .chart-title { font-weight: 700; font-size: 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .chart-title span { font-size: 0.875rem; font-weight: 600; color: hsl(var(--primary)); background-color: hsla(var(--primary), 0.1); padding: 0.25rem 0.75rem; border-radius: 99px; }
+        .bar-chart { display: flex; flex-direction: column; gap: 1rem; }
+        .bar-item { display: grid; grid-template-columns: 90px 1fr 60px; align-items: center; gap: 1rem; }
+        .bar-label { font-size: 0.875rem; color: var(--muted-fg); text-align: right; }
+        .bar-track { background-color: var(--muted); border-radius: 4px; height: 1.75rem; overflow: hidden; }
+        .bar-fill { height: 100%; width: var(--target); transform: scaleX(0); transform-origin: left; transition: transform 1.2s cubic-bezier(0.34, 1.2, 0.64, 1); }
+        .bar-item.animated .bar-fill { transform: scaleX(1); }
+        .bar-item:nth-child(2) .bar-fill { transition-delay: 120ms; }
+        .bar-item:nth-child(3) .bar-fill { transition-delay: 240ms; }
+        .bar-value { font-size: 0.875rem; font-weight: 600; }
+        .metric-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        .metric-card { text-align: center; }
+        .metric-value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+        .metric-label { font-size: 0.875rem; color: var(--muted-fg); }
+        .metric-trend { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; color: var(--muted-fg); margin-top: 0.25rem; }
+        @media (max-width: 600px) { .bar-item { grid-template-columns: 70px 1fr 50px; gap: 0.5rem; } }
+
+        /* === COMPARISON TABLE === */
+        .table-responsive-wrapper { overflow-x: auto; }
+        .comparison-table { width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+        .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .comparison-table th { background-color: var(--muted); font-weight: 600; font-size: 0.875rem; }
+        .comparison-table tbody tr:nth-child(even) { background-color: var(--card); }
+        .comparison-table tbody tr:nth-child(odd) { background-color: var(--bg); }
+        .comparison-table tbody tr:hover { background-color: var(--muted); }
+        .comparison-table .highlight-col { background-color: hsla(var(--primary), 0.04); }
+        .comparison-table th.highlight-col { background-color: hsl(142,76%,94%); color: hsl(142,76%,28%); border-left: 2px solid hsl(var(--primary)); border-right: 2px solid hsl(var(--primary)); }
+        .comparison-table td.highlight-col { border-left: 2px solid hsl(var(--primary)); border-right: 2px solid hsl(var(--primary)); }
+        .comparison-table span { font-size: 15px; }
+        .comparison-table span:contains('✓') { color: hsl(var(--primary)); }
+        .comparison-table span:contains('✗') { color: hsl(0,60%,60%); }
+        .comparison-table .bad-metric { color: hsl(0,60%,60%); font-weight: 500; }
+
+        /* === COUNTERS === */
+        .counter-section { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 900px; margin: 0 auto; }
+        .counter-item { text-align: center; }
+        .counter-item .counter-num, .counter-item span { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 700; color: var(--primary); line-height: 1; }
+        .counter-item div { font-size: 0.875rem; color: var(--muted-fg); margin-top: 0.25rem; }
+        @media (min-width: 768px) { .counter-section { grid-template-columns: repeat(4, 1fr); } }
+
+        /* === CARD HOVER EFFECTS === */
+        .feature-card, .testimonial-card, .team-card { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
+        .feature-icon, .team-avatar { transition: transform 0.25s ease; }
+        .feature-card:hover { transform: translateY(-3px); border-color: hsl(var(--primary)); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .feature-card:hover .feature-icon { transform: scale(1.1); }
+        .testimonial-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .team-card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .team-card:hover .team-avatar { transform: scale(1.08); }
+        .pricing-card { transition: transform 0.25s ease; }
+        .pricing-card:hover { transform: translateY(-3px); }
+    `}</style>
+    </>
   );
 }
-
-    

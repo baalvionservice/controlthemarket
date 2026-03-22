@@ -1,23 +1,4 @@
 
-
-'use client';
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { 
-    Building, 
-    Bell, 
-    CreditCard,
-    Save
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui![CDATA[
-
 'use client';
 
 import { useState } from "react";
@@ -94,7 +75,7 @@ export default function CompanySettingsPage() {
                     </div>
                      <div className="space-y-1">
                         <Label htmlFor="companyDescription">Description</Label>
-                        <Textarea id="companyDescription" value={company.description} onChange={e => setCompany({...company, description: e.target.value})}/>
+                        <Textarea id="companyDescription" value={company.description || ''} onChange={e => setCompany({...company, description: e.target.value})}/>
                     </div>
                 </CardContent>
             </Card>

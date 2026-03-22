@@ -77,7 +77,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 60)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: false, // User has completed onboarding
+    onboardingCompleted: true, // User has completed onboarding
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar2/100/100',
       bio: 'Hiring manager at TechCorp.',
@@ -612,6 +612,65 @@ POST   /api/nda/accept         (Protected: Investor)</code></pre>`,
     multiRound: false,
     imageUrl: 'https://picsum.photos/seed/backend/600/400',
     imageHint: 'server code'
+  },
+  {
+    id: 'task-18',
+    title: 'Build a Role-Based Task Assignment System',
+    description: "You are building a core platform feature for SkillMatch Pro. The goal is to create a secure backend system where companies can create tasks and assign them to specific developers, ensuring only assigned developers can access and submit their work.",
+    instructions: `<h3>Objective</h3>
+<p>Build a backend system where a company can create a job/task, assign it to specific developers, and only those assigned developers can view the task and submit their work. The system must include robust access control and activity logging.</p>
+
+<h3>Core Features to Implement</h3>
+<ul>
+  <li><strong>Task Creation:</strong> Companies can create tasks with a title, description, difficulty, deadline, and required role.</li>
+  <li><strong>Task Assignment:</strong> Companies can assign a task to a specific list of developer user IDs.</li>
+  <li><strong>Task Access Control:</strong> Ensure only assigned developers or company/admin users can view a task's full details.</li>
+  <li><strong>Submission System:</strong> Assigned developers can submit a GitHub repository link and notes for a task.</li>
+  <li><strong>Task Status Management:</strong> Implement a status system for tasks (e.g., pending, in-progress, submitted, reviewed, approved/rejected).</li>
+  <li><strong>Activity Logging:</strong> Track key events like task creation, assignment, submission, and status updates.</li>
+</ul>
+
+<h3>User Roles & RBAC</h3>
+<p>Implement Role-Based Access Control with the following roles:</p>
+<ul>
+    <li><strong>Company:</strong> Can create and assign tasks.</li>
+    <li><strong>Developer:</strong> Can only work on tasks specifically assigned to them.</li>
+    <li><strong>Admin:</strong> Has full access to all tasks and submissions.</li>
+</ul>
+
+<h3>API Endpoints to Build</h3>
+<p>All protected routes must validate a JWT and use RBAC middleware.</p>
+<pre><code>POST   /api/tasks/create              (Company)
+POST   /api/tasks/assign              (Company)
+GET    /api/tasks                     (Role-based filtered list)
+GET    /api/tasks/:id                 (Assigned Developers, Company, Admin)
+POST   /api/tasks/:id/submit          (Assigned Developer)
+POST   /api/tasks/:id/status/update   (Company, Admin)
+GET    /api/tasks/logs                (Admin, Company)</code></pre>
+
+<h3>System Requirements</h3>
+<ul>
+    <li><strong>Technology:</strong> Node.js + Express OR Firebase Functions.</li>
+    <li><strong>Architecture:</strong> Follow a modular structure (controllers, services, routes, middleware, models).</li>
+    <li><strong>API Response:</strong> All endpoints must return a standard JSON format: <code>{ success: boolean, data: any, error: string | null }</code>.</li>
+    <li><strong>Security:</strong> Implement JWT authentication, RBAC middleware, and proper input validation/sanitization.</li>
+    <li><strong>Database:</strong> Use mock/in-memory storage, but design it to be ready for future integration with Firestore or PostgreSQL.</li>
+</ul>
+`,
+    expectedOutputs: '<p>A complete backend implementation in a public GitHub repository. Your repository must include a detailed README.md file with instructions for local setup, environment configuration, and how to run and test all the API endpoints.</p>',
+    roleCategory: 'Backend',
+    taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
+    difficulty: 'Expert',
+    priority: 'High',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 14)).toISOString(),
+    companyId: 'company-1',
+    createdBy: 'user-2',
+    status: 'published',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/rbac/600/400',
+    imageHint: 'database schema',
   },
 ];
 

@@ -1,9 +1,8 @@
 
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import { getSubmission, getTask, getUser, getEvaluationBySubmission } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -34,33 +33,37 @@ export type SubmissionWithRelations = Submission & {
   evaluation?: Evaluation;
 };
 
-export default function SubmissionReviewPage({ params }: { params: { id: string } }) {
+export default function SubmissionReviewPage() {
+  const params = useParams();
+  const submissionId = params.id as string;
   const [submission, setSubmission] = useState<SubmissionWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    async function fetchData() {
-      const subData = await getSubmission(params.id);
-      if (!subData) {
-        notFound();
-        return;
-      }
-      const taskData = await getTask(subData.taskId);
-      const candidateData = await getUser(subData.userId);
-      const evalData = await getEvaluationBySubmission(subData.id);
+    if (submissionId) {
+      async function fetchData() {
+        const subData = await getSubmission(submissionId);
+        if (!subData) {
+          notFound();
+          return;
+        }
+        const taskData = await getTask(subData.taskId);
+        const candidateData = await getUser(subData.userId);
+        const evalData = await getEvaluationBySubmission(subData.id);
 
-      setSubmission({
-        ...subData,
-        task: taskData,
-        candidate: candidateData,
-        evaluation: evalData,
-      });
-      setLoading(false);
+        setSubmission({
+          ...subData,
+          task: taskData,
+          candidate: candidateData,
+          evaluation: evalData,
+        });
+        setLoading(false);
+      }
+      fetchData();
     }
-    fetchData();
-  }, [params.id]);
+  }, [submissionId]);
   
   if (loading || !submission) {
     return (

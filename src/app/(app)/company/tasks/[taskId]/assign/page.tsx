@@ -27,6 +27,7 @@ export default function AssignTaskPage() {
   useEffect(() => {
     if (taskId) {
       const fetchData = async () => {
+          setLoading(true);
           const taskData = await getTask(taskId);
           if (!taskData) {
               notFound();

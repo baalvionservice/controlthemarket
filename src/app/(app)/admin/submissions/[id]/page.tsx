@@ -1,9 +1,8 @@
 
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { getSubmission, getTask, getUser, getEvaluationBySubmission } from '@/lib/api';
 import { Loader2 } from 'lucide-react';
 import { OverrideForm } from './override-form';
@@ -33,31 +32,35 @@ export type SubmissionWithRelations = Submission & {
   evaluation?: Evaluation;
 };
 
-export default function AdminManageSubmissionPage({ params }: { params: { id: string } }) {
+export default function AdminManageSubmissionPage() {
+  const params = useParams();
+  const submissionId = params.id as string;
   const [submission, setSubmission] = useState<SubmissionWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      const subData = await getSubmission(params.id);
-      if (!subData) {
-        notFound();
-        return;
-      }
-      const taskData = await getTask(subData.taskId);
-      const candidateData = await getUser(subData.userId);
-      const evalData = await getEvaluationBySubmission(subData.id);
+    if (submissionId) {
+      async function fetchData() {
+        const subData = await getSubmission(submissionId);
+        if (!subData) {
+          notFound();
+          return;
+        }
+        const taskData = await getTask(subData.taskId);
+        const candidateData = await getUser(subData.userId);
+        const evalData = await getEvaluationBySubmission(subData.id);
 
-      setSubmission({
-        ...subData,
-        task: taskData,
-        candidate: candidateData,
-        evaluation: evalData,
-      });
-      setLoading(false);
+        setSubmission({
+          ...subData,
+          task: taskData,
+          candidate: candidateData,
+          evaluation: evalData,
+        });
+        setLoading(false);
+      }
+      fetchData();
     }
-    fetchData();
-  }, [params.id]);
+  }, [submissionId]);
   
   if (loading || !submission) {
     return (

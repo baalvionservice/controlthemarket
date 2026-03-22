@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { getTask, getCompany } from '@/lib/api';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   Card,
@@ -44,7 +44,9 @@ import { useSubmissions } from '@/contexts/submissions-context';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
-export default function TaskDetailPage({ params }: { params: { id: string } }) {
+export default function TaskDetailPage() {
+  const params = useParams();
+  const taskId = params.id as string;
   const [task, setTask] = useState<Task | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,20 +55,22 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      const taskData = await getTask(params.id);
-      if (taskData) {
-        setTask(taskData);
-        const companyData = await getCompany(taskData.companyId);
-        setCompany(companyData || null);
-      } else {
-        notFound();
+    if (taskId) {
+      async function fetchData() {
+        setLoading(true);
+        const taskData = await getTask(taskId);
+        if (taskData) {
+          setTask(taskData);
+          const companyData = await getCompany(taskData.companyId);
+          setCompany(companyData || null);
+        } else {
+          notFound();
+        }
+        setLoading(false);
       }
-      setLoading(false);
+      fetchData();
     }
-    fetchData();
-  }, [params.id]);
+  }, [taskId]);
 
   const submission = useMemo(() => {
     if (!user || !task) return undefined;

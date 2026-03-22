@@ -4,7 +4,7 @@
 import React from 'react';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { mockTasks, mockEvaluations } from '@/lib/mock-data';
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import {
   Card,
@@ -28,11 +28,13 @@ import { SkillMatchResultPanel } from './skill-match-result-panel';
 
 const statusSteps = ['assigned', 'in-progress', 'pending', 'in-review', 'evaluated'];
 
-export default function SubmissionDetailPage({ params }: { params: { id: string } }) {
+export default function SubmissionDetailPage() {
+  const params = useParams();
+  const submissionId = params.id as string;
   const { submissions, updateSubmission } = useSubmissions();
   const router = useRouter();
   
-  const submission = useMemo(() => submissions.find(s => s.id === params.id), [submissions, params.id]);
+  const submission = useMemo(() => submissions.find(s => s.id === submissionId), [submissions, submissionId]);
 
   const task = useMemo(() => submission ? mockTasks.find(t => t.id === submission.taskId) : undefined, [submission]);
   const evaluation = useMemo(() => submission ? mockEvaluations.find(e => e.submissionId === submission.id) : undefined, [submission]);

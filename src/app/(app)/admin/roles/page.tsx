@@ -1,5 +1,5 @@
 
-import { getTasks, getSubmissions, getEvaluations } from "@/lib/api";
+import { getTasks, getSubmissions, getAllEvaluations } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -25,7 +25,7 @@ export default async function RoleDashboardsPage() {
     const [tasks, submissions, evaluations] = await Promise.all([
         getTasks(),
         getSubmissions(),
-        getEvaluations(),
+        getAllEvaluations(),
     ]);
 
     const roleCategories: RoleCategory[] = ['Engineering', 'Design', 'Marketing', 'Business', 'Data'];

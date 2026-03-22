@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -66,7 +67,7 @@ export function OnboardingFlow() {
           case 1: return <Step2VerificationDocs onNext={handleNext} data={data} />;
           case 2: return <Step2InviteUsers onNext={handleNext} data={data} />;
           case 3: return <Step3CreateTask onNext={handleNext} data={data} />;
-          case 4: return <Step4Review data={data as OnboardingData} />;
+          case 4: return <Step4Review onNext={handleNext} data={data as OnboardingData} />;
           default: return null;
       }
   }

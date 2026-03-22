@@ -70,7 +70,7 @@ export function OnboardingFlow() {
           case 0: return <Step1PersonalDetails onNext={handleNext} data={data} />;
           case 1: return <Step2ProfessionalDetails onNext={handleNext} data={data} />;
           case 2: return <Step3SkillsEducation onNext={handleNext} data={data} />;
-          case 3: return <Step4Review data={data as OnboardingData} />;
+          case 3: return <Step4Review onNext={handleNext} data={data as OnboardingData} />;
           default: return null;
       }
   }

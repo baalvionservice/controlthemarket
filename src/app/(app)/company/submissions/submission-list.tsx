@@ -41,7 +41,7 @@ import type { SubmissionStatus, RoleCategory, User, LiveSessionStatus } from '@/
 import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
 import { cn } from '@/lib/utils';
-import { CandidateHistoryDialog } from './candidate-history-dialog';
+import { CandidateHistoryDialog } from '@/components/shared/candidate-history-dialog';
 
 
 type SortKey = 'candidate.name' | 'score' | 'applicationDate';

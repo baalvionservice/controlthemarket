@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -15,7 +16,7 @@ import { getSubmissionsByUser, getEvaluations, getTask, getUsers } from '@/lib/a
 import type { User, Submission, Evaluation, Task } from '@/lib/types';
 import { format } from 'date-fns';
 import { FileText, Star, Briefcase, Loader2, User as UserIcon } from 'lucide-react';
-import { getStatusVariant } from './submission-list';
+import { getStatusVariant } from '@/app/(app)/company/submissions/submission-list';
 
 interface HistoryDialogProps {
   isOpen: boolean;

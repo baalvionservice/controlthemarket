@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/table';
 import { ArrowRight, Briefcase, PlusCircle, Clock, Star, Monitor, Users, XCircle, FileCheck } from 'lucide-react';
 import Link from 'next/link';
-import { LivestreamPanel } from './livestream-panel';
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
 const CURRENT_USER_ID = 'user-2';
@@ -114,7 +113,7 @@ export default async function CompanyDashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div>
           <Card>
             <CardHeader>
               <CardTitle>Action Required: Pending Reviews</CardTitle>
@@ -163,7 +162,6 @@ export default async function CompanyDashboard() {
               </Table>
             </CardContent>
           </Card>
-          <LivestreamPanel />
         </div>
     </div>
   );

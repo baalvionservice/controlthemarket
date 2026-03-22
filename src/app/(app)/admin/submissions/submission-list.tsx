@@ -41,7 +41,7 @@ import type { SubmissionStatus, User, RoleCategory, ValidationStatus } from '@/l
 import { useToast } from '@/hooks/use-toast';
 import type { AdminSubmissionData } from './page';
 import { cn } from '@/lib/utils';
-import { CandidateHistoryDialog } from '../../company/submissions/candidate-history-dialog';
+import { CandidateHistoryDialog } from '@/components/shared/candidate-history-dialog';
 
 
 type SortKey = 'candidate.name' | 'score' | 'applicationDate';
@@ -287,7 +287,8 @@ export function AdminSubmissionsList({ data }: { data: AdminSubmissionData[] }) 
                 <PopoverTrigger asChild>
                     <Button id="date" variant={"outline"} className={cn("w-full justify-start text-left font-normal md:w-[240px]", !dateRange && "text-muted-foreground")}>
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Filter by date</span>)}
+                        {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} -{" "}
+                            {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Filter by date</span>)}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

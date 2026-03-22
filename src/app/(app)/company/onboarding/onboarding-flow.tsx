@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { OnboardingStepper } from './onboarding-stepper';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Step1CompanyDetails } from './steps/step-1-company-details';
+import { Step2VerificationDocs } from './steps/step-2-verification-docs';
 import { Step2InviteUsers } from './steps/step-2-invite-users';
 import { Step3CreateTask } from './steps/step-3-create-task';
 import { Step4Review } from './steps/step-4-review';
@@ -11,12 +12,14 @@ import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
-const steps = ['Company Details', 'Invite Team', 'Create First Task', 'Review & Finish'];
+const steps = ['Company Details', 'Verification', 'Invite Team', 'Create Task', 'Review & Finish'];
 
 export type OnboardingData = {
     companyName: string;
     companyWebsite: string;
     companyDescription: string;
+    country: string;
+    documents: { [key: string]: File | undefined };
     invitedUsers: string[];
     taskTitle: string;
     taskDescription: string;
@@ -24,10 +27,12 @@ export type OnboardingData = {
 
 export function OnboardingFlow() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [data, setData] = useState<OnboardingData>({
+  const [data, setData] = useState<Partial<OnboardingData>>({
     companyName: '',
     companyWebsite: '',
     companyDescription: '',
+    country: 'United States',
+    documents: {},
     invitedUsers: [],
     taskTitle: '',
     taskDescription: '',
@@ -58,9 +63,10 @@ export function OnboardingFlow() {
   const renderStep = () => {
       switch (currentStep) {
           case 0: return <Step1CompanyDetails onNext={handleNext} data={data} />;
-          case 1: return <Step2InviteUsers onNext={handleNext} data={data} />;
-          case 2: return <Step3CreateTask onNext={handleNext} data={data} />;
-          case 3: return <Step4Review data={data} />;
+          case 1: return <Step2VerificationDocs onNext={handleNext} data={data} />;
+          case 2: return <Step2InviteUsers onNext={handleNext} data={data} />;
+          case 3: return <Step3CreateTask onNext={handleNext} data={data} />;
+          case 4: return <Step4Review data={data as OnboardingData} />;
           default: return null;
       }
   }
@@ -74,8 +80,9 @@ export function OnboardingFlow() {
                 <CardDescription>
                     {
                         currentStep === 0 ? "Let's start with the basics. Tell us about your company." :
-                        currentStep === 1 ? "Invite your team members to collaborate." :
-                        currentStep === 2 ? "Let's create your first task to attract candidates." :
+                        currentStep === 1 ? 'Please provide the required documents for verification.' :
+                        currentStep === 2 ? "Invite your team members to collaborate." :
+                        currentStep === 3 ? "Let's create your first task to attract candidates." :
                         "Please review the information below before completing your setup."
                     }
                 </CardDescription>
@@ -87,16 +94,9 @@ export function OnboardingFlow() {
                 <Button variant="ghost" onClick={handlePrev} disabled={currentStep === 0}>
                     Previous
                 </Button>
-                 {currentStep !== 3 && ( // The submit logic is inside the step components
-                    <Button type="submit" form={`step-${currentStep}-form`}>
-                        Next
-                    </Button>
-                )}
-                 {currentStep === 3 && (
-                    <Button onClick={() => handleNext({})}>
-                        Finish Setup
-                    </Button>
-                )}
+                 <Button type="submit" form={`step-${currentStep}-form`}>
+                    {currentStep === steps.length - 1 ? 'Finish Setup' : 'Next'}
+                </Button>
             </CardFooter>
         </Card>
     </div>

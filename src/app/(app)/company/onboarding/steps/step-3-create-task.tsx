@@ -20,7 +20,7 @@ const formSchema = z.object({
 
 interface Step3Props {
     onNext: (data: Partial<OnboardingData>) => void;
-    data: OnboardingData;
+    data: Partial<OnboardingData>;
 }
 
 export function Step3CreateTask({ onNext, data }: Step3Props) {
@@ -69,7 +69,7 @@ export function Step3CreateTask({ onNext, data }: Step3Props) {
     
     return (
         <Form {...form}>
-            <form id="step-2-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form id="step-3-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
                     name="taskTitle"

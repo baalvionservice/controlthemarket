@@ -207,9 +207,17 @@ export const mockCompanies: Company[] = [
     logoUrl: 'https://picsum.photos/seed/company1/100/100',
     industry: 'Technology',
     location: 'Silicon Valley, CA',
+    country: 'United States',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 60)).toISOString(),
     isActive: true,
     isVerified: true,
+    verificationDocs: {
+        country: 'United States',
+        documents: [
+            { name: 'Articles of Incorporation', url: '/mock-uploads/articles.pdf' },
+            { name: 'EIN Confirmation Letter', url: '/mock-uploads/ein.pdf' },
+        ]
+    }
   },
   {
     id: 'company-2',
@@ -220,6 +228,7 @@ export const mockCompanies: Company[] = [
     logoUrl: 'https://picsum.photos/seed/company2/100/100',
     industry: 'FinTech',
     location: 'New York, NY',
+    country: 'United States',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
     isActive: true,
     isVerified: false,

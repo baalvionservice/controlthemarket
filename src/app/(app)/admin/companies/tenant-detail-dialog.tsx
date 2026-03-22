@@ -9,8 +9,10 @@ import {
 } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Briefcase, FileText } from 'lucide-react';
+import { Users, Briefcase, FileText, Download, FileArchive } from 'lucide-react';
 import type { AdminCompanyData } from './page';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface TenantDetailDialogProps {
   isOpen: boolean;
@@ -68,12 +70,28 @@ export function TenantDetailDialog({ isOpen, onOpenChange, tenant }: TenantDetai
             </Card>
         </div>
         <div className="mt-4">
-            <h4 className="font-medium mb-2">Tenant Data (Mock Isolation)</h4>
-            <div className="rounded-md border p-4 text-sm text-muted-foreground">
-                <p>This view demonstrates data isolation. In a real multi-tenant application, all data queries for this tenant would be strictly scoped to <strong>Tenant ID: {tenant.id}</strong>. This ensures that one tenant cannot access another tenant's data.</p>
-                <p className="mt-2">For example, fetching tasks would be equivalent to:</p>
-                <code className="block bg-muted p-2 rounded-md mt-1 text-xs">SELECT * FROM tasks WHERE tenant_id = '{tenant.id}';</code>
-            </div>
+            <h4 className="font-medium mb-2">Verification Documents ({tenant.verificationDocs?.country || 'N/A'})</h4>
+            {tenant.verificationDocs && tenant.verificationDocs.documents.length > 0 ? (
+                 <div className="rounded-md border p-4 space-y-3">
+                    {tenant.verificationDocs.documents.map((doc, index) => (
+                        <div key={index} className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <FileArchive className="h-5 w-5 text-muted-foreground" />
+                                <span className="text-sm font-medium">{doc.name}</span>
+                            </div>
+                            <Button asChild variant="ghost" size="sm">
+                                <Link href={doc.url} download>
+                                    <Download className="mr-2 h-4 w-4" /> Download
+                                </Link>
+                            </Button>
+                        </div>
+                    ))}
+                 </div>
+            ) : (
+                <div className="rounded-md border p-4 text-sm text-muted-foreground text-center">
+                    No verification documents submitted for this tenant.
+                </div>
+            )}
         </div>
       </DialogContent>
     </Dialog>

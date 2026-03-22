@@ -56,9 +56,17 @@ export interface Company {
   logoUrl?: string;
   industry?: string;
   location?: string;
+  country?: string;
   createdAt: string; // ISO 8601 date string
   isActive?: boolean;
   isVerified?: boolean;
+  verificationDocs?: {
+    country: string;
+    documents: {
+      name: string;
+      url: string;
+    }[];
+  };
 }
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';

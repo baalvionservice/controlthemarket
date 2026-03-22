@@ -8,11 +8,11 @@ import { X, UserPlus } from 'lucide-react';
 
 interface Step2Props {
     onNext: (data: Partial<OnboardingData>) => void;
-    data: OnboardingData;
+    data: Partial<OnboardingData>;
 }
 
 export function Step2InviteUsers({ onNext, data }: Step2Props) {
-    const [invitedUsers, setInvitedUsers] = useState<string[]>(data.invitedUsers);
+    const [invitedUsers, setInvitedUsers] = useState<string[]>(data.invitedUsers || []);
     const [email, setEmail] = useState('');
     
     const handleAddUser = () => {
@@ -32,7 +32,7 @@ export function Step2InviteUsers({ onNext, data }: Step2Props) {
     }
 
     return (
-        <form id="step-1-form" onSubmit={handleSubmit} className="space-y-6">
+        <form id="step-2-form" onSubmit={handleSubmit} className="space-y-6">
             <div className="flex gap-2">
                 <Input 
                     type="email" 

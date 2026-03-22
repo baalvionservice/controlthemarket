@@ -9,21 +9,20 @@ import {
 import { Star, Users, CheckCircle, Percent } from "lucide-react";
 import { AnalyticsCharts, Leaderboard } from './charts';
 import { getTasksByCompany, getSubmissions, getAllEvaluations, getUsers } from '@/lib/api';
-import { mockUsers } from '@/lib/mock-data';
 import type { Submission, Evaluation } from '@/lib/types';
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
 const CURRENT_USER_ID = 'user-2';
 
 export default async function AnalyticsPage() {
-  const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
+  const allUsers = await getUsers();
+  const user = allUsers.find((u) => u.id === CURRENT_USER_ID);
   if (!user || !user.companyId) return <div>Company not found</div>;
   
   const tasks = await getTasksByCompany(user.companyId);
   const allSubmissions = await getSubmissions();
   const allEvaluations = await getAllEvaluations();
-  const allUsers = await getUsers();
-
+  
   const companyTaskIds = new Set(tasks.map(task => task.id));
   const companySubmissions = allSubmissions.filter(sub => companyTaskIds.has(sub.taskId));
   const companySubmissionIds = new Set(companySubmissions.map(sub => sub.id));

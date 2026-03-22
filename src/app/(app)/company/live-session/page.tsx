@@ -1,4 +1,5 @@
 
+
 import { getSubmissions, getUsers, getTasks } from "@/lib/api";
 import { LiveSessionGrid } from "./live-session-list";
 import type { Submission, Task, User, LiveSessionStatus } from '@/lib/types';
@@ -9,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { mockUsers } from "@/lib/mock-data";
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
 const CURRENT_USER_ID = 'user-2';
@@ -23,9 +23,6 @@ export type LiveSessionData = {
 };
 
 export default async function CompanyLiveSessionDashboardPage() {
-  const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
-  if (!user || !user.companyId) return <div>Company not found</div>;
-
   const [
     allSubmissions,
     allUsers,
@@ -35,6 +32,9 @@ export default async function CompanyLiveSessionDashboardPage() {
     getUsers(),
     getTasks(),
   ]);
+
+  const user = allUsers.find((u) => u.id === CURRENT_USER_ID);
+  if (!user || !user.companyId) return <div>Company not found</div>;
 
   const sessionData: LiveSessionData[] = allSubmissions
     .map(submission => {

@@ -1,4 +1,5 @@
 
+
 import { getSubmissions, getUsers, getTasksByCompany } from "@/lib/api";
 import { RecordingList } from "./recording-list";
 import type { Submission, Task, User, Company } from '@/lib/types';
@@ -9,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { mockUsers } from "@/lib/mock-data";
 
 // For prototype, we'll use a hardcoded user ID. In a real app, this would come from auth.
 const CURRENT_USER_ID = 'user-2';
@@ -23,16 +23,15 @@ export type RecordingDashboardData = {
 };
 
 export default async function CompanySessionRecordingsPage() {
-    const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
+    const allUsers = await getUsers();
+    const user = allUsers.find((u) => u.id === CURRENT_USER_ID);
     if (!user || !user.companyId) return <div>Company not found</div>;
 
     const [
         allSubmissions,
-        allUsers,
         allTasks,
     ] = await Promise.all([
         getSubmissions(),
-        getUsers(),
         getTasksByCompany(user.companyId),
     ]);
 

@@ -1,4 +1,5 @@
 
+
 import { getDB, setDB } from './mock-db';
 import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge, Activity, Notification, TaskTemplate } from './types';
 

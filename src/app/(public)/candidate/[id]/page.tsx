@@ -1,8 +1,9 @@
 
+
 import {
     getUser,
     getSubmissionsByUser,
-    getEvaluations,
+    getAllEvaluations,
     getTasks,
     getUsers,
 } from '@/lib/api';
@@ -69,7 +70,7 @@ export default async function CandidateProfilePage({ params }: { params: { id: s
 
     const [submissions, allEvaluations, allTasks, allUsers] = await Promise.all([
         getSubmissionsByUser(params.id),
-        getEvaluations(),
+        getAllEvaluations(),
         getTasks(),
         getUsers(),
     ]);

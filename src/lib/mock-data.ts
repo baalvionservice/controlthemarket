@@ -767,6 +767,207 @@ GET    /api/audit/logs                 (Protected: Admin)</code></pre>`,
     imageUrl: 'https://picsum.photos/seed/dataroom/600/400',
     imageHint: 'data vault',
   },
+  {
+    id: 'task-20',
+    title: 'Build an Investment Execution Engine (Baalvion)',
+    description: "As a senior backend developer, you are tasked with building the Investment Execution Engine for 'Baalvion', a next-generation institutional Investor Relations Platform. This module is responsible for managing the full lifecycle of an investment, from term sheet generation to capital confirmation and admin verification. It ensures a structured, secure, and auditable investment process.",
+    instructions: `<h3>Project Goal</h3>
+<p>Your primary objective is to build a backend system that manages the investment lifecycle in a state-driven flow: term sheet creation, execution, capital submission, and admin verification.</p>
+<h3>Core Architectural & Security Requirements</h3>
+<ul>
+  <li><strong>Project Structure:</strong> Organize your code in a clean, modular fashion (controllers, services, routes, middleware, models).</li>
+  <li><strong>API Response:</strong> All endpoints must return { success: boolean, data: any, error: string | null }.</li>
+  <li><strong>Authentication:</strong> All protected routes must validate JWT/session.</li>
+  <li><strong>RBAC:</strong> Restrict access (Investor, Admin).</li>
+  <li><strong>Input Validation:</strong> Validate all incoming data.</li>
+  <li><strong>Error Handling:</strong> Prevent crashes and return meaningful errors.</li>
+  <li><strong>Logging:</strong> Log all investment lifecycle actions.</li>
+</ul>
+<h3>Features to Implement</h3>
+<h4>1. Investment Lifecycle:</h4>
+<ul>
+  <li>Term sheet generation (mock)</li>
+  <li>Investment execution tracking</li>
+  <li>Capital submission logging</li>
+  <li>Admin verification system</li>
+</ul>
+<h4>2. State Management:</h4>
+<p>Track states:</p>
+<ul>
+  <li>initiated</li>
+  <li>signed</li>
+  <li>funds_submitted</li>
+  <li>verified</li>
+</ul>
+<h3>API Endpoints to Build</h3>
+<pre><code>POST   /api/investment/term-sheet     (Investor)
+POST   /api/investment/execute        (Investor)
+GET    /api/investment/status         (Investor, Admin)
+POST   /api/investment/verify         (Admin)</code></pre>`,
+    expectedOutputs: '<p>Complete backend module with working APIs, clean structure, and lifecycle tracking. Must run without errors.</p>',
+    roleCategory: 'Backend',
+    taskTypes: ['Backend Development', 'API Design', 'System Architecture'],
+    difficulty: 'Expert',
+    priority: 'High',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 25)).toISOString(),
+    companyId: 'company-3',
+    createdBy: 'user-10',
+    status: 'published',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/investment/600/400',
+    imageHint: 'financial chart'
+  },
+  {
+    id: 'task-21',
+    title: 'Build an SPV Management & Profit System (Baalvion)',
+    description: "As a senior backend developer, you are tasked with building the SPV (Special Purpose Vehicle) Management System for 'Baalvion'. This module will manage deal-level investment structures, including investor allocation, capital tracking, and profit distribution logic.",
+    instructions: `<h3>Project Goal</h3>
+<p>Build a backend module that enables creation and management of SPVs, tracks investor allocations, and calculates profit distribution in a structured and auditable way.</p>
+<h3>Core Architectural & Security Requirements</h3>
+<ul>
+  <li><strong>Project Structure:</strong> Modular architecture required.</li>
+  <li><strong>API Response:</strong> Standard response format.</li>
+  <li><strong>Authentication:</strong> JWT/session validation required.</li>
+  <li><strong>RBAC:</strong> Restrict access (Investor, Admin).</li>
+  <li><strong>Input Validation:</strong> Validate all data.</li>
+  <li><strong>Error Handling:</strong> Robust error management.</li>
+  <li><strong>Logging:</strong> Log all financial operations.</li>
+</ul>
+<h3>Features to Implement</h3>
+<h4>1. SPV System:</h4>
+<ul>
+  <li>Create SPV entity</li>
+  <li>Assign investors to SPV</li>
+  <li>Track capital contributions</li>
+</ul>
+<h4>2. Profit System:</h4>
+<ul>
+  <li>Mock profit calculation</li>
+  <li>Distribution tracking</li>
+</ul>
+<h3>API Endpoints to Build</h3>
+<pre><code>POST   /api/spv/create        (Admin)
+GET    /api/spv/:id           (Investor, Admin)
+POST   /api/spv/allocate      (Admin)
+GET    /api/spv/profit        (Investor, Admin)</code></pre>`,
+    expectedOutputs: '<p>Fully functional SPV module with capital tracking and profit logic. Clean and scalable code.</p>',
+    roleCategory: 'Backend',
+    taskTypes: ['Backend Development', 'API Design', 'Financial Modeling'],
+    difficulty: 'Expert',
+    priority: 'High',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 25)).toISOString(),
+    companyId: 'company-3',
+    createdBy: 'user-10',
+    status: 'published',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/spv/600/400',
+    imageHint: 'corporate structure'
+  },
+  {
+    id: 'task-22',
+    title: 'Build an Equity Engine & Cap Table System (Baalvion)',
+    description: "As a senior backend developer, you are tasked with building the Equity Engine for 'Baalvion'. This module manages equity grants, vesting schedules, and cap table tracking for strategic operators.",
+    instructions: `<h3>Project Goal</h3>
+<p>Build a backend system that manages equity allocation, tracks vesting schedules, and maintains a structured cap table.</p>
+<h3>Core Architectural & Security Requirements</h3>
+<ul>
+  <li><strong>Project Structure:</strong> Modular design required.</li>
+  <li><strong>API Response:</strong> Standard format required.</li>
+  <li><strong>Authentication:</strong> JWT/session validation required.</li>
+  <li><strong>RBAC:</strong> Admin-controlled actions.</li>
+  <li><strong>Input Validation:</strong> Strict validation required.</li>
+  <li><strong>Error Handling:</strong> Must handle all failure cases.</li>
+  <li><strong>Logging:</strong> Log all equity-related actions.</li>
+</ul>
+<h3>Features to Implement</h3>
+<h4>1. Equity Management:</h4>
+<ul>
+  <li>Grant equity to users</li>
+  <li>Track equity pool</li>
+</ul>
+<h4>2. Vesting System:</h4>
+<ul>
+  <li>Time-based vesting logic</li>
+  <li>Milestone-ready structure</li>
+</ul>
+<h4>3. Cap Table:</h4>
+<ul>
+  <li>View ownership structure</li>
+  <li>Update records via API</li>
+</ul>
+<h3>API Endpoints to Build</h3>
+<pre><code>POST   /api/equity/grant      (Admin)
+GET    /api/equity/vesting    (Admin, Investor)
+GET    /api/cap-table         (Admin)</code></pre>`,
+    expectedOutputs: '<p>Complete equity management system with vesting logic and cap table tracking. Must be audit-ready.</p>',
+    roleCategory: 'Backend',
+    taskTypes: ['Backend Development', 'API Design', 'Financial Modeling'],
+    difficulty: 'Expert',
+    priority: 'High',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 28)).toISOString(),
+    companyId: 'company-3',
+    createdBy: 'user-10',
+    status: 'published',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/equity/600/400',
+    imageHint: 'pie chart'
+  },
+  {
+    id: 'task-23',
+    title: 'Build an Admin Panel & Compliance System (Baalvion)',
+    description: "As a senior backend developer, you are tasked with building the Admin & Compliance System for 'Baalvion'. This module provides full administrative control over the platform, including investor approvals, compliance tracking, notifications, and audit logs.",
+    instructions: `<h3>Project Goal</h3>
+<p>Build a backend module that allows admins to manage the entire system, review investor actions, and maintain compliance through logging and monitoring.</p>
+<h3>Core Architectural & Security Requirements</h3>
+<ul>
+  <li><strong>Project Structure:</strong> Clean modular architecture.</li>
+  <li><strong>API Response:</strong> Standard format required.</li>
+  <li><strong>Authentication:</strong> JWT/session validation required.</li>
+  <li><strong>RBAC:</strong> Strict admin-only access where required.</li>
+  <li><strong>Input Validation:</strong> Validate all inputs.</li>
+  <li><strong>Error Handling:</strong> Prevent system failures.</li>
+  <li><strong>Logging:</strong> Full audit trail required.</li>
+</ul>
+<h3>Features to Implement</h3>
+<h4>1. Approval System:</h4>
+<ul>
+  <li>Investor approval/rejection</li>
+  <li>KYC review queue</li>
+</ul>
+<h4>2. Notification System:</h4>
+<ul>
+  <li>Send notifications (mock event-based)</li>
+</ul>
+<h4>3. Audit System:</h4>
+<ul>
+  <li>Track all system actions</li>
+</ul>
+<h3>API Endpoints to Build</h3>
+<pre><code>GET    /api/admin/approvals       (Admin)
+POST   /api/admin/approve         (Admin)
+GET    /api/admin/audit           (Admin)
+POST   /api/notifications/send    (Admin)</code></pre>`,
+    expectedOutputs: '<p>Fully functional admin backend module with approval system, notifications, and audit tracking. Must be secure and scalable.</p>',
+    roleCategory: 'Backend',
+    taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
+    difficulty: 'Expert',
+    priority: 'High',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 28)).toISOString(),
+    companyId: 'company-3',
+    createdBy: 'user-10',
+    status: 'published',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/adminpanel/600/400',
+    imageHint: 'control panel'
+  },
 ];
 
 export const mockTemplates: TaskTemplate[] = [
@@ -1998,4 +2199,5 @@ export const mockSubscriptions: Subscription[] = [
 ];
 
     
+
 

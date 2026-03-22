@@ -132,6 +132,17 @@ export function Step3SkillsEducation({ onNext, data }: Step3Props) {
                         )}
                     />
                 </div>
+                 <FormField
+                    control={form.control}
+                    name="linkedinUrl"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>LinkedIn URL (Optional)</FormLabel>
+                            <FormControl><Input placeholder="https://linkedin.com/in/yourprofile" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
             </form>
         </Form>
     )

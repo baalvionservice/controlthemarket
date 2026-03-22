@@ -32,9 +32,18 @@ export function Step4Review({ onNext, data }: Step4Props) {
 
   const InfoRow = ({ label, value }: { label: string, value?: string | number }) => (
     value ? (
-        <div className="flex justify-between py-2 border-b">
+        <div className="flex justify-between py-2 border-b items-center">
             <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
-            <dd className="text-sm text-right">{value}</dd>
+            <dd className="text-sm text-right truncate max-w-xs">{value}</dd>
+        </div>
+    ) : null
+  );
+
+  const FileRow = ({ label, file }: { label: string; file?: File }) => (
+    file ? (
+        <div className="flex justify-between py-2 border-b items-center">
+            <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
+            <dd className="text-sm text-right truncate max-w-xs">{file.name} ({(file.size / 1024).toFixed(2)} KB)</dd>
         </div>
     ) : null
   );
@@ -45,13 +54,20 @@ export function Step4Review({ onNext, data }: Step4Props) {
         <dl className="space-y-2 rounded-md border p-4">
             <InfoRow label="Full Name" value={data.fullName} />
             <InfoRow label="Location" value={data.location} />
+            <FileRow label="Profile Photo" file={data.profilePhoto} />
             <InfoRow label="Last Job Title" value={data.lastJobTitle} />
             <InfoRow label="Last Company" value={data.lastCompany} />
             <InfoRow label="Salary" value={data.salary && data.currency ? `${data.salary.toLocaleString()} ${data.currency}` : undefined} />
+            <FileRow label="Employment Proof" file={data.proofDoc} />
+            <InfoRow label="Experience Summary" value={data.experience} />
             <InfoRow label="Skills" value={data.skills} />
             <InfoRow label="Degree" value={data.degree} />
             <InfoRow label="Institute" value={data.institute} />
             <InfoRow label="Graduation Year" value={data.gradYear} />
+            <FileRow label="Certifications" file={data.certifications} />
+            <InfoRow label="Portfolio URL" value={data.portfolioUrl} />
+            <InfoRow label="GitHub URL" value={data.githubUrl} />
+            <InfoRow label="LinkedIn URL" value={data.linkedinUrl} />
         </dl>
         <FormField
             control={form.control}

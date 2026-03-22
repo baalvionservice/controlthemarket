@@ -88,6 +88,10 @@ const getParentRole = (role: RoleCategory): RoleCategory => {
     return role;
 };
 
+const optionalPositiveNumber = z.preprocess(
+  (val) => (val === "" || val === null ? undefined : val),
+  z.coerce.number().positive().int().optional()
+);
 
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
@@ -102,12 +106,12 @@ const formSchema = z.object({
   // Fields for single-round tasks
   instructions: z.string(),
   expectedOutputs: z.string(),
-  timeLimitMinutes: z.coerce.number().positive().int().optional(),
+  timeLimitMinutes: optionalPositiveNumber,
   // Fields for multi-round tasks
   rounds: z.array(z.object({
     instructions: z.string().min(20, 'Instructions must be at least 20 characters.'),
     expectedOutputs: z.string().min(20, 'Expected Outputs must be at least 20 characters.'),
-    timeLimitMinutes: z.coerce.number().positive().int().optional(),
+    timeLimitMinutes: optionalPositiveNumber,
   })).optional(),
 }).superRefine((data, ctx) => {
   if (data.multiRound) {
@@ -149,7 +153,7 @@ export function CreateTaskForm() {
       instructions: '',
       expectedOutputs: '',
       taskTypes: [],
-      timeLimitMinutes: undefined,
+      timeLimitMinutes: '',
       multiRound: false,
       rounds: [],
     },
@@ -191,11 +195,11 @@ export function CreateTaskForm() {
     form.setValue('multiRound', template.multiRound || false, { shouldValidate: true });
     
     if (template.multiRound && template.rounds) {
-      form.setValue('rounds', template.rounds.map(r => ({...r, timeLimitMinutes: r.timeLimitMinutes || undefined })), { shouldValidate: true });
+      form.setValue('rounds', template.rounds.map(r => ({...r, timeLimitMinutes: r.timeLimitMinutes || '' })), { shouldValidate: true });
     } else {
       form.setValue('instructions', template.instructions, { shouldValidate: true });
       form.setValue('expectedOutputs', template.expectedOutputs, { shouldValidate: true });
-      form.setValue('timeLimitMinutes', template.timeLimitMinutes || undefined, { shouldValidate: true });
+      form.setValue('timeLimitMinutes', template.timeLimitMinutes || '', { shouldValidate: true });
     }
     
     toast({
@@ -435,7 +439,7 @@ export function CreateTaskForm() {
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => append({ instructions: '', expectedOutputs: '', timeLimitMinutes: undefined })}
+                        onClick={() => append({ instructions: '', expectedOutputs: '', timeLimitMinutes: '' })}
                     >
                         Add Round
                     </Button>
@@ -616,5 +620,7 @@ export function CreateTaskForm() {
     </>
   );
 }
+
+    
 
     

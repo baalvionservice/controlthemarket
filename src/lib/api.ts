@@ -24,6 +24,7 @@ import {
   mockRevenueSources,
   mockBadges,
   mockSystemLogs,
+  mockSystemErrors,
 } from './mock-data';
 import type { User, TaskTemplate } from './types';
 
@@ -139,6 +140,7 @@ export const getServiceLoad = async () => mockServiceLoad;
 export const getScalingEvents = async () => mockScalingEvents;
 export const getSystemIncidents = async () => mockSystemIncidents;
 export const getSystemLogs = async () => mockSystemLogs;
+export const getSystemErrors = async () => mockSystemErrors;
 export const getPlanUsage = async () => mockPlanUsage;
 export const getUsageMetrics = async () => mockUsageMetrics;
 export const getRevenueMetrics = async () => mockRevenueMetrics;

@@ -1345,6 +1345,28 @@ export const mockApiIntegrations: ApiIntegration[] = [
     apiKey: 'rzp_test_******************',
     endpointUrl: 'https://api.razorpay.com/v1',
     subscribedEvents: ['submission.created'],
+  },
+  {
+    id: 'api-10',
+    name: 'PayU',
+    category: 'Payments',
+    description: 'Integrate with PayU for payment gateway services, popular in India and other emerging markets.',
+    status: 'Inactive',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString(),
+    apiKey: 'payu_key_******************',
+    endpointUrl: 'https://api.payu.in/v1',
+    subscribedEvents: [],
+  },
+  {
+    id: 'api-11',
+    name: 'ACH / Bank Transfer (Plaid)',
+    category: 'Payments',
+    description: 'Enable direct bank transfers using Plaid for ACH payments.',
+    status: 'Inactive',
+    lastSync: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
+    apiKey: 'plaid_secret_******************',
+    endpointUrl: 'https://api.plaid.com',
+    subscribedEvents: [],
   }
 ];
 

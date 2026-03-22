@@ -534,7 +534,7 @@ export interface Plan {
 
 export type SubscriptionStatus = 'ACTIVE' | 'CANCELED' | 'EXPIRED' | 'TRIAL';
 export type BillingCycle = 'MONTHLY' | 'YEARLY';
-export type PaymentProvider = 'STRIPE' | 'RAZORPAY';
+export type PaymentProvider = 'STRIPE' | 'RAZORPAY' | 'PAYPAL' | 'GOOGLE_PAY' | 'APPLE_PAY' | 'PAYU' | 'ACH';
 
 export interface Subscription {
   id: string;

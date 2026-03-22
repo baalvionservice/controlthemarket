@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -10,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
   CardFooter
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
@@ -119,4 +118,3 @@ export function UsageBreakdownPanel({ data }: { data: PlanUsage[] }) {
         </Card>
     );
 }
-```

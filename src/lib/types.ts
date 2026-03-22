@@ -330,7 +330,6 @@ export interface IntegrationLog {
   eventType: string; // e.g., 'push', 'submission.evaluated'
   status: 'Success' | 'Warning' | 'Error';
   timestamp: string;
-  description: string;
   relatedEntity: {
     type: 'Task' | 'Submission' | 'User' | 'Company' | 'System';
     id: string;

@@ -100,6 +100,9 @@ export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'upda
     id: generateId('task'),
     createdAt: now,
     updatedAt: now,
+    assignedTo: [],
+    isOpen: taskData.isOpen !== false, // default to true
+    isPrivate: taskData.isPrivate || false, // default to false
   };
   setDB({ ...db, tasks: [...db.tasks, newTask] });
   return simulateApiCall(newTask);
@@ -122,7 +125,7 @@ export const getTasksByCompanyId = async (companyId: string): Promise<{ success:
   return simulateApiCall(tasks);
 }
 
-// assignTask creates a new submission with status 'assigned'
+// assignTask creates a new submission with status 'assigned' and updates the task's assignedTo array
 export const assignTask = async (taskId: string, userId: string): Promise<{ success: true; data: Submission }> => {
   const db = getDB();
   const task = db.tasks.find(t => t.id === taskId);
@@ -130,6 +133,17 @@ export const assignTask = async (taskId: string, userId: string): Promise<{ succ
 
   const existingSubmission = db.submissions.find(s => s.taskId === taskId && s.userId === userId);
   if (existingSubmission) return simulateApiCall(existingSubmission);
+  
+  // Update task's assignedTo array
+  const updatedTasks = db.tasks.map(t => {
+      if (t.id === taskId) {
+          const assignedTo = t.assignedTo || [];
+          if (!assignedTo.includes(userId)) {
+              return { ...t, assignedTo: [...assignedTo, userId] };
+          }
+      }
+      return t;
+  });
 
   const now = new Date().toISOString();
   const newSubmission: Submission = {
@@ -141,7 +155,7 @@ export const assignTask = async (taskId: string, userId: string): Promise<{ succ
     assignedAt: now,
     lastUpdated: now,
   };
-  setDB({ ...db, submissions: [...db.submissions, newSubmission] });
+  setDB({ ...db, tasks: updatedTasks, submissions: [...db.submissions, newSubmission] });
   return simulateApiCall(newSubmission);
 };
 
@@ -167,12 +181,6 @@ export const createSubmission = async (submissionData: Omit<Submission, 'id'|'co
   return simulateApiCall(newSubmission);
 };
 
-export const getSubmissionsByUser = async (userId: string): Promise<{ success: true; data: Submission[] }> => {
-  const db = getDB();
-  const userSubmissions = db.submissions.filter(s => s.userId === userId);
-  return simulateApiCall(userSubmissions);
-};
-
 export const getAllSubmissions = async (): Promise<{ success: true; data: Submission[] }> => {
     const db = getDB();
     return simulateApiCall(db.submissions);
@@ -183,12 +191,6 @@ export const getSubmissionById = async (id: string): Promise<{ success: true; da
     const submission = db.submissions.find(s => s.id === id);
     return simulateApiCall(submission);
 }
-
-export const getSubmissionsByTask = async (taskId: string): Promise<{ success: true; data: Submission[] }> => {
-  const db = getDB();
-  const taskSubmissions = db.submissions.filter(s => s.taskId === taskId);
-  return simulateApiCall(taskSubmissions);
-};
 
 export const updateSubmission = async (submissionId: string, updates: Partial<Submission>): Promise<{ success: true; data: Submission | undefined }> => {
     const db = getDB();

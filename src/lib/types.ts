@@ -157,6 +157,9 @@ export interface Task {
     name: string;
     size?: number;
   };
+  assignedTo?: string[]; // Array of user IDs
+  isOpen?: boolean; // True if public, false if invite-only
+  isPrivate?: boolean; // True if only assigned users can see, supersedes isOpen
 }
 
 export interface TaskTemplate {
@@ -174,6 +177,7 @@ export interface TaskTemplate {
   updatedAt: string;
   multiRound?: boolean;
   rounds?: TaskRound[];
+  isPrivate?: boolean;
 }
 
 export type SubmissionContentType = 'link' | 'file' | 'externalLink';
@@ -573,4 +577,5 @@ export interface Subscription {
   paymentProvider?: PaymentProvider;
   externalSubscriptionId?: string;
 }
+
 

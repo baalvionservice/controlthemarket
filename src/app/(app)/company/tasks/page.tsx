@@ -1,19 +1,23 @@
 
+
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { getTasksByCompany, getSubmissions } from "@/lib/api";
-import { mockUsers } from "@/lib/mock-data";
+import { getTasksByCompany, getSubmissions, getUsers } from "@/lib/api";
 import { CompanyTaskList } from "./task-list";
 import type { TaskWithSubmissionCount } from './task-list';
 
-const CURRENT_USER_ID = "user-2";
-
 export default async function ManageTasksPage() {
-  const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
-  if (!user || !user.companyId) return <div>Company not found</div>;
+  // In a real app, user would be derived from session.
+  // We are mocking getting the current user, then their tasks.
+  const allUsers = await getUsers();
+  const currentUser = allUsers.find(u => u.role === 'company');
+  if (!currentUser || !currentUser.companyId) {
+    // Handle case where no company user is found or they have no company
+    return <div>Could not load company tasks. User not found or not associated with a company.</div>;
+  }
   
-  const tasks = await getTasksByCompany(user.companyId);
+  const tasks = await getTasksByCompany(currentUser.companyId);
   const submissions = await getSubmissions();
 
   const tasksWithSubmissionCount: TaskWithSubmissionCount[] = tasks.map(task => ({

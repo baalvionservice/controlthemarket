@@ -17,6 +17,7 @@ import { TaskCard } from './task-card';
 import type { Task, RoleCategory, TaskDifficulty, TaskType, TaskPriority } from '@/lib/types';
 import { Search } from 'lucide-react';
 import { groupedRoles } from '@/lib/roles';
+import { useAuth } from '@/contexts/auth-context';
 
 export type TaskWithCompany = Task & {
   companyName: string;
@@ -29,6 +30,7 @@ const priorities: (TaskPriority | 'All')[] = ["All", "High", "Medium", "Low"];
 
 
 export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<RoleCategory | 'All'>('Engineering');
   const [difficultyFilter, setDifficultyFilter] = useState<TaskDifficulty | 'All'>('All');
@@ -37,7 +39,27 @@ export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
+      // Base filter: only published tasks are visible in the general list
       if (task.status !== 'published') return false;
+
+      // Smart Task Engine Logic
+      if (user && user.role === 'candidate') {
+          // If a task is private, the user MUST be in the assignedTo list
+          if (task.isPrivate === true) {
+              if (!task.assignedTo?.includes(user.id)) {
+                  return false;
+              }
+          } 
+          // If a task is not explicitly open (isOpen: false), it's treated as private
+          else if (task.isOpen === false) {
+              if (!task.assignedTo?.includes(user.id)) {
+                  return false;
+              }
+          }
+          // Otherwise (isOpen: true or undefined), it's a public task visible to all candidates
+      }
+
+
       const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) || task.companyName.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesRole = (() => {
@@ -58,7 +80,7 @@ export function TaskList({ tasks }: { tasks: TaskWithCompany[] }) {
       const matchesPriority = priorityFilter === 'All' || task.priority === priorityFilter;
       return matchesSearch && matchesRole && matchesDifficulty && matchesTaskType && matchesPriority;
     });
-  }, [tasks, searchTerm, roleFilter, difficultyFilter, taskTypeFilter, priorityFilter]);
+  }, [tasks, searchTerm, roleFilter, difficultyFilter, taskTypeFilter, priorityFilter, user]);
 
   return (
     <div className="space-y-6">

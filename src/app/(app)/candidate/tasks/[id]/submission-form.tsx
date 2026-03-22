@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -18,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Github, UploadCloud, File, X, Loader2, Link as LinkIcon } from 'lucide-react';
+import { Github, UploadCloud, File, X, Loader2, Link as LinkIcon, ShieldAlert } from 'lucide-react';
 import type { Task, SubmissionContentType, SubmissionStatus } from '@/lib/types';
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
@@ -148,6 +149,15 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
     }, [task, user, findSubmissionByTask]);
 
     const currentRoundNumber = useMemo(() => submission?.currentRound || 1, [submission]);
+    
+    const isSubmissionAllowed = useMemo(() => {
+        if (!user) return false;
+        // If task is not private, anyone can submit. isPrivate defaults to false if undefined.
+        if (task.isPrivate !== true) return true;
+        // If task is private, user must be in the assignedTo array.
+        return task.assignedTo?.includes(user.id) ?? false;
+    }, [task, user]);
+
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -190,6 +200,14 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
                 cardDescription: 'This task has not been assigned to you.',
             };
         }
+        
+        if (!isSubmissionAllowed) {
+             return {
+                submissionDisabled: true,
+                buttonText: 'Submission Not Allowed',
+                cardDescription: 'This is a private task and you have not been assigned to it.',
+            };
+        }
 
         const isReviewing = ['pending', 'in-review'].includes(submission.status);
         const isCompleted = ['shortlisted'].includes(submission.status);
@@ -213,7 +231,7 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
             buttonText: canResubmit ? 'Resubmit Work' : 'Submit Work',
             cardDescription: descriptions[submission.status],
         };
-    }, [submission]);
+    }, [submission, isSubmissionAllowed]);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         if (!submission) {
@@ -259,6 +277,17 @@ export function SubmissionForm({ task }: SubmissionFormProps) {
         
         setIsLoading(false);
         router.push(`/candidate/submissions/${submission.id}`);
+    }
+
+    if (!isSubmissionAllowed) {
+         return (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-destructive" /> Private Task</CardTitle>
+                    <CardDescription>{cardDescription}</CardDescription>
+                </CardHeader>
+            </Card>
+        )
     }
 
     if (!submission) {

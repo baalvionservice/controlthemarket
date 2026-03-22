@@ -1,10 +1,13 @@
+
 import { getTasks, getCompanies } from '@/lib/api';
 import { TaskList } from './task-list';
 import type { TaskWithCompany } from './task-list';
 
 export default async function RoleTasksPage() {
-  const tasks = await getTasks();
-  const companies = await getCompanies();
+  const [tasks, companies] = await Promise.all([
+    getTasks(),
+    getCompanies()
+  ]);
 
   const tasksWithCompany: TaskWithCompany[] = tasks.map((task) => {
     const company = companies.find((c) => c.id === task.companyId);

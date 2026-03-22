@@ -1,3 +1,6 @@
+
+'use client'
+
 import Link from 'next/link';
 import {
   Card,
@@ -12,10 +15,13 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { TaskWithCompany } from './task-list';
 import { formatDistanceToNow } from 'date-fns';
-import { ArrowRight, Calendar, Clock, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Calendar, Clock, AlertTriangle, UserCheck, Lock } from 'lucide-react';
 import type { TaskPriority } from '@/lib/types';
+import { useAuth } from '@/contexts/auth-context';
 
 export function TaskCard({ task }: { task: TaskWithCompany }) {
+  const { user } = useAuth();
+  
   const getPriorityVariant = (priority?: TaskPriority) => {
     switch (priority) {
       case 'High':
@@ -38,13 +44,21 @@ export function TaskCard({ task }: { task: TaskWithCompany }) {
     }
   };
 
+  const isAssignedToUser = user && task.assignedTo?.includes(user.id);
+
   return (
     <Card className="flex flex-col transition-shadow duration-300 hover:shadow-lg">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <CardTitle className="font-headline mb-1 leading-tight">{task.title}</CardTitle>
           <div className="flex flex-col items-end gap-2 shrink-0">
-            <Badge variant="outline" className="shrink-0">{task.difficulty}</Badge>
+            {isAssignedToUser ? (
+                <Badge variant="purple"><UserCheck className="mr-1.5 h-3 w-3" /> Assigned to You</Badge>
+            ) : task.isPrivate ? (
+                <Badge variant="outline"><Lock className="mr-1.5 h-3 w-3" /> Private Task</Badge>
+            ) : (
+                <Badge variant="outline">{task.difficulty}</Badge>
+            )}
             {task.priority && task.priority !== 'Low' && (
               <Badge variant={getPriorityVariant(task.priority)} className="shrink-0">
                 {getPriorityIcon(task.priority)}

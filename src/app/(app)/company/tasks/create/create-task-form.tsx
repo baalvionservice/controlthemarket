@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -57,6 +58,7 @@ const formSchema = z.object({
     message: 'You have to select at least one task type.',
   }),
   deadline: z.date({ required_error: 'A deadline is required.' }),
+  isPrivate: z.boolean().default(false),
   multiRound: z.boolean().default(false),
   instructions: z.string(),
   expectedOutputs: z.string(),
@@ -111,6 +113,7 @@ export function CreateTaskForm() {
       expectedOutputs: '',
       taskTypes: [],
       timeLimitMinutes: undefined,
+      isPrivate: false,
       multiRound: false,
       rounds: [],
     },
@@ -149,6 +152,7 @@ export function CreateTaskForm() {
     form.setValue('difficulty', template.difficulty, { shouldValidate: true });
     form.setValue('taskTypes', template.taskTypes || [], { shouldValidate: true });
     form.setValue('multiRound', template.multiRound || false, { shouldValidate: true });
+    form.setValue('isPrivate', template.isPrivate || false, { shouldValidate: true });
     
     if (template.multiRound && template.rounds) {
       form.setValue('rounds', template.rounds.map(r => ({...r, timeLimitMinutes: r.timeLimitMinutes || undefined })), { shouldValidate: true });
@@ -172,6 +176,7 @@ export function CreateTaskForm() {
     const taskData = {
         ...values,
         deadline: values.deadline.toISOString(),
+        isOpen: !values.isPrivate,
         status: status,
         companyId: user.companyId,
         createdBy: user.id,
@@ -314,26 +319,48 @@ export function CreateTaskForm() {
            </div>
 
            <div className="space-y-6 rounded-md border p-6">
-                <FormField
-                    control={form.control}
-                    name="multiRound"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between">
-                        <div className="space-y-0.5">
-                            <FormLabel className="text-base">Multi-Round Task</FormLabel>
-                            <FormDescription>
-                            Enable this to create a task with multiple sequential rounds.
-                            </FormDescription>
-                        </div>
-                        <FormControl>
-                            <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            />
-                        </FormControl>
-                        </FormItem>
-                    )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <FormField
+                        control={form.control}
+                        name="multiRound"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">Multi-Round Task</FormLabel>
+                                <FormDescription>
+                                Enable to create sequential rounds.
+                                </FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="isPrivate"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">Private Task</FormLabel>
+                                <FormDescription>
+                                Only assigned candidates can see this task.
+                                </FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
                
                {!watchedMultiRound ? (
                  <>

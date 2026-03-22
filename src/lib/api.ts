@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import * as api from './mock-api';
@@ -26,6 +27,7 @@ import {
   mockPlanDistribution,
   mockRevenueSources,
 } from './mock-data';
+import type { User } from './types';
 
 // This file now acts as the single source of truth for all data operations.
 // It uses the hybrid data layer for fetching, ensuring a mix of
@@ -48,6 +50,27 @@ export const createCompany = api.createCompany;
 // --- Task API ---
 export const getTasks = dataLayer.getHybridTasks;
 export const getTask = async (id: string) => (await api.getTaskById(id)).data;
+
+export const getVisibleTasksForUser = async (user: User) => {
+    const allTasks = await dataLayer.getHybridTasks();
+    if (user.role === 'admin') {
+        return allTasks;
+    }
+    if (user.role === 'company') {
+        return allTasks.filter(task => task.companyId === user.companyId);
+    }
+    if (user.role === 'candidate') {
+        return allTasks.filter(task => {
+            if (task.isPrivate) {
+                return task.assignedTo?.includes(user.id);
+            }
+            return task.isOpen !== false; // Default to open if not specified
+        });
+    }
+    return [];
+};
+
+
 export const getTasksByCompany = async (companyId: string) => {
     const allTasks = await dataLayer.getHybridTasks();
     return allTasks.filter(t => t.companyId === companyId);
@@ -103,3 +126,4 @@ export const getPlanDistribution = async () => mockPlanDistribution;
 export const getRevenueSources = async () => mockRevenueSources;
 export const getPlans = async () => (await api.getAllPlans()).data;
 export const getSubscriptions = async () => (await api.getAllSubscriptions()).data;
+

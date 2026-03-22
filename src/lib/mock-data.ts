@@ -48,7 +48,9 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
     isActive: true,
     isVerified: true,
-    consentAccepted: false,
+    consentAccepted: true, // User has accepted consent
+    consentAcceptedAt: new Date(new Date().setDate(new Date().getDate() - 29)).toISOString(),
+    candidateOnboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar1/100/100',
       bio: 'Aspiring frontend developer with a passion for React.',
@@ -75,7 +77,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 60)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: false,
+    onboardingCompleted: true, // User has completed onboarding
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar2/100/100',
       bio: 'Hiring manager at TechCorp.',
@@ -99,10 +101,11 @@ export const mockUsers: User[] = [
     email: 'diana@example.com',
     role: 'candidate',
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
-    isActive: false, // Changed for testing
+    isActive: true, // Changed for testing
     isVerified: true,
     consentAccepted: true,
     consentAcceptedAt: new Date(new Date().setDate(new Date().getDate() - 9)).toISOString(),
+    candidateOnboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar4/100/100',
       bio: 'Full-stack engineer with 5 years of experience.',
@@ -129,7 +132,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: false,
+    onboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar5/100/100',
       bio: 'Lead Recruiter at Innovate Inc.',
@@ -145,7 +148,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: false,
+    onboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar6/100/100',
     },
@@ -160,7 +163,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 12)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: false,
+    onboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar7/100/100',
     },
@@ -175,7 +178,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 18)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: false,
+    onboardingCompleted: true,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar8/100/100',
     },
@@ -188,7 +191,8 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setHours(new Date().getHours() - 5)).toISOString(),
     isActive: true,
     isVerified: true,
-    consentAccepted: false,
+    consentAccepted: true,
+    candidateOnboardingCompleted: true,
     profile: {
         avatarUrl: 'https://picsum.photos/seed/avatar9/100/100',
         bio: 'Creative designer focused on user experience.',
@@ -550,7 +554,66 @@ export const mockTasks: Task[] = [
     multiRound: false,
     imageUrl: 'https://picsum.photos/seed/dataviz/600/400',
     imageHint: 'data dashboard'
-  }
+  },
+  {
+    id: 'task-17',
+    title: 'Build a Secure Backend Module for an Investor Platform (Baalvion)',
+    description: 'Your mission is to build Module 1 of a production-ready backend system for Baalvion, an institutional Investor Relations Platform. This involves creating a secure foundation for Authentication, Role-Based Access Control (RBAC), and Investor Onboarding.',
+    instructions: `
+### SYSTEM REQUIREMENTS
+- **Modular Architecture**: Structure your project logically (e.g., /controllers, /services, /routes, /middlewares, /models).
+- **Standard API Response**: All API responses must follow: \`{ success: boolean, data: any, error: string | null }\`.
+- **Mandatory API Features**: Every API endpoint must include: Authentication checks, Role-Based Access Control (RBAC), input validation, and robust error handling.
+- **Roles**: Implement three user roles: \`Public\`, \`Investor\`, and \`Admin\`.
+- **Security**: Hash passwords (e.g., using bcrypt), never store plaintext passwords, validate and sanitize all inputs, and use environment variables for secrets.
+- **Logging**: Implement logging for critical events: user login, KYC submission, and NDA acceptance.
+
+### FEATURES TO BUILD
+1.  **User Registration**:
+    -   Allow signup via email and password.
+    -   Assign a default role (e.g., 'Investor').
+    -   Securely store user credentials.
+2.  **User Login**:
+    -   Authenticate credentials against stored data.
+    -   Generate and return a JWT or session token.
+    -   Include user role in the login response.
+3.  **Authentication Middleware**:
+    -   Create middleware to protect routes.
+    -   It should validate the token from the request headers.
+    -   On successful validation, attach user information to the request object.
+4.  **RBAC Middleware**:
+    -   Create middleware to restrict route access based on user roles.
+5.  **KYC System (Mock)**:
+    -   An endpoint for users to submit KYC details (simulate, no file upload needed).
+    -   Store and retrieve a KYC status: \`pending\`, \`approved\`, or \`rejected\`.
+6.  **AML Screening (Mock)**:
+    -   Simulate an Anti-Money Laundering (AML) check during KYC submission that can randomly or based on a rule set a risk flag.
+7.  **NDA Acceptance**:
+    -   An endpoint to record that a user has accepted the Non-Disclosure Agreement, including a timestamp.
+
+### APIs TO IMPLEMENT
+- \`POST   /api/auth/register\`
+- \`POST   /api/auth/login\`
+- \`GET    /api/auth/me\` (Protected)
+- \`POST   /api/kyc/upload\` (Protected, Investor/Admin)
+- \`GET    /api/kyc/status\` (Protected, Investor/Admin)
+- \`POST   /api/nda/accept\` (Protected, Investor/Admin)
+    `,
+    expectedOutputs: 'A fully functional Node.js application delivered as a link to a public GitHub repository. The repository must contain the complete source code, a README.md file with clear setup and run instructions, and be ready to run locally without errors.',
+    roleCategory: 'Backend',
+    taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
+    difficulty: 'Expert',
+    priority: 'High',
+    deadline: new Date(new Date().setDate(new Date().getDate() + 21)).toISOString(),
+    companyId: 'company-1',
+    createdBy: 'user-2',
+    status: 'published',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    multiRound: false,
+    imageUrl: 'https://picsum.photos/seed/backend/600/400',
+    imageHint: 'server code'
+  },
 ];
 
 export const mockTemplates: TaskTemplate[] = [
@@ -1717,7 +1780,7 @@ export const mockInvoices: Invoice[] = [
 
 export const mockPlanUsage: PlanUsage[] = [
   { feature: 'API Calls', usage: 12500, limit: 50000, unit: 'requests' },
-  { feature: 'Tasks', usage: 42, limit: 100, unit: 'tasks' },
+  { feature: 'Tasks', usage: 42, limit: 50, unit: 'tasks' },
   { feature: 'Storage', usage: 15, limit: 50, unit: 'GB' },
 ];
 

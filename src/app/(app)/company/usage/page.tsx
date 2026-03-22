@@ -1,4 +1,3 @@
-
 'use client';
 
 import { getPlanUsage, getUsageMetrics } from "@/lib/api";
@@ -95,4 +94,3 @@ export default function UsageMetricsPage() {
         </div>
     )
 }
-```

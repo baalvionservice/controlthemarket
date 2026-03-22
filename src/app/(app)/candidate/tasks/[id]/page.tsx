@@ -184,7 +184,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
       </section>
 
       {/* Key Details Bar */}
-      <section className="sticky top-16 z-30 border-b border-t bg-background/80 backdrop-blur-lg">
+      <section className="sticky top-0 z-30 border-b border-t bg-background/80 backdrop-blur-lg">
           <div className="container grid grid-cols-2 md:grid-cols-4 gap-4 py-4 text-center">
               <div className="flex flex-col items-center justify-center gap-1">
                   <span className="text-xs text-muted-foreground">Role</span>

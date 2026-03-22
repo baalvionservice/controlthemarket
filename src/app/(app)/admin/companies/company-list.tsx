@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -226,7 +227,7 @@ export function AdminCompaniesList({
                         </Avatar>
                         <div>
                             <p className="font-medium">{company.name}</p>
-                            <p className="text-sm text-muted-foreground">{company.website}</p>
+                            <p className="text-sm text-muted-foreground">{company.domains?.[0]?.name || 'No domain'}</p>
                         </div>
                     </div>
                   </TableCell>

@@ -16,6 +16,24 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+} from "@/components/ui![CDATA[
+
+'use client';
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { 
+    Building, 
+    Bell, 
+    CreditCard,
+    Save
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { mockCompanies } from "@/lib/mock-data"; 
 import type { Company } from "@/lib/types";
@@ -26,6 +44,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { TeamManagementCard } from "./team-management-card";
+import { DomainManagementCard } from "./domain-management-card";
 
 export default function CompanySettingsPage() {
     const { user } = useAuth();
@@ -74,10 +93,6 @@ export default function CompanySettingsPage() {
                         <Input id="companyName" value={company.name} onChange={e => setCompany({...company, name: e.target.value})}/>
                     </div>
                      <div className="space-y-1">
-                        <Label htmlFor="companyWebsite">Website</Label>
-                        <Input id="companyWebsite" value={company.website} onChange={e => setCompany({...company, website: e.target.value})}/>
-                    </div>
-                     <div className="space-y-1">
                         <Label htmlFor="companyDescription">Description</Label>
                         <Textarea id="companyDescription" value={company.description} onChange={e => setCompany({...company, description: e.target.value})}/>
                     </div>
@@ -86,6 +101,10 @@ export default function CompanySettingsPage() {
 
              {/* User Management Card */}
             <TeamManagementCard />
+
+            <div className="lg:col-span-2">
+              <DomainManagementCard />
+            </div>
 
             {/* Notification Settings Card */}
             <Card>

@@ -52,7 +52,11 @@ export interface Company {
   name: string;
   description?: string;
   ownerId: string; // The ID of the user who owns the company
-  website?: string;
+  domains?: {
+    name: string;
+    verified: boolean;
+    purpose: string;
+  }[];
   logoUrl?: string;
   industry?: string;
   location?: string;

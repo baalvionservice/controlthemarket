@@ -223,7 +223,10 @@ export const mockCompanies: Company[] = [
     name: 'TechCorp',
     description: 'A leading innovator in cloud solutions.',
     ownerId: 'user-2',
-    website: 'https://techcorp.com',
+    domains: [
+      { name: 'techcorp.com', verified: true, purpose: 'Primary Website' },
+      { name: 'app.techcorp.com', verified: true, purpose: 'App Backend' }
+    ],
     logoUrl: 'https://picsum.photos/seed/company1/100/100',
     industry: 'Technology',
     location: 'Silicon Valley, CA',
@@ -244,7 +247,9 @@ export const mockCompanies: Company[] = [
     name: 'Innovate Inc.',
     description: 'Building the future of decentralized applications.',
     ownerId: 'user-5',
-    website: 'https://innovate.io',
+    domains: [
+      { name: 'innovate.io', verified: true, purpose: 'Primary Website' },
+    ],
     logoUrl: 'https://picsum.photos/seed/company2/100/100',
     industry: 'FinTech',
     location: 'New York, NY',
@@ -258,7 +263,11 @@ export const mockCompanies: Company[] = [
     name: 'Baalvion Inc.',
     description: 'A next-generation institutional Investor Relations Platform.',
     ownerId: 'user-10',
-    website: 'https://baalvion.inc',
+    domains: [
+        { name: 'baalvion.com', verified: true, purpose: 'Primary Website' },
+        { name: 'app.baalvion.com', verified: true, purpose: 'App Backend' },
+        { name: 'invest.baalvion.com', verified: false, purpose: 'Investor Portal' },
+    ],
     logoUrl: 'https://picsum.photos/seed/company3/100/100',
     industry: 'Financial Services',
     location: 'New York, NY',
@@ -351,7 +360,7 @@ export const mockTasks: Task[] = [
       {
         roundNumber: 1,
         instructions: 'Design and build the backend API. It should have endpoints for creating and retrieving user data. Use Node.js and Express.',
-        expectedOutputs: 'A set of functional REST API endpoints deployed on a test server.',
+        expectedOutputs: 'A GitHub repo with the backend code and a Postman collection.',
         timeLimitMinutes: 180,
       },
       {
@@ -420,8 +429,8 @@ export const mockTasks: Task[] = [
   {
     id: 'task-8',
     title: 'Implement Dark Mode Toggle Feature',
-    description: 'Add a dark mode toggle to a simple application. The user\\\'s preference should be saved in localStorage.',
-    instructions: '<ol><li>Add a button to toggle between light and dark themes.</li><li>Use CSS variables to manage colors for both themes.</li><li>When the theme changes, add a <code>.dark</code> class to the <code>&lt;html&gt;</code> element.</li><li>Persist the selected theme in <code>localStorage</code>.</li></ol>',
+    description: "Add a dark mode toggle to a simple application. The user's preference should be saved in localStorage.",
+    instructions: "<ol><li>Add a button to toggle between light and dark themes.</li><li>Use CSS variables to manage colors for both themes.</li><li>When the theme changes, add a <code>.dark</code> class to the <code>&lt;html&gt;</code> element.</li><li>Persist the selected theme in <code>localStorage</code>.</li></ol>",
     expectedOutputs: '<p>A link to a GitHub repository with the complete project.</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Feature Implementation', 'Styling'],
@@ -439,7 +448,7 @@ export const mockTasks: Task[] = [
     id: 'task-9',
     title: 'Refactor a Class Component to a Functional Component',
     description: 'Take an existing React class component and refactor it into a modern functional component using hooks.',
-    instructions: '<ol><li>Convert all lifecycle methods (e.g., <code>componentDidMount</code>) to their <code>useEffect</code> equivalents.</li><li>Convert the component\\\'s state management from <code>this.setState</code> to the <code>useState</code> hook.</li></ol>',
+    instructions: "<ol><li>Convert all lifecycle methods (e.g., <code>componentDidMount</code>) to their <code>useEffect</code> equivalents.</li><li>Convert the component's state management from <code>this.setState</code> to the <code>useState</code> hook.</li></ol>",
     expectedOutputs: '<p>The refactored functional component file (.tsx).</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Coding'],
@@ -695,8 +704,9 @@ POST   /api/nda/accept         (Protected: Investor)</code></pre><h3>WORKLOAD EX
 POST   /api/tasks/assign              (Company)
 GET    /api/tasks                     (Role-based filtered list)
 GET    /api/tasks/:id                 (Only assigned users)
-POST   /api/tasks/:id/submit          (Assigned Developer)
-POST   /api/tasks/:id/status/update   (Company, Admin)
+POST   /api/tasks/submit              (Developer)
+POST   /api/tasks/status/update       (Company, Admin)
+
 GET    /api/tasks/logs                (Admin, Company)</code></pre>
 
 <h3>System Requirements</h3>
@@ -2077,7 +2087,7 @@ export const mockSystemErrors: SystemError[] = [
     service: 'API',
     type: 'Unhandled Exception',
     severity: 'Critical',
-    message: 'TypeError: Cannot read properties of undefined (reading \'id\')',
+    message: "TypeError: Cannot read properties of undefined (reading 'id')",
     stackTrace: 'at /app/src/services/userService.ts:42:15\nat processTicksAndRejections (node:internal/process/task_queues:95:5)',
     frequency: 125,
     lastOccurred: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
@@ -2325,6 +2335,9 @@ export const mockSubscriptions: Subscription[] = [
 ];
 
     
+
+
+
 
 
 

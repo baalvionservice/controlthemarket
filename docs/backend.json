@@ -147,10 +147,28 @@
           "type": "string",
           "description": "The ID of the user who owns/created the company."
         },
-        "website": {
-          "type": "string",
-          "format": "uri",
-          "description": "The company's official website."
+        "domains": {
+          "type": "array",
+          "description": "A list of domains and subdomains associated with the company.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "The domain or subdomain name (e.g., 'app.baalvion.com')."
+              },
+              "verified": {
+                "type": "boolean",
+                "description": "Whether the domain ownership has been verified.",
+                "default": false
+              },
+              "purpose": {
+                "type": "string",
+                "description": "The purpose of the domain (e.g., 'Primary Website', 'App Backend', 'Marketing')."
+              }
+            },
+            "required": ["name"]
+          }
         },
         "logoUrl": {
           "type": "string",

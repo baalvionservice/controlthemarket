@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect } from 'react';
@@ -32,7 +33,6 @@ import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
-  website: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   description: z.string().optional(),
   isActive: z.boolean(),
 });
@@ -54,7 +54,6 @@ export function CompanyFormDialog({ isOpen, onOpenChange, onSave, company }: Com
     if (company) {
       form.reset({
         name: company.name,
-        website: company.website,
         description: company.description,
         isActive: company.isActive,
       });
@@ -95,19 +94,6 @@ export function CompanyFormDialog({ isOpen, onOpenChange, onSave, company }: Com
                             <FormLabel>Tenant Name</FormLabel>
                             <FormControl>
                                 <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="website"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Website</FormLabel>
-                            <FormControl>
-                                <Input type="url" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

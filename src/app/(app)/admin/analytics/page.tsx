@@ -1,5 +1,5 @@
 
-import { getCompanies, getSubmissions, getTasks, getUsers, getEvaluations, getEvaluationSchemas } from "@/lib/api";
+import { getCompanies, getSubmissions, getTasks, getUsers, getAllEvaluations, getEvaluationSchemas } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -76,12 +76,12 @@ const calculateAggregatedScore = (
 
 
 export default async function AdminAnalyticsPage() {
-    const [users, companies, tasks, submissions, evaluations, schemas] = await Promise.all([
+    const [users, companies, tasks, submissions, allEvaluations, schemas] = await Promise.all([
         getUsers(),
         getCompanies(),
         getTasks(),
         getSubmissions(),
-        getEvaluations(),
+        getAllEvaluations(),
         getEvaluationSchemas(),
     ]);
 
@@ -90,7 +90,7 @@ export default async function AdminAnalyticsPage() {
     const unsortedRankingData = candidates.map((candidate) => {
         const candidateSubmissions = submissions.filter((sub) => sub.userId === candidate.id);
         const candidateSubmissionIds = new Set(candidateSubmissions.map((s) => s.id));
-        const candidateEvaluations = evaluations.filter((ev) => candidateSubmissionIds.has(ev.submissionId));
+        const candidateEvaluations = allEvaluations.filter((ev) => candidateSubmissionIds.has(ev.submissionId));
         if (candidateEvaluations.length === 0) return null;
         const { score } = calculateAggregatedScore(candidateEvaluations, schemas);
         return { aggregatedScore: score, };
@@ -112,7 +112,7 @@ export default async function AdminAnalyticsPage() {
     });
     const percentileData = Object.entries(percentileTiers).map(([tier, count]) => ({ tier, count }));
 
-    const leaderboardData = evaluations
+    const leaderboardData = allEvaluations
         .map(ev => {
             const submission = submissions.find(s => s.id === ev.submissionId);
             const candidate = users.find(u => u.id === submission?.userId);
@@ -248,7 +248,7 @@ export default async function AdminAnalyticsPage() {
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
                 <div className="lg:col-span-3 space-y-6">
-                    <AverageScoreTrendChart evaluations={evaluations} />
+                    <AverageScoreTrendChart evaluations={allEvaluations} />
                     <GlobalSubmissionTrendChart submissions={submissions} />
                     <GlobalTasksByCompanyChart tasks={tasks} companies={companies} />
                 </div>

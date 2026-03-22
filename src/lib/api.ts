@@ -147,3 +147,4 @@ export const getUsageMetrics = async () => mockUsageMetrics;
 export const getRevenueMetrics = async () => mockRevenueMetrics;
 export const getPlanDistribution = async () => mockPlanDistribution;
 export const getRevenueSources = async () => mockRevenueSources;
+export const getAllActivities = api.getAllActivities;

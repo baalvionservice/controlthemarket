@@ -1,5 +1,5 @@
 
-import { getCompanies, getSubmissions, getTasks, getUsers, getEvaluations } from "@/lib/api";
+import { getCompanies, getSubmissions, getTasks, getUsers, getAllEvaluations } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -41,7 +41,7 @@ export default async function RoleAnalyticsPage({ params }: { params: { role: st
         getCompanies(),
         getTasks(),
         getSubmissions(),
-        getEvaluations()
+        getAllEvaluations()
     ]);
     
     // Filter data for the specific role

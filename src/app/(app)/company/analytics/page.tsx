@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Star, Users, CheckCircle, Percent } from "lucide-react";
 import { AnalyticsCharts, Leaderboard } from './charts';
-import { getTasksByCompany, getSubmissions, getEvaluations, getUsers } from '@/lib/api';
+import { getTasksByCompany, getSubmissions, getAllEvaluations, getUsers } from '@/lib/api';
 import { mockUsers } from '@/lib/mock-data';
 import type { Submission, Evaluation } from '@/lib/types';
 
@@ -21,7 +21,7 @@ export default async function AnalyticsPage() {
   
   const tasks = await getTasksByCompany(user.companyId);
   const allSubmissions = await getSubmissions();
-  const allEvaluations = await getEvaluations();
+  const allEvaluations = await getAllEvaluations();
   const allUsers = await getUsers();
 
   const companyTaskIds = new Set(tasks.map(task => task.id));

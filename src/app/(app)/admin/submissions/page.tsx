@@ -1,6 +1,6 @@
 
 
-import { getSubmissions, getUsers, getTasks, getCompanies, getEvaluations } from "@/lib/api";
+import { getSubmissions, getUsers, getTasks, getCompanies, getAllEvaluations } from "@/lib/api";
 import { AdminSubmissionsList } from "./submission-list";
 import type { Submission, Task, User, Evaluation, Company } from '@/lib/types';
 import {
@@ -36,7 +36,7 @@ export default async function AdminSubmissionsPage() {
     getUsers(),
     getTasks(),
     getCompanies(),
-    getEvaluations()
+    getAllEvaluations()
   ]);
 
   const evaluationData: AdminSubmissionData[] = allSubmissions

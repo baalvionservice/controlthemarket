@@ -2,7 +2,7 @@
 import {
   getUsers,
   getSubmissions,
-  getEvaluations,
+  getAllEvaluations,
   getCompanies,
 } from '@/lib/api';
 import type { User, Evaluation, Submission, Company, CandidateInsight, CompanyInsight } from '@/lib/types';
@@ -53,7 +53,7 @@ export default async function IntelligenceHubPage() {
     const [allUsers, allSubmissions, allEvaluations, allCompanies] = await Promise.all([
         getUsers(),
         getSubmissions(),
-        getEvaluations(),
+        getAllEvaluations(),
         getCompanies(),
     ]);
 
@@ -102,7 +102,7 @@ export default async function IntelligenceHubPage() {
         const companyUserIds = new Set(allUsers.filter(u => u.companyId === company.id).map(u => u.id));
         const companyCandidateInsights = candidateInsights.filter(insight => {
             const submission = allSubmissions.find(s => s.userId === insight.candidate.id);
-            return submission && companyUserIds.has(submission.companyId); // This logic might need adjustment based on real relations
+            return submission && submission.companyId === company.id;
         });
 
         const avgCandidateScore = companyCandidateInsights.length > 0 

@@ -34,6 +34,12 @@ export default function PublicLayout({
               Companies
             </Link>
             <Link
+              href="/blog"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Blog
+            </Link>
+            <Link
               href="/badges"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             >

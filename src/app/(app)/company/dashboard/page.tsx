@@ -48,12 +48,12 @@ export default async function CompanyDashboard() {
       getSubmissions(),
       getAllEvaluations(),
   ]);
-  
+
   const companyTaskIds = new Set(tasks.map(task => task.id));
   const companySubmissions = allSubmissions.filter(sub => companyTaskIds.has(sub.taskId));
   const companySubmissionIds = new Set(companySubmissions.map(s => s.id));
   const companyEvaluations = allEvaluations.filter(ev => companySubmissionIds.has(ev.submissionId));
-  
+
   // Metrics calculation
   const publishedTasksCount = tasks.filter(t => t.status === 'published').length;
   const pendingReviewCount = companySubmissions.filter(s => ['pending', 'in-review', 'resubmitted'].includes(s.status)).length;
@@ -74,7 +74,7 @@ export default async function CompanyDashboard() {
   );
 
   // Calculate top candidates
-  const candidatesInCompany = allUsers.filter(u => 
+  const candidatesInCompany = allUsers.filter(u =>
     companySubmissions.some(s => s.userId === u.id)
   );
 
@@ -87,7 +87,7 @@ export default async function CompanyDashboard() {
       if (evaluations.length === 0) {
         return null;
       }
-      
+
       const totalScore = evaluations.reduce((acc, curr) => acc + curr.score, 0);
       const averageScore = Math.round(totalScore / evaluations.length);
 

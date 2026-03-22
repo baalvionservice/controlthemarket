@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import type { User, UserRole, Company, Plan, Subscription } from '@/lib/types';

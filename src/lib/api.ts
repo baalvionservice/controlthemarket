@@ -1,13 +1,8 @@
 
-
 'use server';
 
+import * as api from './mock-api';
 import {
-  mockUsers,
-  mockCompanies,
-  mockTasks,
-  mockSubmissions,
-  mockEvaluations,
   mockEvaluationSchemas,
   mockActivityLogs,
   mockNotifications,
@@ -20,230 +15,74 @@ import {
   mockIntegrationLogs,
   mockSystemMetrics,
   mockServiceStatus,
-  mockSystemLogs,
-  mockLogSeverity,
-  mockSystemErrors,
-  mockSystemIncidents,
   mockServiceLoad,
   mockScalingEvents,
-  mockAutoScalingStatus,
+  mockSystemIncidents,
   mockInvoices,
-  mockInvoiceStatus,
   mockPlanUsage,
   mockUsageMetrics,
   mockRevenueMetrics,
   mockPlanDistribution,
   mockRevenueSources,
-  mockPlans,
-  mockSubscriptions,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, Plan, Subscription } from './types';
 
-const ARTIFICIAL_DELAY = 500;
+// This file now acts as a pass-through to the mock API,
+// but could be swapped out for a real API implementation later.
 
 // --- User API ---
-export async function getUsers(): Promise<User[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockUsers;
-}
-
-export async function getUser(id: string): Promise<User | undefined> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockUsers.find((u) => u.id === id);
-}
+export const getUsers = async () => (await api.getAllUsers()).data;
+export const getUser = async (id: string) => (await api.getUserById(id)).data;
+export const createUser = api.createUser;
 
 // --- Company API ---
-export async function getCompanies(): Promise<Company[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockCompanies;
-}
-
-export async function getCompany(id: string): Promise<Company | undefined> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockCompanies.find((c) => c.id === id);
-}
+export const getCompanies = async () => (await api.getAllCompanies()).data;
+export const getCompany = async (id: string) => (await api.getCompanyById(id)).data;
+export const createCompany = api.createCompany;
 
 // --- Task API ---
-export async function getTasks(): Promise<Task[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockTasks;
-}
-
-export async function getTask(id: string): Promise<Task | undefined> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockTasks.find((t) => t.id === id);
-}
-
-export async function getTasksByCompany(companyId: string): Promise<Task[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockTasks.filter((t) => t.companyId === companyId);
-}
+export const getTasks = async () => (await api.getAllTasks()).data;
+export const getTask = async (id: string) => (await api.getTaskById(id)).data;
+export const getTasksByCompany = async (companyId: string) => (await api.getTasksByCompanyId(companyId)).data;
+export const createTask = api.createTask;
+export const assignTask = api.assignTask;
 
 // --- Submission API ---
-export async function getSubmissions(): Promise<Submission[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockSubmissions;
-}
-
-export async function getSubmission(id: string): Promise<Submission | undefined> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockSubmissions.find(s => s.id === id);
-}
-
-export async function getSubmissionsByUser(userId: string): Promise<Submission[]> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockSubmissions.filter((s) => s.userId === userId);
-}
+export const getSubmissions = async () => (await api.getAllSubmissions()).data;
+export const getSubmission = async (id: string) => (await api.getSubmissionById(id)).data;
+export const getSubmissionsByUser = async (userId: string) => (await api.getSubmissionsByUser(userId)).data;
+export const getSubmissionsByTask = async (taskId: string) => (await api.getSubmissionsByTask(taskId)).data;
+export const createSubmission = api.createSubmission;
+export const updateSubmissionStatus = api.updateSubmissionStatus;
 
 // --- Evaluation API ---
-export async function getEvaluationBySubmission(
-  submissionId: string
-): Promise<Evaluation | undefined> {
-  await new Promise((res) => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockEvaluations.find((e) => e.submissionId === submissionId);
-}
+export const getEvaluationBySubmission = async (submissionId: string) => (await api.getEvaluationBySubmissionId(submissionId)).data;
+export const getAllEvaluations = async () => (await api.getAllEvaluations()).data;
+export const createEvaluation = api.createEvaluation;
 
-export async function getEvaluations(): Promise<Evaluation[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockEvaluations;
-}
 
-// --- Evaluation Schema API ---
-export async function getEvaluationSchemas(): Promise<EvaluationSchema[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockEvaluationSchemas;
-}
-
-// --- Activity Log API ---
-export async function getActivityLogs(): Promise<Activity[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockActivityLogs;
-}
-
-// --- Notification API ---
-export async function getNotifications(): Promise<Notification[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockNotifications;
-}
-
-// --- Test Case API ---
-export async function getTestCasesBySubmission(submissionId: string): Promise<TestCase[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockTestCases.filter((tc) => tc.submissionId === submissionId);
-}
-
-// --- GitHub Integration API ---
-export async function getGitHubRepositories(): Promise<GitHubRepository[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockGitHubRepositories;
-}
-
-// --- Webhook API ---
-export async function getWebhooks(): Promise<Webhook[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockWebhooks;
-}
-
-export async function getWebhookTriggerLogs(webhookId: string): Promise<WebhookTriggerLog[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockWebhookTriggerLogs.filter(log => log.webhookId === webhookId);
-}
-
-// --- Team API ---
-export async function getTeams(): Promise<Team[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockTeams;
-}
-
-// --- API Integration API ---
-export async function getApiIntegrations(): Promise<ApiIntegration[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockApiIntegrations;
-}
-
-// --- Integration Log API ---
-export async function getIntegrationLogs(): Promise<IntegrationLog[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockIntegrationLogs;
-}
-
-// --- System Monitoring API ---
-export async function getSystemMetrics(): Promise<SystemMetric[]> {
-    await new Promise(res => setTimeout(res, 100)); // Faster for "real-time" feel
-    return mockSystemMetrics;
-}
-
-export async function getServiceStatus(): Promise<ServiceStatus[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockServiceStatus;
-}
-
-export async function getServiceLoad(): Promise<ServiceLoad[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockServiceLoad;
-}
-
-export async function getScalingEvents(): Promise<ScalingEvent[]> {
-    await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-    return mockScalingEvents;
-}
-
-// --- System Log API ---
-export async function getSystemLogs(): Promise<SystemLog[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockSystemLogs;
-}
-
-// --- Error Tracking API ---
-export async function getSystemErrors(): Promise<SystemError[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockSystemErrors;
-}
-
-export async function getSystemIncidents(): Promise<SystemIncident[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockSystemIncidents;
-}
-
-// --- Billing API ---
-export async function getInvoices(): Promise<Invoice[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockInvoices;
-}
-
-// --- Usage API ---
-export async function getPlanUsage(): Promise<PlanUsage[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockPlanUsage;
-}
-
-export async function getUsageMetrics(): Promise<UsageMetric[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockUsageMetrics;
-}
-
-// --- Revenue Analytics API ---
-export async function getRevenueMetrics(): Promise<RevenueMetric[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockRevenueMetrics;
-}
-
-export async function getPlanDistribution(): Promise<PlanDistribution[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockPlanDistribution;
-}
-
-export async function getRevenueSources(): Promise<RevenueSource[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockRevenueSources;
-}
-
-export async function getPlans(): Promise<Plan[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockPlans;
-}
-
-export async function getSubscriptions(): Promise<Subscription[]> {
-  await new Promise(res => setTimeout(res, ARTIFICIAL_DELAY));
-  return mockSubscriptions;
-}
+// --- Remaining data is still from mock-data.ts as API functions were not requested for them ---
+export const getEvaluationSchemas = async () => mockEvaluationSchemas;
+export const getActivityLogs = async () => mockActivityLogs;
+export const getNotifications = async () => mockNotifications;
+export const getTestCasesBySubmission = async (submissionId: string) => mockTestCases.filter(tc => tc.submissionId === submissionId);
+export const getGitHubRepositories = async () => mockGitHubRepositories;
+export const getWebhooks = async () => mockWebhooks;
+export const getWebhookTriggerLogs = async (webhookId: string) => mockWebhookTriggerLogs.filter(log => log.webhookId === webhookId);
+export const getTeams = async () => mockTeams;
+export const getApiIntegrations = async () => mockApiIntegrations;
+export const getIntegrationLogs = async () => mockIntegrationLogs;
+export const getSystemMetrics = async () => mockSystemMetrics;
+export const getServiceStatus = async () => mockServiceStatus;
+export const getServiceLoad = async () => mockServiceLoad;
+export const getScalingEvents = async () => mockScalingEvents;
+export const getSystemLogs = async () => mockSystemLogs;
+export const getSystemErrors = async () => mockSystemErrors;
+export const getSystemIncidents = async () => mockSystemIncidents;
+export const getInvoices = async () => (await api.getAllInvoices()).data;
+export const getPlanUsage = async () => mockPlanUsage;
+export const getUsageMetrics = async () => mockUsageMetrics;
+export const getRevenueMetrics = async () => mockRevenueMetrics;
+export const getPlanDistribution = async () => mockPlanDistribution;
+export const getRevenueSources = async () => mockRevenueSources;
+export const getPlans = async () => (await api.getAllPlans()).data;
+export const getSubscriptions = async () => (await api.getAllSubscriptions()).data;

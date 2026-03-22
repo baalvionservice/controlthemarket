@@ -38,7 +38,7 @@ interface AssignTaskFormProps {
 export function AssignTaskForm({ candidates, task, assignedCandidateIds }: AssignTaskFormProps) {
   const { toast } = useToast();
   const router = useRouter();
-  const { addSubmission, findSubmissionByTask } = useSubmissions();
+  const { assignTaskToUser, findSubmissionByTask } = useSubmissions();
   
   const [manualEmails, setManualEmails] = useState<string[]>([]);
   const [currentEmail, setCurrentEmail] = useState('');
@@ -84,11 +84,9 @@ export function AssignTaskForm({ candidates, task, assignedCandidateIds }: Assig
     );
 
     newAssignments.forEach(candidateId => {
-        addSubmission({
+        assignTaskToUser({
             taskId: task.id,
             userId: candidateId,
-            companyId: task.companyId,
-            status: 'assigned',
         });
     });
     

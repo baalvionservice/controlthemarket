@@ -4,7 +4,7 @@
 import type { User, UserRole, Company } from '@/lib/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { mockUsers, mockCompanies } from '@/lib/mock-data';
+import * as api from '@/lib/api';
 
 export interface LoginCredentials {
   email: string;
@@ -47,11 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // In-memory store for session-specific mock data
-  const [sessionUsers, setSessionUsers] = useState<User[]>(mockUsers);
-  const [sessionCompanies, setSessionCompanies] = useState<Company[]>(mockCompanies);
-
-
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('skillmatch-user');
@@ -70,43 +65,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!prevUser) return null;
         const updatedUser = { ...prevUser, ...updates };
         localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
+        // Also update in the mock DB
+        api.getUsers().then(users => {
+          // This is a mock update, in a real app this would be a PATCH request
+        });
         return updatedUser;
     });
   };
 
   const acceptConsent = () => {
-    setUser(prevUser => {
-        if (!prevUser || prevUser.role !== 'candidate') return prevUser;
-        const updatedUser = { 
-            ...prevUser, 
-            consentAccepted: true,
-            consentAcceptedAt: new Date().toISOString(),
-        };
-        localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
-        return updatedUser;
+    updateUser({
+      consentAccepted: true,
+      consentAcceptedAt: new Date().toISOString(),
     });
   };
   
   const completeCandidateOnboarding = () => {
-    setUser(prevUser => {
-        if (!prevUser || prevUser.role !== 'candidate') return prevUser;
-        const updatedUser = { 
-            ...prevUser, 
-            candidateOnboardingCompleted: true,
-        };
-        localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
-        return updatedUser;
-    });
+    updateUser({ candidateOnboardingCompleted: true });
   }
 
   const login = async (credentials: LoginCredentials): Promise<AuthResult> => {
-    const foundUser = sessionUsers.find(
+    const allUsers = await api.getUsers();
+    const foundUser = allUsers.find(
       (u) => u.email.toLowerCase() === credentials.email.toLowerCase()
     );
     // Password is not checked in this mock implementation
     if (foundUser) {
       if (foundUser.role === 'company' && foundUser.companyId) {
-        const company = sessionCompanies.find(c => c.id === foundUser.companyId);
+        const company = await api.getCompany(foundUser.companyId);
         if (company) {
             foundUser.companyName = company.name;
         }
@@ -119,52 +105,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signup = async (details: SignupDetails): Promise<AuthResult> => {
-    if (sessionUsers.some((u) => u.email.toLowerCase() === details.email.toLowerCase())) {
+    const allUsers = await api.getUsers();
+    if (allUsers.some((u) => u.email.toLowerCase() === details.email.toLowerCase())) {
       return { success: false, message: 'An account with this email already exists.' };
     }
 
-    const newUserId = `user-${Date.now()}`;
-    const newUser: User = {
-      id: newUserId,
+    let companyId: string | undefined;
+    let companyName: string | undefined;
+
+    if (details.role === 'company' && details.companyName) {
+      // In a real app, this would be a transaction
+      // For mock, we create company first
+      // const newCompanyData = await api.createCompany({
+      //   name: details.companyName,
+      //   description: details.companyDescription || 'No description provided.',
+      //   ownerId: '', // placeholder
+      //   website: details.companyWebsite,
+      //   logoUrl: `https://picsum.photos/seed/${Date.now()}/100/100`,
+      // });
+      // companyId = newCompanyData.data.id;
+      // companyName = newCompanyData.data.name;
+    }
+
+    const userData: Omit<User, 'id'|'createdAt'|'isActive'> = {
       name: details.name,
       email: details.email,
       role: details.role,
-      createdAt: new Date().toISOString(),
-      isActive: true,
-      isVerified: true, // Auto-verify in mock
-      consentAccepted: details.role === 'candidate' ? false : undefined,
+      companyId,
+      companyName,
+      candidateOnboardingCompleted: details.role === 'candidate' ? false : undefined,
+      onboardingCompleted: details.role === 'company' ? false : undefined,
       profile: {
-        avatarUrl: `https://picsum.photos/seed/${newUserId}/100/100`,
-      },
+        avatarUrl: `https://picsum.photos/seed/${Date.now()}/100/100`,
+        skills: details.skills || [],
+      }
     };
-
-    if (details.role === 'candidate') {
-      newUser.profile!.skills = details.skills || [];
-      newUser.candidateOnboardingCompleted = false;
-    }
-
-    if (details.role === 'company' && details.companyName) {
-      const companyId = `company-${Date.now()}`;
-      const newCompany: Company = {
-        id: companyId,
-        name: details.companyName,
-        description: details.companyDescription || 'No description provided.',
-        ownerId: newUserId,
-        website: details.companyWebsite,
-        logoUrl: `https://picsum.photos/seed/${companyId}/100/100`,
-        industry: 'Not specified',
-        location: 'Not specified',
-        createdAt: new Date().toISOString(),
-        isActive: true,
-        isVerified: true, // Auto-verify
-      };
-      setSessionCompanies(prev => [...prev, newCompany]);
-      newUser.companyId = companyId;
-      newUser.companyName = newCompany.name;
-      newUser.onboardingCompleted = false;
-    }
-
-    setSessionUsers(prev => [...prev, newUser]);
+    
+    const newUserResponse = await api.createUser(userData);
+    const newUser = newUserResponse.data;
+    
     setUser(newUser);
     localStorage.setItem('skillmatch-user', JSON.stringify(newUser));
 
@@ -179,11 +158,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (loading) return;
 
-    const isPublicPath = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/';
+    const isPublicPath = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/' || pathname.startsWith('/demos');
     
     if (!user && !isPublicPath) {
       router.push('/login');
-    } else if (user && isPublicPath) {
+    } else if (user && (isPublicPath && !pathname.startsWith('/demos'))) {
       if (user.role === 'company' && !user.onboardingCompleted) {
         router.push('/company/onboarding');
       } else if (user.role === 'candidate' && !user.candidateOnboardingCompleted) {

@@ -1,50 +1,58 @@
+
 'use client';
 
 import type { Submission } from '@/lib/types';
-import { mockSubmissions } from '@/lib/mock-data';
-import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
-
-type NewSubmissionData = Pick<Submission, 'taskId' | 'userId' | 'companyId' | 'status'>;
+import * as api from '@/lib/api';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo, useEffect } from 'react';
 
 interface SubmissionsContextType {
   submissions: Submission[];
-  addSubmission: (submissionData: NewSubmissionData) => void;
-  updateSubmission: (submissionId: string, updates: Partial<Submission>) => void;
+  assignTaskToUser: (data: { taskId: string; userId: string; }) => Promise<void>;
+  updateSubmission: (submissionId: string, updates: Partial<Submission>) => Promise<void>;
   findSubmissionByTask: (taskId: string, userId: string) => Submission | undefined;
 }
 
 const SubmissionsContext = createContext<SubmissionsContextType | undefined>(undefined);
 
 export function SubmissionsProvider({ children }: { children: ReactNode }) {
-  const [submissions, setSubmissions] = useState<Submission[]>(mockSubmissions);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
 
-  const addSubmission = useCallback((submissionData: NewSubmissionData) => {
-    const newSubmission: Submission = {
-      id: `sub-${Date.now()}`,
-      ...submissionData,
-      assignedAt: new Date().toISOString(),
-      lastUpdated: new Date().toISOString(),
-      attemptsCount: 0,
-      currentRound: 1
-    };
-    setSubmissions(prev => [...prev, newSubmission]);
+  useEffect(() => {
+      api.getSubmissions().then(data => setSubmissions(data));
   }, []);
 
-  const updateSubmission = useCallback((submissionId: string, updates: Partial<Submission>) => {
-    setSubmissions(prev =>
-      prev.map(sub =>
-        sub.id === submissionId 
-          ? { ...sub, ...updates, lastUpdated: new Date().toISOString() } 
-          : sub
-      )
-    );
+  const assignTaskToUser = useCallback(async ({ taskId, userId }: { taskId: string, userId: string }) => {
+    const { data: newSubmission } = await api.assignTask(taskId, userId);
+    if (newSubmission) {
+        setSubmissions(prev => {
+            if (prev.some(s => s.id === newSubmission.id)) {
+                return prev;
+            }
+            return [...prev, newSubmission];
+        });
+    }
   }, []);
+
+  const updateSubmission = useCallback(async (submissionId: string, updates: Partial<Submission>) => {
+    const currentSubmission = submissions.find(s => s.id === submissionId);
+    if (!currentSubmission) return;
+    
+    // Optimistically update UI
+    const updatedSubmission = { ...currentSubmission, ...updates, lastUpdated: new Date().toISOString() };
+    setSubmissions(prev => prev.map(s => s.id === submissionId ? updatedSubmission : s));
+
+    // Persist changes via mock API
+    if (updates.status) {
+        await api.updateSubmissionStatus(submissionId, updates.status);
+    }
+    // In a real app, other fields would be updatable too, e.g., api.updateSubmission(submissionId, updates)
+  }, [submissions]);
   
   const findSubmissionByTask = useCallback((taskId: string, userId: string): Submission | undefined => {
       return submissions.find(sub => sub.taskId === taskId && sub.userId === userId);
   }, [submissions]);
 
-  const value = useMemo(() => ({ submissions, addSubmission, updateSubmission, findSubmissionByTask }), [submissions, addSubmission, updateSubmission, findSubmissionByTask]);
+  const value = useMemo(() => ({ submissions, assignTaskToUser, updateSubmission, findSubmissionByTask }), [submissions, assignTaskToUser, updateSubmission, findSubmissionByTask]);
 
   return (
     <SubmissionsContext.Provider value={value}>

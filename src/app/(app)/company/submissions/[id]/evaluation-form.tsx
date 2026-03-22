@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,6 +24,8 @@ import type { SubmissionWithRelations } from './page';
 import { aiSubmissionFeedback, type SubmissionFeedbackInput } from '@/ai/flows/ai-submission-feedback-flow';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { createEvaluation } from '@/lib/api';
+import { useAuth } from '@/contexts/auth-context';
 
 
 const evaluationSections = {
@@ -63,6 +66,7 @@ const formSchema = z.object({
 export function EvaluationForm({ submission }: { submission: SubmissionWithRelations }) {
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   
@@ -122,20 +126,28 @@ export function EvaluationForm({ submission }: { submission: SubmissionWithRelat
     }
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+        toast({ title: "Authentication Error", description: "You must be logged in to submit an evaluation.", variant: "destructive" });
+        return;
+    }
     setIsSubmitting(true);
     const finalScore = totalScore;
-    console.log('Evaluation Submitted:', { ...values, score: finalScore });
+    
+    await createEvaluation({
+        submissionId: submission.id,
+        score: finalScore,
+        criteriaScores: values.criteriaScores,
+        feedback: values.feedback,
+        evaluatedBy: user.id,
+    });
 
-    // Mock API call
-    setTimeout(() => {
-      toast({
+    toast({
         title: 'Evaluation Submitted',
         description: 'The candidate has been notified.',
-      });
-      setIsSubmitting(false);
-      router.refresh();
-    }, 1000);
+    });
+    setIsSubmitting(false);
+    router.refresh();
   }
 
   const SectionSubtotal = ({ sectionName, criteria }: {sectionName: string, criteria: Record<string, string>}) => {

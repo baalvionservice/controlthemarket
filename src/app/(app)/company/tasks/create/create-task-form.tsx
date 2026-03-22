@@ -39,6 +39,9 @@ import { AiAssistantDialog } from './ai-assistant-dialog';
 import type { RoleCategory, TaskDifficulty, TaskType, TaskTemplate } from '@/lib/types';
 import { mockTemplates } from '@/lib/mock-data';
 import { allRoleCategories, groupedRoles, roleTaskTypesMap, getParentRole } from '@/lib/roles';
+import { createTask } from '@/lib/api';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
 
 const optionalPositiveNumber = z.preprocess(
   (val) => (val === "" || val === null || val === undefined ? undefined : val),
@@ -61,7 +64,7 @@ const formSchema = z.object({
   projectFile: z.any().optional(),
   rounds: z.array(z.object({
     instructions: z.string().min(20, 'Instructions must be at least 20 characters.'),
-    expectedOutputs: z.string().min(20, 'Expected Outputs must be at least 20 characters.'),
+    expectedOutputs: z.string().min(20, 'Expected outputs must be at least 20 characters.'),
     timeLimitMinutes: optionalPositiveNumber,
   })).optional(),
 }).superRefine((data, ctx) => {
@@ -96,6 +99,9 @@ export function CreateTaskForm() {
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [templates] = useState<TaskTemplate[]>(mockTemplates);
   const { toast } = useToast();
+  const router = useRouter();
+  const { user } = useAuth();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -158,12 +164,24 @@ export function CreateTaskForm() {
     });
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>, status: 'draft' | 'published' = 'published') {
+    if (!user || !user.companyId) {
+        toast({ title: "Error", description: "You must be associated with a company to create a task.", variant: "destructive" });
+        return;
+    }
+    const taskData = {
+        ...values,
+        deadline: values.deadline.toISOString(),
+        status: status,
+        companyId: user.companyId,
+        createdBy: user.id,
+    };
+    await createTask(taskData);
     toast({
-      title: 'Task Action!',
-      description: `The task "${values.title}" has been processed.`,
+      title: `Task ${status === 'draft' ? 'Saved as Draft' : 'Published'}!`,
+      description: `The task "${values.title}" has been successfully ${status}.`,
     });
+    router.push('/company/tasks');
   }
   
   const handleDescriptionUpdate = (newDescription: string) => {
@@ -173,7 +191,7 @@ export function CreateTaskForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
           <div className="space-y-6 rounded-md border p-6">
             <h3 className="text-lg font-medium">Task Information</h3>
             <FormField
@@ -573,8 +591,8 @@ export function CreateTaskForm() {
           
           <div className="flex justify-end gap-4 pt-4">
             <Button type="button" variant="ghost">Cancel</Button>
-            <Button type="submit" variant="secondary" onClick={() => console.log('Saving as draft...')}>Save Draft</Button>
-            <Button type="submit" onClick={() => console.log('Publishing task...')}>Publish Task</Button>
+            <Button type="button" variant="secondary" onClick={form.handleSubmit((values) => onSubmit(values, 'draft'))}>Save Draft</Button>
+            <Button type="button" onClick={form.handleSubmit((values) => onSubmit(values, 'published'))}>Publish Task</Button>
           </div>
         </form>
       </Form>

@@ -411,21 +411,33 @@ export default function PlatformLandingPage() {
        </section>
 
       <section className="bg-muted/50 py-12 md:py-20">
-        <div className="container counter-section reveal grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div className="container counter-section reveal grid grid-cols-2 gap-4 text-center md:grid-cols-4 md:gap-8">
           <div className="counter-item">
-            <span className="counter-num" data-target="2400">0</span><span>+</span>
+            <div className="counter-value">
+              <span className="counter-num" data-target="2400">0</span>
+              <span>+</span>
+            </div>
             <div>Companies hiring</div>
           </div>
           <div className="counter-item">
-            <span className="counter-num" data-target="48000">0</span><span>+</span>
+            <div className="counter-value">
+              <span className="counter-num" data-target="48000">0</span>
+              <span>+</span>
+            </div>
             <div>Verified candidates</div>
           </div>
           <div className="counter-item">
-            <span className="counter-num" data-target="6">0</span><span> days</span>
+            <div className="counter-value">
+              <span className="counter-num" data-target="6">0</span>
+              <span className="counter-unit">days</span>
+            </div>
             <div>Average time to hire</div>
           </div>
           <div className="counter-item">
-            <span className="counter-num" data-target="94">0</span><span>%</span>
+            <div className="counter-value">
+              <span className="counter-num" data-target="94">0</span>
+              <span>%</span>
+            </div>
             <div>Hiring satisfaction</div>
           </div>
         </div>

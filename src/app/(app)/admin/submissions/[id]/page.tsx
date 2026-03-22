@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -25,6 +26,8 @@ import { LiveCodingWorkspacePanel } from './live-coding-workspace-panel';
 import { AntiCheatingIndicatorPanel } from './anti-cheating-panel';
 import { RecordingPanel } from './recording-panel';
 import { SkillMatchResultPanel } from './skill-match-result-panel';
+import { DomainAccessPanel } from '@/app/(app)/company/submissions/[id]/domain-access-panel';
+
 
 export type SubmissionWithRelations = Submission & {
   task?: Task;
@@ -109,6 +112,7 @@ export default function AdminManageSubmissionPage() {
             <RecordingPanel submission={submission} />
         </div>
         <div className="space-y-6">
+            <DomainAccessPanel submission={submission} />
             <SkillMatchResultPanel submission={submission} />
             <AiEvaluationPanel submission={submission} />
             <AntiCheatingIndicatorPanel submission={submission} />

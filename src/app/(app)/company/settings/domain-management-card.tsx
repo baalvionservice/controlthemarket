@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -9,12 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Globe, PlusCircle, Trash2, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-interface Domain {
-    name: string;
-    verified: boolean;
-    purpose: string;
-}
+import type { Domain } from '@/lib/types';
 
 const mockDomains: Domain[] = [
     { name: 'baalvion.com', verified: true, purpose: 'Primary Website' },

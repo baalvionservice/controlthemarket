@@ -14,6 +14,12 @@ export interface Badge {
   rarity: BadgeRarity;
 }
 
+export interface Domain {
+    name: string;
+    verified: boolean;
+    purpose: string;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -52,11 +58,7 @@ export interface Company {
   name: string;
   description?: string;
   ownerId: string; // The ID of the user who owns the company
-  domains?: {
-    name: string;
-    verified: boolean;
-    purpose: string;
-  }[];
+  domains?: Domain[];
   logoUrl?: string;
   industry?: string;
   location?: string;
@@ -203,6 +205,12 @@ export interface TestCase {
   status: TestCaseStatus;
 }
 
+export type DomainAccessRequest = {
+  domainName: string;
+  status: 'pending' | 'approved' | 'revoked';
+  reason: string;
+};
+
 export interface Submission {
   id: string;
   taskId: string;
@@ -234,6 +242,7 @@ export interface Submission {
     result: 'pass' | 'fail';
     skillBadge: string;
   };
+  requestedDomains?: DomainAccessRequest[];
 }
 
 export interface Evaluation {

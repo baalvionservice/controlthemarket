@@ -1,9 +1,10 @@
 
+
 'use client';
 
 import React from 'react';
 import { useSubmissions } from '@/contexts/submissions-context';
-import { mockTasks, mockEvaluations } from '@/lib/mock-data';
+import { mockTasks, mockEvaluations, mockCompanies } from '@/lib/mock-data';
 import { notFound, useRouter, useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import {
@@ -22,8 +23,9 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts';
 import { ActivityLog } from '@/components/activity-log';
-import type { SubmissionStatus } from '@/lib/types';
+import type { SubmissionStatus, Company } from '@/lib/types';
 import { SkillMatchResultPanel } from './skill-match-result-panel';
+import { DomainAccessCard } from './domain-access-card';
 
 
 const statusSteps = ['assigned', 'in-progress', 'pending', 'in-review', 'evaluated'];
@@ -38,6 +40,7 @@ export default function SubmissionDetailPage() {
 
   const task = useMemo(() => submission ? mockTasks.find(t => t.id === submission.taskId) : undefined, [submission]);
   const evaluation = useMemo(() => submission ? mockEvaluations.find(e => e.submissionId === submission.id) : undefined, [submission]);
+  const company = useMemo(() => task ? mockCompanies.find(c => c.id === task.companyId) : undefined, [task]);
 
   if (!submission || !task) {
      return (
@@ -256,6 +259,8 @@ export default function SubmissionDetailPage() {
                     </div>
                 </CardContent>
             </Card>
+            
+            <DomainAccessCard submission={submission} company={company} />
 
             <ActivityLog submission={submission} evaluation={evaluation} />
         </div>

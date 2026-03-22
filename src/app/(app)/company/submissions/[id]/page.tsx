@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -25,6 +26,7 @@ import { Progress } from '@/components/ui/progress';
 import { AiEvaluationPanel } from './ai-evaluation-panel';
 import { SkillMatchResultPanel } from './skill-match-result-panel';
 import { RecordingPanel } from './recording-panel';
+import { DomainAccessPanel } from './domain-access-panel';
 
 
 export type SubmissionWithRelations = Submission & {
@@ -212,6 +214,7 @@ export default function SubmissionReviewPage() {
                     </Button>
                 </CardContent>
             </Card>
+            <DomainAccessPanel submission={submission} />
             <SkillMatchResultPanel submission={submission} />
             <AiEvaluationPanel submission={submission} />
             <Card>

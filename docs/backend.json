@@ -408,6 +408,36 @@
               "description": "The URL to the submission content (e.g., GitHub repo, Figma file) or a path to a stored file."
             }
           }
+        },
+        "requestedDomains": {
+          "type": "array",
+          "description": "Domains requested by the candidate for this submission, including their access status.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "domainName": {
+                "type": "string",
+                "description": "The domain name requested."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "revoked"
+                ],
+                "description": "The status of the access request."
+              },
+              "reason": {
+                "type": "string",
+                "description": "The reason provided by the candidate for the request."
+              }
+            },
+            "required": [
+              "domainName",
+              "status"
+            ]
+          }
         }
       },
       "required": [

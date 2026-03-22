@@ -22,7 +22,14 @@ export type AdminCompanyData = Company & {
 };
 
 export default async function ManageCompaniesPage() {
-  const [allCompanies, allUsers, allTasks, allSubmissions, allSubscriptions, allPlans] = await Promise.all([
+  const [
+    allCompanies, 
+    allUsers, 
+    allTasks, 
+    allSubmissions, 
+    subscriptionsResponse, 
+    plansResponse
+  ] = await Promise.all([
     getCompanies(),
     getUsers(),
     getTasks(),
@@ -30,6 +37,9 @@ export default async function ManageCompaniesPage() {
     getAllSubscriptions(),
     getAllPlans(),
   ]);
+
+  const allSubscriptions = subscriptionsResponse.data;
+  const allPlans = plansResponse.data;
 
   const companyData: AdminCompanyData[] = allCompanies.map(company => {
     const owner = allUsers.find(u => u.id === company.ownerId);

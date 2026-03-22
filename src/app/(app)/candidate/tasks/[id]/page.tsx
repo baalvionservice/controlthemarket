@@ -148,11 +148,11 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
         <div className="space-y-8">
             <div className="space-y-4">
                 <h3 className="font-semibold flex items-center gap-2 text-xl"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
-                <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: task.instructions.replace(/\n/g, '<br />') }} />
+                <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: task.instructions }} />
             </div>
             <div className="space-y-4">
                 <h3 className="font-semibold flex items-center gap-2 text-xl"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
-                <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: task.expectedOutputs.replace(/\n/g, '<br />') }} />
+                <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: task.expectedOutputs }} />
             </div>
         </div>
     );
@@ -249,3 +249,5 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+    

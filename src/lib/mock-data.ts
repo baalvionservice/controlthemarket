@@ -244,8 +244,8 @@ export const mockTasks: Task[] = [
     id: 'task-1',
     title: 'Build a Responsive Navbar Component',
     description: 'The goal of this task is to create a reusable and responsive navigation bar for a modern web application.',
-    instructions: '1. Use React and Tailwind CSS.\n2. The navbar should have a logo, navigation links, and a call-to-action button.\n3. It must collapse into a hamburger menu on mobile screens (under 768px).\n4. The state of the mobile menu (open/closed) should be managed within the component.',
-    expectedOutputs: 'A single React component file (.tsx) containing the Navbar. The component should be self-contained and ready to be used in a Next.js project. No external state management libraries should be used.',
+    instructions: '<ol><li>Use React and Tailwind CSS.</li><li>The navbar should have a logo, navigation links, and a call-to-action button.</li><li>It must collapse into a hamburger menu on mobile screens (under 768px).</li><li>The state of the mobile menu (open/closed) should be managed within the component.</li></ol>',
+    expectedOutputs: '<p>A single React component file (.tsx) containing the Navbar. The component should be self-contained and ready to be used in a Next.js project. No external state management libraries should be used.</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Coding', 'Design'],
     difficulty: 'Intermediate',
@@ -268,8 +268,8 @@ export const mockTasks: Task[] = [
     id: 'task-2',
     title: 'Design a Database Schema for a Blog',
     description: 'This task requires you to design a normalized database schema for a typical blogging platform.',
-    instructions: '1. Identify the core entities: Users, Posts, Comments, and Tags.\n2. Define the attributes for each entity.\n3. Establish the relationships between entities (e.g., one-to-many, many-to-many).\n4. Provide the schema as a SQL CREATE TABLE script.',
-    expectedOutputs: 'A single .sql file containing the SQL statements to create all necessary tables, columns, primary keys, and foreign keys.',
+    instructions: '<ol><li>Identify the core entities: Users, Posts, Comments, and Tags.</li><li>Define the attributes for each entity.</li><li>Establish the relationships between entities (e.g., one-to-many, many-to-many).</li><li>Provide the schema as a SQL CREATE TABLE script.</li></ol>',
+    expectedOutputs: '<p>A single .sql file containing the SQL statements to create all necessary tables, columns, primary keys, and foreign keys.</p>',
     roleCategory: 'Data',
     taskTypes: ['Documentation'],
     difficulty: 'Beginner',
@@ -286,8 +286,8 @@ export const mockTasks: Task[] = [
     id: 'task-3',
     title: 'Create a Serverless API Endpoint',
     description: 'Build a serverless function that acts as a proxy to a third-party API, adding caching to reduce latency.',
-    instructions: '1. Choose a serverless provider (e.g., AWS Lambda, Vercel Functions).\n2. The function should accept a stock ticker symbol (e.g., "AAPL").\n3. It should fetch stock data from a free API like Alpha Vantage or Financial Modeling Prep.\n4. Cache the response for 5 minutes to avoid hitting API rate limits.\n5. Handle potential errors from the third-party API gracefully.',
-    expectedOutputs: 'A link to a GitHub repository containing your serverless function code and a brief README explaining how to deploy and test it.',
+    instructions: '<ol><li>Choose a serverless provider (e.g., AWS Lambda, Vercel Functions).</li><li>The function should accept a stock ticker symbol (e.g., "AAPL").</li><li>It should fetch stock data from a free API like Alpha Vantage or Financial Modeling Prep.</li><li>Cache the response for 5 minutes to avoid hitting API rate limits.</li><li>Handle potential errors from the third-party API gracefully.</li></ol>',
+    expectedOutputs: '<p>A link to a GitHub repository containing your serverless function code and a brief README explaining how to deploy and test it.</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Coding'],
     difficulty: 'Advanced',
@@ -336,8 +336,8 @@ export const mockTasks: Task[] = [
     id: 'task-5',
     title: 'Implement a Draggable Kanban Board UI',
     description: 'Create a fully functional Kanban board UI where users can drag and drop tasks between columns.',
-    instructions: '1. Use React and a library like `react-beautiful-dnd` or `dnd-kit`.\n2. Create three columns: "To Do", "In Progress", "Done".\n3. Tasks should be represented as cards.\n4. The state of the board should be managed within the React component.',
-    expectedOutputs: 'A single React component file (.tsx) demonstrating the draggable Kanban board.',
+    instructions: '<ol><li>Use React and a library like <code>react-beautiful-dnd</code> or <code>dnd-kit</code>.</li><li>Create three columns: "To Do", "In Progress", "Done".</li><li>Tasks should be represented as cards.</li><li>The state of the board should be managed within the React component.</li></ol>',
+    expectedOutputs: '<p>A single React component file (.tsx) demonstrating the draggable Kanban board.</p>',
     roleCategory: 'Engineering',
     taskTypes: ['UI', 'Component', 'Feature Implementation'],
     difficulty: 'Advanced',
@@ -355,8 +355,8 @@ export const mockTasks: Task[] = [
     id: 'task-6',
     title: 'Style a Login Form with Tailwind CSS',
     description: 'Given a basic HTML structure for a login form, apply styling using Tailwind CSS to make it visually appealing and responsive.',
-    instructions: '1. Use the provided HTML markup.\n2. Apply Tailwind CSS classes to style all form elements.\n3. Ensure the form is centered on the page and looks good on both desktop and mobile devices.',
-    expectedOutputs: 'An HTML file with inline Tailwind CSS classes applied.',
+    instructions: '<ol><li>Use the provided HTML markup.</li><li>Apply Tailwind CSS classes to style all form elements.</li><li>Ensure the form is centered on the page and looks good on both desktop and mobile devices.</li></ol>',
+    expectedOutputs: '<p>An HTML file with inline Tailwind CSS classes applied.</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Styling', 'UI'],
     difficulty: 'Beginner',
@@ -373,8 +373,8 @@ export const mockTasks: Task[] = [
     id: 'task-7',
     title: 'Create a Reusable Button Component',
     description: 'Develop a flexible and reusable Button component in React that supports different variants, sizes, and states.',
-    instructions: '1. The component should accept `variant` (primary, secondary, destructive), `size` (sm, md, lg), and `disabled` props.\n2. Use a library like `class-variance-authority` to manage styles.\n3. The component should render a `<button>` element and forward any other props to it.',
-    expectedOutputs: 'A single React component file (.tsx) for the Button.',
+    instructions: '<ol><li>The component should accept <code>variant</code> (primary, secondary, destructive), <code>size</code> (sm, md, lg), and <code>disabled</code> props.</li><li>Use a library like <code>class-variance-authority</code> to manage styles.</li><li>The component should render a <code>&lt;button&gt;</code> element and forward any other props to it.</li></ol>',
+    expectedOutputs: '<p>A single React component file (.tsx) for the Button.</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Component'],
     difficulty: 'Intermediate',
@@ -391,8 +391,8 @@ export const mockTasks: Task[] = [
     id: 'task-8',
     title: 'Implement Dark Mode Toggle Feature',
     description: 'Add a dark mode toggle to a simple application. The user\'s preference should be saved in localStorage.',
-    instructions: '1. Add a button to toggle between light and dark themes.\n2. Use CSS variables to manage colors for both themes.\n3. When the theme changes, add a `.dark` class to the `<html>` element.\n4. Persist the selected theme in `localStorage`.',
-    expectedOutputs: 'A link to a GitHub repository with the complete project.',
+    instructions: '<ol><li>Add a button to toggle between light and dark themes.</li><li>Use CSS variables to manage colors for both themes.</li><li>When the theme changes, add a <code>.dark</code> class to the <code>&lt;html&gt;</code> element.</li><li>Persist the selected theme in <code>localStorage</code>.</li></ol>',
+    expectedOutputs: '<p>A link to a GitHub repository with the complete project.</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Feature Implementation', 'Styling'],
     difficulty: 'Intermediate',
@@ -409,8 +409,8 @@ export const mockTasks: Task[] = [
     id: 'task-9',
     title: 'Refactor a Class Component to a Functional Component',
     description: 'Take an existing React class component and refactor it into a modern functional component using hooks.',
-    instructions: '1. Convert all lifecycle methods (e.g., `componentDidMount`) to their `useEffect` equivalents.\n2. Convert the component\'s state management from `this.setState` to the `useState` hook.',
-    expectedOutputs: 'The refactored functional component file (.tsx).',
+    instructions: '<ol><li>Convert all lifecycle methods (e.g., <code>componentDidMount</code>) to their <code>useEffect</code> equivalents.</li><li>Convert the component\\\'s state management from <code>this.setState</code> to the <code>useState</code> hook.</li></ol>',
+    expectedOutputs: '<p>The refactored functional component file (.tsx).</p>',
     roleCategory: 'Engineering',
     taskTypes: ['Coding'],
     difficulty: 'Beginner',
@@ -427,8 +427,8 @@ export const mockTasks: Task[] = [
     id: 'task-10',
     title: 'Design a Landing Page Mockup',
     description: 'Create a high-fidelity mockup for a new SaaS product landing page.',
-    instructions: '1. Design a hero section, a features section, and a pricing section.\n2. The design should be modern, clean, and professional.\n3. You can use any design tool you prefer (e.g., Figma, Sketch, Adobe XD).',
-    expectedOutputs: 'A shareable link to your design file or a high-resolution image of the mockup.',
+    instructions: '<ol><li>Design a hero section, a features section, and a pricing section.</li><li>The design should be modern, clean, and professional.</li><li>You can use any design tool you prefer (e.g., Figma, Sketch, Adobe XD).</li></ol>',
+    expectedOutputs: '<p>A shareable link to your design file or a high-resolution image of the mockup.</p>',
     roleCategory: 'Design',
     taskTypes: ['Design', 'UI'],
     difficulty: 'Intermediate',
@@ -446,8 +446,8 @@ export const mockTasks: Task[] = [
     id: 'task-11',
     title: 'Develop a Content Strategy for a Product Launch',
     description: 'Create a one-month content calendar for the launch of a new productivity app.',
-    instructions: '1. Define 3 key content themes.\n2. Outline 4 blog post ideas (titles and brief descriptions).\n3. Propose 8 social media posts (for LinkedIn and Twitter).\n4. Create one concept for a launch-day newsletter.',
-    expectedOutputs: 'A PDF or Google Doc containing the content strategy and calendar.',
+    instructions: '<ol><li>Define 3 key content themes.</li><li>Outline 4 blog post ideas (titles and brief descriptions).</li><li>Propose 8 social media posts (for LinkedIn and Twitter).</li><li>Create one concept for a launch-day newsletter.</li></ol>',
+    expectedOutputs: '<p>A PDF or Google Doc containing the content strategy and calendar.</p>',
     roleCategory: 'Marketing',
     taskTypes: ['Campaign Planning', 'Content Creation', 'Social Media'],
     difficulty: 'Intermediate',
@@ -463,8 +463,8 @@ export const mockTasks: Task[] = [
     id: 'task-12',
     title: 'Write an SEO-Optimized Blog Post',
     description: 'Write a 1000-word blog post on the topic "The Future of Remote Collaboration Tools".',
-    instructions: '1. Target the primary keyword "remote collaboration tools".\n2. Include at least two secondary keywords like "virtual teamwork" and "hybrid work".\n3. Structure the post with clear headings (H2, H3).\n4. Include an introduction, a conclusion, and at least 3 internal links (to mock URLs).',
-    expectedOutputs: 'A Google Doc or Word document with the final blog post.',
+    instructions: '<ol><li>Target the primary keyword "remote collaboration tools".</li><li>Include at least two secondary keywords like "virtual teamwork" and "hybrid work".</li><li>Structure the post with clear headings (H2, H3).</li><li>Include an introduction, a conclusion, and at least 3 internal links (to mock URLs).</li></ol>',
+    expectedOutputs: '<p>A Google Doc or Word document with the final blog post.</p>',
     roleCategory: 'Marketing',
     taskTypes: ['Content Creation'],
     difficulty: 'Beginner',
@@ -480,8 +480,8 @@ export const mockTasks: Task[] = [
     id: 'task-13',
     title: 'Plan a Social Media Campaign for a Holiday Sale',
     description: 'Plan a 3-day social media campaign for a Black Friday sale.',
-    instructions: '1. Define the target audience.\n2. Create 3 distinct ad copy variations (headline and body) for Facebook/Instagram.\n3. Mock up one visual concept for the ads (a simple description or a link to a Canva/Figma design is fine).\n4. Outline the campaign schedule (pre-launch, launch day, final hours).',
-    expectedOutputs: 'A presentation (PPT, Google Slides) outlining the campaign plan.',
+    instructions: '<ol><li>Define the target audience.</li><li>Create 3 distinct ad copy variations (headline and body) for Facebook/Instagram.</li><li>Mock up one visual concept for the ads (a simple description or a link to a Canva/Figma design is fine).</li><li>Outline the campaign schedule (pre-launch, launch day, final hours).</li></ol>',
+    expectedOutputs: '<p>A presentation (PPT, Google Slides) outlining the campaign plan.</p>',
     roleCategory: 'Marketing',
     taskTypes: ['Campaign Planning', 'Ads', 'Social Media'],
     difficulty: 'Intermediate',
@@ -497,8 +497,8 @@ export const mockTasks: Task[] = [
     id: 'task-14',
     title: 'Go-to-Market Strategy Presentation',
     description: 'Develop a 10-slide presentation outlining the go-to-market strategy for a new B2B SaaS product targeting small businesses.',
-    instructions: '1. Define the Ideal Customer Profile (ICP).\n2. Outline the pricing strategy.\n3. Detail the marketing and sales channels.\n4. Set key performance indicators (KPIs) for the first six months.',
-    expectedOutputs: 'A PDF or PPTX file of the presentation.',
+    instructions: '<ol><li>Define the Ideal Customer Profile (ICP).</li><li>Outline the pricing strategy.</li><li>Detail the marketing and sales channels.</li><li>Set key performance indicators (KPIs) for the first six months.</li></ol>',
+    expectedOutputs: '<p>A PDF or PPTX file of the presentation.</p>',
     roleCategory: 'Business',
     taskTypes: ['Strategy Planning', 'Presentation', 'Market Analysis'],
     difficulty: 'Advanced',
@@ -522,8 +522,8 @@ export const mockTasks: Task[] = [
     id: 'task-15',
     title: 'Financial Model for New Product Line',
     description: 'Create a 3-year financial projection for a new product line. The model should include revenue forecasts, cost of goods sold (COGS), and operational expenses.',
-    instructions: '1. Use the provided assumptions for market size and growth rate.\n2. Create a P&L statement forecast.\n3. Calculate the break-even point.\n4. The model should be clear, well-structured, and easy to understand.',
-    expectedOutputs: 'An Excel file (.xlsx) or Google Sheets link containing the financial model.',
+    instructions: '<ol><li>Use the provided assumptions for market size and growth rate.</li><li>Create a P&L statement forecast.</li><li>Calculate the break-even point.</li><li>The model should be clear, well-structured, and easy to understand.</li></ol>',
+    expectedOutputs: '<p>An Excel file (.xlsx) or Google Sheets link containing the financial model.</p>',
     roleCategory: 'Business',
     taskTypes: ['Financial Modeling'],
     difficulty: 'Expert',
@@ -540,7 +540,8 @@ export const mockTasks: Task[] = [
     id: 'task-16',
     title: 'Analyze Sales Data and Create Dashboard',
     description: 'Analyze a provided sales dataset to identify trends and create a visualization dashboard.',
-    instructions: '1. Clean the provided CSV data.\n2. Analyze monthly revenue and top-selling products.\n3. Create a dashboard with at least 3 charts (e.g., bar, line, pie) to visualize your findings.\n4. Provide a summary of your key insights.',
+    instructions: '<ol><li>Clean the provided CSV data.</li><li>Analyze monthly revenue and top-selling products.</li><li>Create a dashboard with at least 3 charts (e.g., bar, line, pie) to visualize your findings.</li><li>Provide a summary of your key insights.</li></ol>',
+    expectedOutputs: '<p>A shareable link to a public dashboard (e.g., Tableau Public, Looker Studio) or a Jupyter Notebook file.</p>',
     roleCategory: 'Data',
     taskTypes: ['Data Cleaning', 'Visualization', 'Reporting'],
     difficulty: 'Intermediate',
@@ -559,40 +560,45 @@ export const mockTasks: Task[] = [
     id: 'task-17',
     title: 'Build a Secure Backend Module for an Investor Platform (Baalvion)',
     description: "As a senior backend developer, you are tasked with building the core security and onboarding module for 'Baalvion', a next-generation institutional Investor Relations Platform. This is a critical first module that will handle all user authentication, role management, and the initial investor verification process. Your work will be the foundation for the entire platform's security and data integrity.",
-    instructions: `### Project Goal
-Your primary objective is to build a robust and secure backend module that handles user authentication, role-based access, and a mock investor onboarding workflow. This module will serve as the gateway to the Baalvion platform, making security and reliability paramount.
+    instructions: `<h3>Project Goal</h3>
+<p>Your primary objective is to build a robust and secure backend module that handles user authentication, role-based access, and a mock investor onboarding workflow. This module will serve as the gateway to the Baalvion platform, making security and reliability paramount.</p>
 
-### Core Architectural & Security Requirements
-- **Project Structure**: Organize your code in a clean, modular fashion (e.g., controllers, services, routes, middleware, models).
-- **API Response**: All endpoints must return a standardized JSON object: \`{ success: boolean, data: any, error: string | null }\`.
-- **Authentication**: All protected routes must validate a JWT or session token. Create middleware for this.
-- **Role-Based Access Control (RBAC)**: Implement middleware to restrict access based on user roles. The three roles are \`Public\`, \`Investor\`, and \`Admin\`.
-- **Input Validation**: Sanitize and validate all incoming data from API requests.
-- **Security Best Practices**: Passwords must be hashed using a strong algorithm like bcrypt. Never store plaintext secrets; use environment variables.
-- **Error Handling**: Implement comprehensive error handling to prevent crashes and provide meaningful error messages.
-- **Logging**: Log critical events such as user logins, KYC submissions, and NDA acceptances.
+<h3>Core Architectural & Security Requirements</h3>
+<ul>
+  <li><strong>Project Structure</strong>: Organize your code in a clean, modular fashion (e.g., controllers, services, routes, middleware, models).</li>
+  <li><strong>API Response</strong>: All endpoints must return a standardized JSON object: <code>{ success: boolean, data: any, error: string | null }</code>.</li>
+  <li><strong>Authentication</strong>: All protected routes must validate a JWT or session token. Create middleware for this.</li>
+  <li><strong>Role-Based Access Control (RBAC)</strong>: Implement middleware to restrict access based on user roles. The three roles are <code>Public</code>, <code>Investor</code>, and <code>Admin</code>.</li>
+  <li><strong>Input Validation</strong>: Sanitize and validate all incoming data from API requests.</li>
+  <li><strong>Security Best Practices</strong>: Passwords must be hashed using a strong algorithm like bcrypt. Never store plaintext secrets; use environment variables.</li>
+  <li><strong>Error Handling</strong>: Implement comprehensive error handling to prevent crashes and provide meaningful error messages.</li>
+  <li><strong>Logging</strong>: Log critical events such as user logins, KYC submissions, and NDA acceptances.</li>
+</ul>
 
-### Features to Implement
+<h3>Features to Implement</h3>
+<h4>1. Authentication Service:</h4>
+<ul>
+  <li><strong>User Registration</strong>: Allow new users to sign up with an email and password. New users should default to the 'Investor' role.</li>
+  <li><strong>User Login</strong>: Authenticate users and return a token and their role upon success.</li>
+  <li><strong>User Profile</strong>: Create a protected endpoint to fetch the currently authenticated user's profile.</li>
+</ul>
 
-**1. Authentication Service:**
--   **User Registration**: Allow new users to sign up with an email and password. New users should default to the 'Investor' role.
--   **User Login**: Authenticate users and return a token and their role upon success.
--   **User Profile**: Create a protected endpoint to fetch the currently authenticated user's profile.
+<h4>2. Onboarding Workflow (Mock):</h4>
+<ul>
+  <li><strong>KYC System</strong>: An endpoint for an authenticated 'Investor' to submit their Know-Your-Customer (KYC) details. This can be a mock submission (no file upload needed). The system should track a status: <code>pending</code>, <code>approved</code>, or <code>rejected</code>.</li>
+  <li><strong>AML Screening</strong>: As part of the KYC submission, simulate an Anti-Money Laundering (AML) check. This can be a simple function that randomly flags a user for review.</li>
+  <li><strong>NDA Acceptance</strong>: An endpoint that allows an authenticated 'Investor' to record their acceptance of a Non-Disclosure Agreement, capturing the timestamp.</li>
+</ul>
 
-**2. Onboarding Workflow (Mock):**
--   **KYC System**: An endpoint for an authenticated 'Investor' to submit their Know-Your-Customer (KYC) details. This can be a mock submission (no file upload needed). The system should track a status: \`pending\`, \`approved\`, or \`rejected\`.
--   **AML Screening**: As part of the KYC submission, simulate an Anti-Money Laundering (AML) check. This can be a simple function that randomly flags a user for review.
--   **NDA Acceptance**: An endpoint that allows an authenticated 'Investor' to record their acceptance of a Non-Disclosure Agreement, capturing the timestamp.
-
-### API Endpoints to Build
-
-- \`POST   /api/auth/register\` (Public)
-- \`POST   /api/auth/login\` (Public)
-- \`GET    /api/auth/me\` (Protected: Investor, Admin)
-- \`POST   /api/kyc/submit\` (Protected: Investor)
-- \`GET    /api/kyc/status\` (Protected: Investor, Admin)
-- \`POST   /api/nda/accept\` (Protected: Investor)`,
-    expectedOutputs: 'A public GitHub repository containing the complete, runnable Node.js application. The repository must include a `README.md` with clear, step-by-step instructions for local setup, environment configuration (`.env.example`), and how to run the server. The application should start without errors and all endpoints should be functional as per the requirements.',
+<h3>API Endpoints to Build</h3>
+<p>The following is a list of endpoints you must create:</p>
+<pre><code>POST   /api/auth/register      (Public)
+POST   /api/auth/login         (Public)
+GET    /api/auth/me            (Protected: Investor, Admin)
+POST   /api/kyc/submit         (Protected: Investor)
+GET    /api/kyc/status         (Protected: Investor, Admin)
+POST   /api/nda/accept         (Protected: Investor)</code></pre>`,
+    expectedOutputs: '<p>A public GitHub repository containing the complete, runnable Node.js application. The repository must include a <code>README.md</code> with clear, step-by-step instructions for local setup, environment configuration (<code>.env.example</code>), and how to run the server. The application should start without errors and all endpoints should be functional as per the requirements.</p>',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
     difficulty: 'Expert',
@@ -1836,3 +1842,5 @@ export const mockSubscriptions: Subscription[] = [
     billingCycle: 'MONTHLY',
   },
 ];
+
+    

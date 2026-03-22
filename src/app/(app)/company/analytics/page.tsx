@@ -39,17 +39,31 @@ export default async function AnalyticsPage() {
 
   const shortlistedCount = companySubmissions.filter(s => s.status === 'shortlisted').length;
   
-  const leaderboardData = companyEvaluations
-    .map(ev => {
-      const submission = companySubmissions.find(s => s.id === ev.submissionId);
-      const candidate = allUsers.find(u => u.id === submission?.userId);
+  const candidatesInCompany = allUsers.filter(u => 
+    companySubmissions.some(s => s.userId === u.id)
+  );
+
+  const leaderboardData = candidatesInCompany
+    .map(candidate => {
+      const candidateSubmissions = companySubmissions.filter(s => s.userId === candidate.id);
+      const candidateSubmissionIds = new Set(candidateSubmissions.map(s => s.id));
+      const candidateEvaluations = companyEvaluations.filter(ev => candidateSubmissionIds.has(ev.submissionId));
+
+      if (candidateEvaluations.length === 0) {
+        return null;
+      }
+      
+      const totalScore = candidateEvaluations.reduce((acc, curr) => acc + curr.score, 0);
+      const averageScore = Math.round(totalScore / candidateEvaluations.length);
+
       return {
-        candidateId: candidate?.id || ev.id,
-        candidateName: candidate?.name || 'Unknown',
-        score: ev.score,
-        avatarUrl: candidate?.profile?.avatarUrl,
+        candidateId: candidate.id,
+        candidateName: candidate.name,
+        score: averageScore,
+        avatarUrl: candidate.profile?.avatarUrl,
       };
     })
+    .filter((c): c is { candidateId: string; candidateName: string; score: number; avatarUrl?: string; } => c !== null)
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
   

@@ -191,7 +191,7 @@ export type SubmissionStatus =
 export type ValidationStatus = 'Valid' | 'Invalid' | 'Warning' | 'Pending';
 export type TestCaseStatus = 'Passed' | 'Failed' | 'Warning' | 'Pending';
 export type SandboxStatus = 'Active' | 'Idle' | 'Completed' | 'Error' | 'Not Started';
-export type LiveSessionStatus = 'Not Started' | 'Scheduled' | 'Active' | 'Paused' | 'Completed' | 'Cancelled';
+export type LiveSessionStatus = 'Not Started' | 'Scheduled' | 'Active' | 'Paused' | 'Completed' | 'Cancelled' | 'Requested' | 'Denied';
 export type PlagiarismRisk = 'High' | 'Medium' | 'Low' | 'None';
 
 export interface TestCase {
@@ -564,3 +564,4 @@ export interface Subscription {
   paymentProvider?: PaymentProvider;
   externalSubscriptionId?: string;
 }
+

@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Share, StopCircle, Radio, MonitorOff, Loader2, Pause, AlertTriangle } from 'lucide-react';
+import { Share, StopCircle, Radio, MonitorOff, Loader2, Pause, AlertTriangle, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/auth-context';
@@ -17,10 +17,14 @@ const getStatusVariant = (status?: LiveSessionStatus): 'default' | 'destructive'
     switch (status) {
       case 'Active': return 'default';
       case 'Cancelled': 
+      case 'Denied':
+        return 'destructive';
       case 'Completed':
         return 'secondary';
-      case 'Paused': return 'warning';
-      case 'Scheduled': return 'warning';
+      case 'Paused':
+      case 'Requested':
+      case 'Scheduled': 
+        return 'warning';
       default: return 'outline';
     }
   };
@@ -35,11 +39,21 @@ export default function CandidateLiveSessionPage() {
 
   const submission = useMemo(() => {
     if (!user) return null;
-    return submissions.find(s => 
-        s.userId === user.id && 
-        ['Active', 'Scheduled', 'Paused'].includes(s.liveSessionStatus || 'Not Started')
-    ) || null;
+    // Find a submission that needs a live session or has one in progress
+    return submissions
+      .filter(s => s.userId === user.id && !['Completed', 'shortlisted', 'rejected'].includes(s.status))
+      .sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
+      [0] || null;
   }, [submissions, user]);
+
+  const handleRequestSession = () => {
+    if (!submission) return;
+    updateSubmission(submission.id, { liveSessionStatus: 'Requested' });
+    toast({
+      title: 'Session Requested',
+      description: 'Your request has been sent to the company for approval.',
+    });
+  };
 
   const handleStartSharing = async () => {
     if (!submission) {
@@ -106,10 +120,10 @@ export default function CandidateLiveSessionPage() {
                 </h2>
                  <Card>
                     <CardHeader>
-                        <CardTitle>No Active Session</CardTitle>
+                        <CardTitle>No Active Tasks</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">There are no live coding sessions scheduled for you at this time.</p>
+                        <p className="text-muted-foreground">There are no tasks assigned to you that require a live session.</p>
                     </CardContent>
                 </Card>
            </div>
@@ -137,7 +151,7 @@ export default function CandidateLiveSessionPage() {
                 <CardHeader>
                 <CardTitle>Session Control Panel</CardTitle>
                 <CardDescription>
-                    Use the controls below to manage your screen sharing session.
+                    Task: {submission.task?.title || 'N/A'}
                 </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -177,7 +191,12 @@ export default function CandidateLiveSessionPage() {
                              <>
                                 <MonitorOff className="h-16 w-16 text-muted-foreground" />
                                 <p className="mt-4 text-muted-foreground text-center">
-                                    {sessionStatus === 'Completed' ? 'Your session has ended.' : 'Your screen is not being shared.'}
+                                    {sessionStatus === 'Completed' ? 'Your session has ended.' : 
+                                     sessionStatus === 'Scheduled' ? 'Your session is scheduled. Click "Start Sharing" to begin.' :
+                                     sessionStatus === 'Requested' ? 'Your request is pending approval.' :
+                                     sessionStatus === 'Denied' ? 'Your request was denied by the company.' :
+                                     'Your screen is not being shared.'
+                                    }
                                 </p>
                              </>
                            )}
@@ -186,23 +205,21 @@ export default function CandidateLiveSessionPage() {
                 </div>
 
                 <div className="flex justify-center gap-4">
-                    <Button
-                    size="lg"
-                    onClick={handleStartSharing}
-                    disabled={sessionStatus === 'Active' || sessionStatus === 'Completed'}
-                    >
-                    <Share className="mr-2 h-5 w-5" />
-                    Start Sharing
-                    </Button>
-                    <Button
-                    size="lg"
-                    variant="destructive"
-                    onClick={() => handleStopSharing(submission.id)}
-                    disabled={!['Active', 'Paused'].includes(sessionStatus)}
-                    >
-                    <StopCircle className="mr-2 h-5 w-5" />
-                    Stop Sharing
-                    </Button>
+                    {['Not Started', 'Completed', 'Denied', 'Cancelled'].includes(sessionStatus) && (
+                        <Button size="lg" onClick={handleRequestSession}>
+                            <Send className="mr-2 h-5 w-5" /> Request Live Session
+                        </Button>
+                    )}
+                    {sessionStatus === 'Scheduled' && (
+                        <Button size="lg" onClick={handleStartSharing}>
+                            <Share className="mr-2 h-5 w-5" /> Start Sharing
+                        </Button>
+                    )}
+                    {['Active', 'Paused'].includes(sessionStatus) && (
+                         <Button size="lg" variant="destructive" onClick={() => handleStopSharing(submission.id)}>
+                            <StopCircle className="mr-2 h-5 w-5" /> Stop Sharing
+                        </Button>
+                    )}
                 </div>
                 </CardContent>
             </Card>

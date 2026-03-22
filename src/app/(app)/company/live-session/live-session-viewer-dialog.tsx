@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -27,9 +28,13 @@ interface LiveSessionViewerDialogProps {
 const getStatusVariant = (status: LiveSessionStatus): 'default' | 'destructive' | 'warning' | 'outline' | 'secondary' => {
     switch (status) {
         case 'Active': return 'default';
-        case 'Paused': return 'warning';
-        case 'Cancelled': return 'destructive';
-        case 'Scheduled': return 'warning';
+        case 'Paused': 
+        case 'Scheduled': 
+        case 'Requested':
+            return 'warning';
+        case 'Cancelled': 
+        case 'Denied':
+            return 'destructive';
         case 'Completed': return 'secondary';
         case 'Not Started': return 'outline';
         default: return 'outline';

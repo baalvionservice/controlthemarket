@@ -95,9 +95,14 @@ export default async function CompanyDashboard() {
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="font-headline text-3xl font-bold tracking-tight">
-          {company?.name || 'Company'} Dashboard
-        </h2>
+        <div>
+          <h2 className="font-headline text-3xl font-bold tracking-tight">
+            {company?.name || 'Company'} Dashboard
+          </h2>
+          <p className="text-muted-foreground">
+            Manage your company's tasks, review submissions, and track candidate performance.
+          </p>
+        </div>
         <div className="flex items-center space-x-2">
           <Button asChild>
             <Link href="/company/tasks/create">

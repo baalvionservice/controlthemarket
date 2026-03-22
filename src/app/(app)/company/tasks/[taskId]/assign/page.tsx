@@ -63,9 +63,9 @@ export default function AssignTaskPage({ params }: { params: { taskId: string } 
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Select Candidates</CardTitle>
+          <CardTitle>Select Candidates or Invite New Ones</CardTitle>
           <CardDescription>
-            Choose the candidates you want to assign this task to. Previously assigned candidates are pre-selected.
+            Choose from existing candidates on the platform, or invite new candidates by entering their email addresses.
           </CardDescription>
         </CardHeader>
         <CardContent>

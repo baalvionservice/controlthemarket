@@ -1,6 +1,6 @@
 
 
-import type { User, Company, Task, Submission, Evaluation, Plan, Subscription, Invoice, Badge, Notification, SystemError, SystemLog, ApiIntegration, IntegrationLog, Webhook, GitHubRepository, Team, SystemMetric, ServiceStatus, ServiceLoad, ScalingEvent, SystemIncident, UsageMetric, PlanUsage, RevenueMetric, PlanDistribution, RevenueSource, EvaluationSchema, TestCase, WebhookTriggerLog, Activity } from './types';
+import type { User, Company, Task, Submission, Evaluation, Plan, Subscription, Invoice, Badge, Notification, SystemError, SystemLog, ApiIntegration, IntegrationLog, Webhook, GitHubRepository, Team, SystemMetric, ServiceStatus, ServiceLoad, ScalingEvent, SystemIncident, UsageMetric, PlanUsage, RevenueMetric, PlanDistribution, RevenueSource, EvaluationSchema, TestCase, WebhookTriggerLog, Activity, TaskTemplate } from './types';
 import {
   mockUsers,
   mockCompanies,
@@ -33,6 +33,7 @@ import {
   mockTestCases,
   mockWebhookTriggerLogs,
   mockActivityLogs,
+  mockTemplates,
 } from './mock-data';
 
 // This is a mock database that uses localStorage for persistence.
@@ -42,6 +43,7 @@ export interface DB {
   users: User[];
   companies: Company[];
   tasks: Task[];
+  templates: TaskTemplate[];
   submissions: Submission[];
   evaluations: Evaluation[];
   plans: Plan[];
@@ -83,6 +85,7 @@ const initializeDB = () => {
       users: mockUsers,
       companies: mockCompanies,
       tasks: mockTasks,
+      templates: mockTemplates,
       submissions: mockSubmissions,
       evaluations: mockEvaluations,
       plans: mockPlans,
@@ -129,6 +132,7 @@ const initializeDB = () => {
     users: mockUsers,
     companies: mockCompanies,
     tasks: mockTasks,
+    templates: mockTemplates,
     submissions: mockSubmissions,
     evaluations: mockEvaluations,
     plans: mockPlans,

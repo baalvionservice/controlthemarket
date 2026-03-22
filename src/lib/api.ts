@@ -23,7 +23,6 @@ import {
   mockPlanDistribution,
   mockRevenueSources,
   mockBadges,
-  mockTemplates,
 } from './mock-data';
 import type { User, TaskTemplate } from './types';
 
@@ -75,6 +74,8 @@ export const getTasksByCompany = async (companyId: string) => {
 };
 export const createTask = api.createTask;
 export const assignTask = api.assignTask;
+export const saveTemplate = api.saveTaskAsTemplate;
+
 
 // --- Submission API ---
 export const getSubmissions = dataLayer.getHybridSubmissions;
@@ -100,13 +101,13 @@ export const createEvaluation = api.createEvaluation;
 
 // --- Payment APIs ---
 export const createPayment = api.createPayment;
-export const getInvoicesByUserId = api.getInvoicesByUserId;
+export const getInvoicesByUserId = async (userId: string) => (await api.getInvoicesByCompanyId(userId));
 export const createSubscription = api.createSubscription;
-export const getAllPlans = api.getAllPlans;
-export const getSubscriptionByCompany = api.getSubscriptionByCompany;
+export const getAllPlans = async () => (await api.getAllPlans());
+export const getSubscriptionByCompany = async (companyId: string) => (await api.getSubscriptionByCompany(companyId));
 export const updateSubscription = api.updateSubscription;
-export const getAllSubscriptions = api.getAllSubscriptions;
-export const getAllInvoices = api.getAllInvoices;
+export const getAllSubscriptions = async () => (await api.getAllSubscriptions());
+export const getAllInvoices = async () => (await api.getAllInvoices());
 
 
 // --- Badge API ---
@@ -119,13 +120,7 @@ export const getNotifications = dataLayer.getHybridNotifications;
 
 
 // --- Template API ---
-export const getTemplates = async (): Promise<TaskTemplate[]> => {
-    return mockTemplates;
-}
-export const saveTemplate = async (template: TaskTemplate): Promise<TaskTemplate> => {
-    mockTemplates.push(template);
-    return template;
-}
+export const getTemplates = async (): Promise<TaskTemplate[]> => (await api.getTemplates()).data;
 
 
 // --- Remaining data is still from mock-data.ts as API functions were not requested for them ---
@@ -147,4 +142,4 @@ export const getUsageMetrics = async () => mockUsageMetrics;
 export const getRevenueMetrics = async () => mockRevenueMetrics;
 export const getPlanDistribution = async () => mockPlanDistribution;
 export const getRevenueSources = async () => mockRevenueSources;
-export const getAllActivities = api.getAllActivities;
+export const getAllActivities = async () => (await api.getAllActivities()).data;

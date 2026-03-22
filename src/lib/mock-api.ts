@@ -1,5 +1,4 @@
 
-
 import { getDB, setDB } from './mock-db';
 import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge, Activity, Notification, TaskTemplate } from './types';
 
@@ -199,6 +198,11 @@ export const saveTaskAsTemplate = async (templateData: Omit<TaskTemplate, 'templ
   return simulateApiCall(newTemplate);
 };
 
+export const getTemplates = async (): Promise<{ success: true; data: TaskTemplate[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.templates);
+};
+
 
 // --- SUBMISSION APIs ---
 
@@ -350,13 +354,9 @@ export const createPayment = async (data: { companyId: string, amount: number, p
     return simulateApiCall(newInvoice);
 }
 
-export const getInvoicesByUserId = async (userId: string): Promise<{ success: true, data: Invoice[] }> => {
+export const getInvoicesByCompanyId = async (companyId: string): Promise<{ success: true, data: Invoice[] }> => {
     const db = getDB();
-    const user = db.users.find(u => u.id === userId);
-    if (!user || !user.companyId) {
-        return simulateApiCall([]);
-    }
-    const invoices = db.invoices.filter(inv => inv.companyId === user.companyId);
+    const invoices = db.invoices.filter(inv => inv.companyId === companyId);
     return simulateApiCall(invoices);
 }
 

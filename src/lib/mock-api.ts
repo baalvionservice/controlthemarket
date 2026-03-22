@@ -1,7 +1,7 @@
 
 
 import { getDB, setDB } from './mock-db';
-import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge, Activity, Notification } from './types';
+import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge, Activity, Notification, TaskTemplate } from './types';
 
 const ARTIFICIAL_DELAY = 300;
 
@@ -184,6 +184,19 @@ export const assignTask = async (taskId: string, userId: string): Promise<{ succ
   };
   setDB({ ...db, tasks: updatedTasks, submissions: [...db.submissions, newSubmission] });
   return simulateApiCall(newSubmission);
+};
+
+export const saveTaskAsTemplate = async (templateData: Omit<TaskTemplate, 'templateId' | 'createdAt' | 'updatedAt'>): Promise<{ success: true, data: TaskTemplate }> => {
+  const db = getDB();
+  const now = new Date().toISOString();
+  const newTemplate: TaskTemplate = {
+      ...templateData,
+      templateId: generateId('tpl'),
+      createdAt: now,
+      updatedAt: now,
+  };
+  setDB({ ...db, templates: [...db.templates, newTemplate] });
+  return simulateApiCall(newTemplate);
 };
 
 

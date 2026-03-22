@@ -24,8 +24,9 @@ import {
   mockPlanDistribution,
   mockRevenueSources,
   mockBadges,
+  mockTemplates,
 } from './mock-data';
-import type { User } from './types';
+import type { User, TaskTemplate } from './types';
 
 // This file now acts as the single source of truth for all data operations.
 // It uses the hybrid data layer for fetching, ensuring a mix of
@@ -118,6 +119,16 @@ export const getActivityLogs = dataLayer.getHybridActivities;
 export const getNotifications = dataLayer.getHybridNotifications;
 
 
+// --- Template API ---
+export const getTemplates = async (): Promise<TaskTemplate[]> => {
+    return mockTemplates;
+}
+export const saveTemplate = async (template: TaskTemplate): Promise<TaskTemplate> => {
+    mockTemplates.push(template);
+    return template;
+}
+
+
 // --- Remaining data is still from mock-data.ts as API functions were not requested for them ---
 export const getEvaluationSchemas = async () => mockEvaluationSchemas;
 export const getTestCasesBySubmission = async (submissionId: string) => mockTestCases.filter(tc => tc.submissionId === submissionId);
@@ -137,3 +148,4 @@ export const getUsageMetrics = async () => mockUsageMetrics;
 export const getRevenueMetrics = async () => mockRevenueMetrics;
 export const getPlanDistribution = async () => mockPlanDistribution;
 export const getRevenueSources = async () => mockRevenueSources;
+

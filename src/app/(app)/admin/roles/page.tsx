@@ -19,6 +19,27 @@ const ROLE_ICONS: Record<RoleCategory, React.ElementType> = {
     Marketing: Megaphone,
     Business: Briefcase,
     Data: Database,
+    // Add sub-roles if they need specific icons, otherwise they can default
+    Frontend: Code,
+    Backend: Code,
+    'Full Stack': Code,
+    DevOps: Code,
+    Mobile: Code,
+    'UI/UX Design': Palette,
+    'Graphic Design': Palette,
+    'Product Design': Palette,
+    'Motion Design': Palette,
+    'Digital Marketing': Megaphone,
+    SEO: Megaphone,
+    'Content Marketing': Megaphone,
+    'Performance Marketing': Megaphone,
+    Sales: Briefcase,
+    Operations: Briefcase,
+    'Business Development': Briefcase,
+    Strategy: Briefcase,
+    'Data Analyst': Database,
+    'Data Scientist': Database,
+    'Machine Learning Engineer': Database
 };
 
 export default async function RoleDashboardsPage() {

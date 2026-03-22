@@ -41,6 +41,7 @@ import type { RoleCategory, TaskDifficulty, TaskType, TaskTemplate } from '@/lib
 import { getTemplates, createTask, saveTemplate } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
+import { groupedRoles, allRoleCategories, roleTaskTypesMap } from '@/lib/roles';
 
 const optionalPositiveNumber = z.preprocess(
   (val) => (val === "" || val === null || val === undefined ? undefined : val),
@@ -77,14 +78,14 @@ const formSchema = z.object({
       });
     }
   } else {
-    if (data.instructions.length < 20) {
+    if (!data.instructions || data.instructions.length < 20) {
       ctx.addIssue({
         code: 'custom',
         path: ['instructions'],
         message: 'Instructions must be at least 20 characters for a single-round task.',
       });
     }
-    if (data.expectedOutputs.length < 20) {
+    if (!data.expectedOutputs || data.expectedOutputs.length < 20) {
         ctx.addIssue({
           code: 'custom',
           path: ['expectedOutputs'],
@@ -94,23 +95,6 @@ const formSchema = z.object({
   }
 });
 
-
-const allRoleCategories: RoleCategory[] = [
-  'Engineering', 'Frontend', 'Backend', 'Full Stack', 'DevOps', 'Mobile',
-  'Design', 'UI/UX Design', 'Graphic Design', 'Product Design', 'Motion Design',
-  'Marketing', 'Digital Marketing', 'SEO', 'Content Marketing', 'Performance Marketing',
-  'Business', 'Sales', 'Operations', 'Business Development', 'Strategy',
-  'Data', 'Data Analyst', 'Data Scientist', 'Machine Learning Engineer'
-];
-
-const groupedRoles: { label: RoleCategory; subRoles: RoleCategory[] }[] = [
-  { label: 'Engineering', subRoles: ['Frontend', 'Backend', 'Full Stack', 'DevOps', 'Mobile'] },
-  { label: 'Design', subRoles: ['UI/UX Design', 'Graphic Design', 'Product Design', 'Motion Design'] },
-  { label: 'Marketing', subRoles: ['Digital Marketing', 'SEO', 'Content Marketing', 'Performance Marketing'] },
-  { label: 'Business', subRoles: ['Sales', 'Operations', 'Business Development', 'Strategy'] },
-  { label: 'Data', subRoles: ['Data Analyst', 'Data Scientist', 'Machine Learning Engineer'] }
-];
-
 const getParentRole = (role: RoleCategory): RoleCategory => {
     for (const group of groupedRoles) {
         if (group.subRoles.includes(role) || group.label === role) {
@@ -118,46 +102,6 @@ const getParentRole = (role: RoleCategory): RoleCategory => {
         }
     }
     return role;
-};
-
-const roleTaskTypesMap: Record<string, TaskType[]> = {
-  Engineering: [
-    'Coding', 'Backend Development', 'API Design', 'Database Management', 'Project', 'Documentation', 'UI', 'Component', 'Styling', 'Feature Implementation', 'DevOps', 'CI/CD', 'Security Analysis', 'Automated Testing', 'Bug Fix', 'Code Review', 'System Architecture', 'Mobile Development', 'Algorithm Design', 'Performance Optimization', 'MCQ'
-  ],
-  Frontend: [
-    'Coding', 'UI', 'Component', 'Styling', 'Feature Implementation', 'Automated Testing', 'Bug Fix', 'Performance Optimization', 'MCQ'
-  ],
-  Backend: [
-    'Coding', 'Backend Development', 'API Design', 'Database Management', 'DevOps', 'CI/CD', 'Security Analysis', 'Automated Testing', 'Bug Fix', 'System Architecture', 'Performance Optimization', 'MCQ'
-  ],
-  'Full Stack': [
-    'Coding', 'Backend Development', 'API Design', 'Database Management', 'UI', 'Component', 'Styling', 'Feature Implementation', 'DevOps', 'System Architecture', 'MCQ'
-  ],
-  DevOps: [
-    'DevOps', 'CI/CD', 'Security Analysis', 'System Architecture', 'Performance Optimization'
-  ],
-  Mobile: [
-    'Coding', 'Mobile Development', 'UI', 'Component', 'API Design', 'Automated Testing', 'Bug Fix', 'MCQ'
-  ],
-  Design: ['Design', 'Project', 'Documentation', 'UI', 'Styling', 'User Research', 'Wireframing', 'Prototyping', 'Visual Design', 'Branding', 'MCQ'],
-  'UI/UX Design': ['Design', 'UI', 'Styling', 'User Research', 'Wireframing', 'Prototyping', 'Visual Design'],
-  'Graphic Design': ['Design', 'Visual Design', 'Branding'],
-  'Product Design': ['Design', 'User Research', 'Wireframing', 'Prototyping', 'Strategy Planning'],
-  'Motion Design': ['Design', 'Visual Design'],
-  Marketing: ['Documentation', 'Project', 'MCQ', 'Campaign Planning', 'Content Creation', 'Social Media', 'Email Marketing', 'Ads', 'Market Analysis', 'Copywriting', 'Growth Hacking'],
-  'Digital Marketing': ['Campaign Planning', 'Content Creation', 'Social Media', 'Email Marketing', 'Ads', 'SEO'],
-  SEO: ['Content Creation', 'Market Analysis', 'Copywriting'],
-  'Content Marketing': ['Content Creation', 'Copywriting', 'Documentation'],
-  'Performance Marketing': ['Ads', 'Market Analysis'],
-  Business: ['Documentation', 'Project', 'MCQ', 'Market Analysis', 'Strategy Planning', 'Financial Modeling', 'Presentation', 'Business Case'],
-  Sales: ['Presentation', 'Business Case'],
-  Operations: ['Strategy Planning', 'Documentation'],
-  'Business Development': ['Market Analysis', 'Presentation', 'Strategy Planning'],
-  Strategy: ['Strategy Planning', 'Market Analysis', 'Presentation'],
-  Data: ['Coding', 'Project', 'MCQ', 'Documentation', 'Data Cleaning', 'Visualization', 'Statistical Analysis', 'Reporting', 'SQL Querying', 'Machine Learning Model'],
-  'Data Analyst': ['Data Cleaning', 'Visualization', 'Reporting', 'SQL Querying', 'Statistical Analysis'],
-  'Data Scientist': ['Machine Learning Model', 'Statistical Analysis', 'Python', 'SQL Querying', 'Visualization'],
-  'Machine Learning Engineer': ['Machine Learning Model', 'Python', 'System Architecture', 'Performance Optimization'],
 };
 
 

@@ -1,6 +1,6 @@
 
 import { getDB, setDB } from './mock-db';
-import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge, Activity, Notification, TaskTemplate } from './types';
+import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge, Activity, Notification, TaskTemplate, SystemLog, SystemError, SystemIncident, SystemMetric, ServiceStatus, ServiceLoad, ScalingEvent, ApiIntegration, IntegrationLog, Webhook, WebhookTriggerLog, GitHubRepository, Team, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, EvaluationSchema, TestCase } from './types';
 
 const ARTIFICIAL_DELAY = 300;
 
@@ -431,4 +431,106 @@ export const getAllActivities = async (): Promise<{ success: true; data: Activit
 export const getAllNotifications = async (): Promise<{ success: true; data: Notification[] }> => {
     const db = getDB();
     return simulateApiCall(db.notifications);
+};
+
+// --- Admin / System APIs ---
+export const getTestCasesBySubmission = async (submissionId: string): Promise<{ success: true; data: TestCase[] }> => {
+  const db = getDB();
+  const testCases = db.testCases.filter(tc => tc.submissionId === submissionId);
+  return simulateApiCall(testCases);
+};
+
+export const getGitHubRepositories = async (): Promise<{ success: true; data: GitHubRepository[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.githubRepositories);
+};
+
+export const getWebhooks = async (): Promise<{ success: true; data: Webhook[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.webhooks);
+};
+
+export const getWebhookTriggerLogs = async (webhookId: string): Promise<{ success: true; data: WebhookTriggerLog[] }> => {
+  const db = getDB();
+  const logs = db.webhookTriggerLogs.filter(log => log.webhookId === webhookId);
+  return simulateApiCall(logs);
+};
+
+export const getTeams = async (): Promise<{ success: true; data: Team[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.teams);
+};
+
+export const getApiIntegrations = async (): Promise<{ success: true; data: ApiIntegration[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.apiIntegrations);
+};
+
+export const getIntegrationLogs = async (): Promise<{ success: true; data: IntegrationLog[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.integrationLogs);
+};
+
+export const getSystemMetrics = async (): Promise<{ success: true; data: SystemMetric[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.systemMetrics);
+};
+
+export const getServiceStatus = async (): Promise<{ success: true; data: ServiceStatus[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.serviceStatus);
+};
+
+export const getServiceLoad = async (): Promise<{ success: true; data: ServiceLoad[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.serviceLoad);
+};
+
+export const getScalingEvents = async (): Promise<{ success: true; data: ScalingEvent[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.scalingEvents);
+};
+
+export const getSystemIncidents = async (): Promise<{ success: true; data: SystemIncident[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.systemIncidents);
+};
+
+export const getSystemLogs = async (): Promise<{ success: true; data: SystemLog[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.systemLogs);
+};
+
+export const getSystemErrors = async (): Promise<{ success: true; data: SystemError[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.systemErrors);
+};
+
+export const getPlanUsage = async (): Promise<{ success: true; data: PlanUsage[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.planUsage);
+};
+
+export const getUsageMetrics = async (): Promise<{ success: true; data: UsageMetric[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.usageMetrics);
+};
+
+export const getRevenueMetrics = async (): Promise<{ success: true; data: RevenueMetric[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.revenueMetrics);
+};
+
+export const getPlanDistribution = async (): Promise<{ success: true; data: PlanDistribution[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.planDistribution);
+};
+
+export const getRevenueSources = async (): Promise<{ success: true; data: RevenueSource[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.revenueSources);
+};
+export const getEvaluationSchemas = async (): Promise<{ success: true; data: EvaluationSchema[] }> => {
+  const db = getDB();
+  return simulateApiCall(db.evaluationSchemas);
 };

@@ -27,8 +27,8 @@ export default async function ManageCompaniesPage() {
     allUsers, 
     allTasks, 
     allSubmissions, 
-    subscriptionsResponse, 
-    plansResponse
+    allSubscriptions, 
+    allPlans
   ] = await Promise.all([
     getCompanies(),
     getUsers(),
@@ -37,9 +37,6 @@ export default async function ManageCompaniesPage() {
     getAllSubscriptions(),
     getAllPlans(),
   ]);
-
-  const allSubscriptions = subscriptionsResponse.data;
-  const allPlans = plansResponse.data;
 
   const companyData: AdminCompanyData[] = allCompanies.map(company => {
     const owner = allUsers.find(u => u.id === company.ownerId);
@@ -75,7 +72,7 @@ export default async function ManageCompaniesPage() {
         <CardHeader>
           <CardTitle>All Platform Tenants</CardTitle>
           <CardDescription>
-            Use the filters to find specific tenants and perform actions.
+            Use the filters to find specific tenants and perform bulk actions.
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -5,23 +5,23 @@
 
 @layer base {
   :root {
-    --background: 220 20% 96%;
+    --background: 220 20% 95%;
     --foreground: 220 15% 20%;
     --card: 0 0% 100%;
     --card-foreground: 220 15% 20%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 20%;
     
-    --primary: 142 76% 36%;      /* Green */
+    --primary: 220 60% 40%;      /* Deep Blue */
     --primary-foreground: 0 0% 100%;
-    --secondary: 221 83% 53%;   /* Blue */
+    --secondary: 142 76% 36%;   /* Green */
     --secondary-foreground: 0 0% 100%;
     
     --muted: 220 15% 90%;
     --muted-foreground: 220 10% 45%;
     
-    --accent: 220 15% 90%;
-    --accent-foreground: 220 15% 20%;
+    --accent: 190 80% 60%; /* Vibrant Sky Blue */
+    --accent-foreground: 220 15% 10%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -34,23 +34,23 @@
 
     --border: 220 15% 85%;
     --input: 220 15% 88%;
-    --ring: 221 83% 53%;
+    --ring: 190 80% 60%;
     --radius: 0.5rem;
     
-    --chart-1: 142 76% 36%;
-    --chart-2: 221 83% 53%;
+    --chart-1: 220 60% 40%;
+    --chart-2: 142 76% 36%;
     --chart-3: 45 93% 47%;
     --chart-4: 0 84% 60%;
     --chart-5: 27 87% 67%;
     
     --sidebar-background: 220 10% 12%;
     --sidebar-foreground: 220 10% 80%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 190 80% 60%;
+    --sidebar-primary-foreground: 220 15% 10%;
     --sidebar-accent: 220 10% 20%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 10% 20%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-ring: 190 80% 60%;
   }
 
   .dark {
@@ -61,16 +61,16 @@
     --popover: 220 10% 16%;
     --popover-foreground: 220 10% 85%;
     
-    --primary: 142 66% 46%;      /* Green */
+    --primary: 220 70% 55%;      /* Deep Blue */
     --primary-foreground: 0 0% 100%;
-    --secondary: 221 73% 63%;   /* Blue */
+    --secondary: 142 66% 46%;   /* Green */
     --secondary-foreground: 0 0% 100%;
     
     --muted: 220 10% 25%;
     --muted-foreground: 220 10% 60%;
 
-    --accent: 220 10% 25%;
-    --accent-foreground: 220 10% 85%;
+    --accent: 190 80% 70%;
+    --accent-foreground: 220 15% 10%;
     
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 98%;
@@ -83,22 +83,22 @@
 
     --border: 220 10% 25%;
     --input: 220 10% 25%;
-    --ring: 221 73% 63%;
+    --ring: 190 80% 70%;
 
-    --chart-1: 142 66% 46%;
-    --chart-2: 221 73% 63%;
+    --chart-1: 220 70% 55%;
+    --chart-2: 142 66% 46%;
     --chart-3: 45 83% 57%;
     --chart-4: 0 72% 50%;
     --chart-5: 27 77% 57%;
     
     --sidebar-background: 220 10% 12%;
     --sidebar-foreground: 220 10% 80%;
-    --sidebar-primary: 221 73% 63%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 190 80% 70%;
+    --sidebar-primary-foreground: 220 15% 10%;
     --sidebar-accent: 220 10% 20%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 10% 20%;
-    --sidebar-ring: 221 73% 63%;
+    --sidebar-ring: 190 80% 70%;
   }
 }
 
@@ -182,7 +182,7 @@ header.scrolled {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: hsl(142,76%,36%);
+    background-color: hsl(var(--primary));
     margin-right: 0.75rem;
 }
 .marquee-text strong {
@@ -224,7 +224,7 @@ header.scrolled {
 .comparison-table tbody tr:nth-child(odd) { background-color: hsl(var(--background)); }
 .comparison-table tbody tr:hover { background-color: hsl(var(--muted)); }
 .comparison-table .highlight-col { background-color: hsla(var(--primary), 0.04); }
-.comparison-table th.highlight-col { background-color: hsl(142,76%,94%); color: hsl(142,76%,28%); border-left: 2px solid hsl(var(--primary)); border-right: 2px solid hsl(var(--primary)); }
+.comparison-table th.highlight-col { background-color: hsl(220,60%,94%); color: hsl(220,60%,30%); border-left: 2px solid hsl(var(--primary)); border-right: 2px solid hsl(var(--primary)); }
 .comparison-table td.highlight-col { border-left: 2px solid hsl(var(--primary)); border-right: 2px solid hsl(var(--primary)); }
 .comparison-table .bad-metric { color: hsl(0,60%,60%); font-weight: 500; }
 

@@ -31,9 +31,11 @@ export default async function FeedbackDashboardPage() {
   const user = allUsers.find((u) => u.id === CURRENT_USER_ID);
   if (!user || !user.companyId) return <div>Company not found</div>;
   
-  const tasks = await getTasksByCompany(user.companyId);
-  const allSubmissions = await getSubmissions();
-  const allEvaluations = await getAllEvaluations();
+  const [tasks, allSubmissions, allEvaluations] = await Promise.all([
+    getTasksByCompany(user.companyId),
+    getSubmissions(),
+    getAllEvaluations(),
+  ]);
 
   const companyTaskIds = new Set(tasks.map(task => task.id));
   

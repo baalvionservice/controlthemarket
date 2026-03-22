@@ -8,8 +8,10 @@ import {
   mockEvaluations,
   mockActivityLogs,
   mockNotifications,
+  mockSystemLogs,
+  mockSystemErrors,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation, Activity, Notification } from './types';
+import type { User, Company, Task, Submission, Evaluation, Activity, Notification, SystemLog, SystemError } from './types';
 
 // This file acts as a hybrid data layer, fetching from the persistent
 // mock API first and falling back to the hardcoded mock data.
@@ -53,4 +55,14 @@ export const getHybridActivities = async (): Promise<Activity[]> => {
 export const getHybridNotifications = async (): Promise<Notification[]> => {
     const { data: apiNotifications } = await api.getAllNotifications();
     return mergeData(apiNotifications, mockNotifications);
+};
+
+export const getHybridSystemLogs = async (): Promise<SystemLog[]> => {
+  const { data: apiLogs } = await api.getSystemLogs();
+  return mergeData(apiLogs, mockSystemLogs);
+};
+
+export const getHybridSystemErrors = async (): Promise<SystemError[]> => {
+  const { data: apiErrors } = await api.getSystemErrors();
+  return mergeData(apiErrors, mockSystemErrors);
 };

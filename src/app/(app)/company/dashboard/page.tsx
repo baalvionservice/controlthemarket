@@ -1,10 +1,9 @@
 
+
 import {
   getTasksByCompany,
   getSubmissions,
   getAllEvaluations,
-  getTask,
-  getUser,
   getUsers,
   getCompany
 } from '@/lib/api';
@@ -40,15 +39,17 @@ export default async function CompanyDashboard() {
   const user = allUsers.find((u) => u.id === CURRENT_USER_ID);
   if (!user || !user.companyId) return <div>Company not found</div>;
 
-  const company = await getCompany(user.companyId);
-
-  const [tasks, allSubmissions, allEvaluations] = await Promise.all([
+  const [company, tasks, allSubmissions, allEvaluations] = await Promise.all([
+      getCompany(user.companyId),
       getTasksByCompany(user.companyId),
       getSubmissions(),
       getAllEvaluations(),
   ]);
 
   const companyTaskIds = new Set(tasks.map(task => task.id));
+  const usersMap = new Map(allUsers.map(u => [u.id, u]));
+  const tasksMap = new Map(tasks.map(t => [t.id, t]));
+
   const companySubmissions = allSubmissions.filter(sub => companyTaskIds.has(sub.taskId));
   const companySubmissionIds = new Set(companySubmissions.map(s => s.id));
   const companyEvaluations = allEvaluations.filter(ev => companySubmissionIds.has(ev.submissionId));
@@ -60,20 +61,18 @@ export default async function CompanyDashboard() {
   const evaluatedCount = companyEvaluations.length;
 
 
-  const submissionsWithDetails = await Promise.all(
-    companySubmissions
+  const submissionsWithDetails = companySubmissions
       .filter(s => ['pending', 'in-review', 'resubmitted'].includes(s.status))
       .sort((a,b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
       .slice(0, 5)
-      .map(async (submission) => {
-        const task = await getTask(submission.taskId);
-        const candidate = await getUser(submission.userId);
+      .map(submission => {
+        const task = tasksMap.get(submission.taskId);
+        const candidate = usersMap.get(submission.userId);
         return { ...submission, task, candidate };
-      })
-  );
+      });
 
   // Calculate top candidates
-  const candidatesInCompany = allUsers.filter(u =>
+  const candidatesInCompany = allUsers.filter(u => 
     companySubmissions.some(s => s.userId === u.id)
   );
 

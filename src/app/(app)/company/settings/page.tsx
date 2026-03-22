@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from "react";
@@ -16,7 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { mockCompanies } from "@/lib/mock-data"; 
 import type { Company } from "@/lib/types";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -26,14 +26,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { TeamManagementCard } from "./team-management-card";
 import { DomainManagementCard } from "./domain-management-card";
+import Link from 'next/link';
 
 export default function CompanySettingsPage() {
-    const { user } = useAuth();
+    const { user, plan } = useAuth();
     const { toast } = useToast();
     
     // Mock company data - in a real app this would be fetched
-    const companyData = mockCompanies.find(c => c.id === user?.companyId) || mockCompanies[0];
-    const [company, setCompany] = useState(companyData);
+    const [companyName, setCompanyName] = useState(user?.companyName || 'Your Company');
+    const [companyDescription, setCompanyDescription] = useState('A description of your company.');
     
 
     const handleSaveChanges = () => {
@@ -71,11 +72,11 @@ export default function CompanySettingsPage() {
                 <CardContent className="space-y-4">
                     <div className="space-y-1">
                         <Label htmlFor="companyName">Company Name</Label>
-                        <Input id="companyName" value={company.name} onChange={e => setCompany({...company, name: e.target.value})}/>
+                        <Input id="companyName" value={companyName} onChange={e => setCompanyName(e.target.value)}/>
                     </div>
                      <div className="space-y-1">
                         <Label htmlFor="companyDescription">Description</Label>
-                        <Textarea id="companyDescription" value={company.description || ''} onChange={e => setCompany({...company, description: e.target.value})}/>
+                        <Textarea id="companyDescription" value={companyDescription} onChange={e => setCompanyDescription(e.target.value)}/>
                     </div>
                 </CardContent>
             </Card>
@@ -124,10 +125,12 @@ export default function CompanySettingsPage() {
                 <CardContent className="space-y-4">
                     <div className="flex items-center justify-between rounded-md border p-4">
                         <div>
-                            <p className="font-bold text-lg">Pro Plan</p>
-                            <p className="text-sm text-muted-foreground">$99 / month</p>
+                            <p className="font-bold text-lg">{plan?.name || 'Loading...'} Plan</p>
+                            <p className="text-sm text-muted-foreground">${plan?.priceMonthly || 0} / month</p>
                         </div>
-                        <Button variant="outline">Manage Subscription</Button>
+                        <Button variant="outline" asChild>
+                           <Link href="/company/subscription">Manage Subscription</Link>
+                        </Button>
                     </div>
                 </CardContent>
             </Card>

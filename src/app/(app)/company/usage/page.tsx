@@ -1,6 +1,7 @@
+
 'use client';
 
-import { getPlanUsage, getUsageMetrics } from "@/lib/api";
+import { getUsageMetrics } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -12,11 +13,23 @@ import { Zap, Briefcase, HardDrive, FileText } from "lucide-react";
 import { UsageTrendsChart, UsageBreakdownPanel } from "./charts";
 import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
-import type { Plan, Subscription, PlanUsage } from "@/lib/types";
-import { useMemo } from "react";
+import type { Plan, Subscription, PlanUsage, UsageMetric } from "@/lib/types";
+import { useMemo, useEffect, useState } from "react";
 
 export default function UsageMetricsPage() {
     const { user, plan, subscription, loading } = useAuth();
+    const [usageMetrics, setUsageMetrics] = useState<UsageMetric[]>([]);
+    const [metricsLoading, setMetricsLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchMetrics() {
+            setMetricsLoading(true);
+            const metrics = await getUsageMetrics();
+            setUsageMetrics(metrics);
+            setMetricsLoading(false);
+        }
+        fetchMetrics();
+    }, []);
 
     const planUsage: PlanUsage[] = useMemo(() => {
         if (!plan || !subscription) return [];
@@ -84,8 +97,13 @@ export default function UsageMetricsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                    {/* The trends chart requires historical data which we are not yet storing per-day. */}
-                    {/* <UsageTrendsChart data={usageMetrics} /> */}
+                    {metricsLoading ? (
+                        <Card className="flex h-full items-center justify-center min-h-[300px]">
+                           <Loader2 className="h-8 w-8 animate-spin" />
+                        </Card>
+                    ) : (
+                        <UsageTrendsChart data={usageMetrics} />
+                    )}
                 </div>
                 <div>
                     <UsageBreakdownPanel data={planUsage} />

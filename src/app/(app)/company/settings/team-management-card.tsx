@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -34,7 +35,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -76,7 +76,7 @@ export function TeamManagementCard() {
             return;
         }
 
-        const { data: newUser } = await api.createUser({
+        const newUser = await api.createUser({
             name: 'New Member',
             email: emailToInvite,
             role: 'company',
@@ -88,7 +88,7 @@ export function TeamManagementCard() {
             }
         });
 
-        setTeamMembers(prev => [...prev, newUser]);
+        setTeamMembers(prev => [...prev, newUser.data]);
         toast({ title: 'Invitation Sent', description: `An invitation has been sent to ${emailToInvite}.`});
         setEmailToInvite('');
         setRoleToInvite('member');
@@ -105,14 +105,6 @@ export function TeamManagementCard() {
         setTeamMembers(prev => prev.map(u => u.id === userId ? { ...u, companyRole: newRole } : u));
         api.updateUser(userId, { companyRole: newRole });
         toast({ title: 'Role Updated', description: `The user's role has been updated to ${newRole}.` });
-    };
-
-    const getRoleVariant = (role?: CompanyRole) => {
-        switch(role) {
-            case 'owner': return 'default';
-            case 'admin': return 'secondary';
-            default: return 'outline';
-        }
     };
     
     return (

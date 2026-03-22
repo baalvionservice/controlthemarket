@@ -71,7 +71,7 @@ export function LeaderboardTable({ data }: { data: PublicCandidateRanking[] }) {
                                             <TooltipProvider key={badge.id}>
                                                 <Tooltip>
                                                     <TooltipTrigger>
-                                                        <Icon className="h-5 w-5 text-muted-foreground" />
+                                                        <Icon className="h-5 w-5 text-muted-foreground hover:text-primary" />
                                                     </TooltipTrigger>
                                                     <TooltipContent>
                                                         <p className="font-semibold">{badge.name}</p>

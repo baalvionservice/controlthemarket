@@ -1,6 +1,7 @@
 
+
 import { getDB, setDB } from './mock-db';
-import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle } from './types';
+import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge } from './types';
 
 const ARTIFICIAL_DELAY = 300;
 
@@ -333,4 +334,10 @@ export const updateSubscription = async (subscriptionId: string, updates: Partia
 export const getAllInvoices = async (): Promise<{ success: true; data: Invoice[] }> => {
     const db = getDB();
     return simulateApiCall(db.invoices);
-}
+};
+
+// --- Badge APIs ---
+export const getAllBadges = async (): Promise<{ success: true; data: Badge[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.badges);
+};

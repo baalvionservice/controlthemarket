@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import * as api from './mock-api';
@@ -24,6 +25,7 @@ import {
   mockRevenueMetrics,
   mockPlanDistribution,
   mockRevenueSources,
+  mockBadges,
 } from './mock-data';
 import type { User } from './types';
 
@@ -107,6 +109,10 @@ export const getSubscriptionByCompany = api.getSubscriptionByCompany;
 export const updateSubscription = api.updateSubscription;
 export const getAllSubscriptions = api.getAllSubscriptions;
 export const getAllInvoices = api.getAllInvoices;
+
+
+// --- Badge API ---
+export const getBadges = async () => mockBadges;
 
 
 // --- Remaining data is still from mock-data.ts as API functions were not requested for them ---

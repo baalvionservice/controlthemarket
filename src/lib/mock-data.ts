@@ -1,4 +1,5 @@
 
+
 import type { User, Company, Task, Submission, Evaluation, TaskTemplate, SubmissionContentType, EvaluationSchema, Activity, Notification, TestCase, GitHubRepository, Webhook, WebhookTriggerLog, Team, ApiIntegration, IntegrationLog, SystemMetric, ServiceStatus, SystemLog, LogSeverity, SystemError, SystemIncident, ServiceLoad, ScalingEvent, AutoScalingStatus, Invoice, InvoiceStatus, PlanUsage, UsageMetric, RevenueMetric, PlanDistribution, RevenueSource, Plan, Subscription, Badge } from './types';
 
 export const mockBadges: Badge[] = [
@@ -2310,9 +2311,9 @@ export const mockRevenueSources: RevenueSource[] = [
 ];
 
 export const mockPlans: Plan[] = [
-  { id: 'plan-basic', name: 'Basic', priceMonthly: 29, priceYearly: 290, limits: { tasks: 5, submissions: 20, teamMembers: 1 }, features: ['5 Active Tasks', '100 Candidates per month', 'Basic Analytics', 'Email Support'] },
-  { id: 'plan-pro', name: 'Pro', priceMonthly: 79, priceYearly: 790, limits: { tasks: 50, submissions: 1000, teamMembers: 10 }, features: ['Advanced Analytics', 'AI Task Assistant'] },
-  { id: 'plan-ent', name: 'Enterprise', priceMonthly: 0, priceYearly: 0, limits: { tasks: -1, submissions: -1, teamMembers: -1 }, features: ['Custom Integrations', 'Dedicated Support'] },
+  { id: 'plan-free', name: 'Free', priceMonthly: 0, priceYearly: 0, limits: { tasks: 1, submissions: 3, teamMembers: 1 }, features: ['1 Active Task', '3 Submissions per month', 'Basic Analytics'] },
+  { id: 'plan-pro', name: 'Pro', priceMonthly: 79, priceYearly: 790, limits: { tasks: 10, submissions: -1, teamMembers: 10 }, features: ['10 Active Tasks', 'Unlimited Submissions', 'Advanced Analytics', 'AI Task Assistant'] },
+  { id: 'plan-ent', name: 'Enterprise', priceMonthly: 0, priceYearly: 0, limits: { tasks: -1, submissions: -1, teamMembers: -1 }, features: ['Unlimited Everything', 'Custom Integrations', 'Dedicated Support'] },
 ];
 
 export const mockSubscriptions: Subscription[] = [
@@ -2326,23 +2327,22 @@ export const mockSubscriptions: Subscription[] = [
     billingCycle: 'YEARLY',
     paymentProvider: 'STRIPE',
     externalSubscriptionId: 'sub_123abc',
+    usage: {
+        tasksCreated: 8,
+        submissionsReceived: 120,
+    }
   },
   {
     id: 'sub-comp-2',
     companyId: 'company-2',
-    planId: 'plan-basic',
+    planId: 'plan-free',
     status: 'TRIAL',
     startDate: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     endDate: new Date(new Date().setDate(new Date().getDate() + 20)).toISOString(),
     billingCycle: 'MONTHLY',
+    usage: {
+        tasksCreated: 1,
+        submissionsReceived: 2,
+    }
   },
 ];
-
-    
-
-
-
-
-
-
-

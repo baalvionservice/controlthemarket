@@ -30,6 +30,7 @@ export default function AssignTaskPage() {
           const taskData = await getTask(taskId);
           if (!taskData) {
               notFound();
+              return;
           }
           setTask(taskData);
 

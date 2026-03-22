@@ -5,13 +5,13 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Share, StopCircle, Radio, MonitorOff, Loader2, Pause } from 'lucide-react';
+import { Share, StopCircle, Radio, MonitorOff, Loader2, Pause, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
 import type { LiveSessionStatus } from '@/lib/types';
-import { SkillMatchResultPanel } from '../submissions/[id]/skill-match-result-panel';
+import { SkillMatchResultPanel } from '../../company/submissions/[id]/skill-match-result-panel';
 
 const getStatusVariant = (status?: LiveSessionStatus): 'default' | 'destructive' | 'warning' | 'outline' | 'secondary' => {
     switch (status) {
@@ -33,7 +33,6 @@ export default function CandidateLiveSessionPage() {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [hasPermission, setHasPermission] = useState(true);
 
-  // Find the active or scheduled session for the current user
   const submission = useMemo(() => {
     if (!user) return null;
     return submissions.find(s => 
@@ -155,6 +154,7 @@ export default function CandidateLiveSessionPage() {
                 
                 {!hasPermission && (
                   <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
                       <AlertTitle>Screen Share Permission Denied</AlertTitle>
                       <AlertDescription>
                         Please enable screen sharing permissions in your browser settings to continue.
@@ -208,7 +208,7 @@ export default function CandidateLiveSessionPage() {
             </Card>
         </div>
         <div className="space-y-6">
-             {sessionStatus === 'Completed' && (
+             {sessionStatus === 'Completed' && submission && (
                 <SkillMatchResultPanel submission={submission} />
             )}
         </div>

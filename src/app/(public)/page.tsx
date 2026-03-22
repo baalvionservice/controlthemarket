@@ -6,16 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import {
+  ArrowUp,
+  Award,
   BarChart2,
   BrainCircuit,
   Briefcase,
+  Check,
   CheckCircle,
   FileText,
   ShieldCheck,
-  Trophy,
-  Award,
-  ArrowUp,
   TrendingUp,
+  Trophy,
+  X,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect } from 'react';
@@ -73,7 +75,6 @@ const AmazonLogo = () => (
 
 export default function PlatformLandingPage() {
     useEffect(() => {
-        /* === SCROLL REVEAL ANIMATIONS === */
         const revealObserver = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -88,7 +89,6 @@ export default function PlatformLandingPage() {
             revealObserver.observe(el);
         });
 
-        /* === STICKY NAV SHADOW === */
         const handleScroll = () => {
             const header = document.querySelector('header');
             if (header) {
@@ -101,13 +101,12 @@ export default function PlatformLandingPage() {
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
 
-        /* === ANIMATED BAR CHARTS === */
         const chartObserver = new IntersectionObserver(
             (entries, observer) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.querySelectorAll('.bar-item').forEach((bar) => {
-                            bar.classList.add('animated');
+                            (bar as HTMLElement).classList.add('animated');
                         });
                         observer.unobserve(entry.target);
                     }
@@ -119,15 +118,14 @@ export default function PlatformLandingPage() {
             chartObserver.observe(chart);
         });
 
-        /* === ANIMATED NUMBER COUNTERS === */
         const counterObserver = new IntersectionObserver(
             (entries, observer) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         const counters = entry.target.querySelectorAll('.counter-num');
                         counters.forEach((counter) => {
-                            const target = +counter.getAttribute('data-target');
-                            counter.innerHTML = '0';
+                            const target = +(counter.getAttribute('data-target') || 0);
+                            (counter as HTMLElement).innerHTML = '0';
                             const duration = 1800;
                             const frameDuration = 1000 / 60;
                             const totalFrames = Math.round(duration / frameDuration);
@@ -139,12 +137,12 @@ export default function PlatformLandingPage() {
                                 const currentCount = Math.round(target * progress);
 
                                 if (parseInt(counter.innerHTML, 10) !== currentCount) {
-                                    counter.innerHTML = currentCount.toLocaleString();
+                                    (counter as HTMLElement).innerHTML = currentCount.toLocaleString();
                                 }
 
                                 if (frame === totalFrames) {
                                     clearInterval(interval);
-                                    counter.innerHTML = target.toLocaleString();
+                                    (counter as HTMLElement).innerHTML = target.toLocaleString();
                                 }
                             }, frameDuration);
                         });
@@ -158,7 +156,6 @@ export default function PlatformLandingPage() {
             counterObserver.observe(section);
         });
 
-        // Cleanup function
         return () => {
             window.removeEventListener('scroll', handleScroll);
             revealObserver.disconnect();
@@ -235,7 +232,6 @@ export default function PlatformLandingPage() {
   return (
     <>
     <div className="flex flex-col">
-      {/* Hero Section */}
       <section className="container flex flex-col items-center justify-center gap-6 pb-8 pt-12 text-center md:py-24">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4">
           <h1 className="hero-headline font-headline text-4xl font-extrabold tracking-tighter animate-in fade-in slide-in-from-top-4 duration-1000 md:text-6xl lg:text-7xl">
@@ -266,7 +262,6 @@ export default function PlatformLandingPage() {
         </div>
       </section>
 
-      {/* Marquee Ticker Section */}
       <section className="marquee-bar">
         <div className="marquee-track">
           {[...marqueeItems, ...marqueeItems].map((item, index) => (
@@ -280,8 +275,7 @@ export default function PlatformLandingPage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-       <section className="bg-muted/50 py-12 md:py-20">
+      <section className="bg-muted/50 py-12 md:py-20">
         <div className="container">
           <div className="mx-auto max-w-3xl text-center reveal">
             <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
@@ -317,7 +311,6 @@ export default function PlatformLandingPage() {
         </div>
       </section>
 
-      {/* Bar Chart Section */}
       <section className="container py-12 md:py-20 reveal">
         <div className="data-chart-wrap">
           <div className="chart-title">Average time to hire <span>↓ 85% faster</span></div>
@@ -353,7 +346,6 @@ export default function PlatformLandingPage() {
         </div>
       </section>
 
-       {/* Comparison Table Section */}
        <section className="container py-12 md:py-20 reveal">
          <div className="mx-auto max-w-4xl text-center">
             <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
@@ -375,50 +367,49 @@ export default function PlatformLandingPage() {
               <tbody>
                 <tr>
                   <td>Real-world skill tasks</td>
-                  <td className="highlight-col"><span>✓</span> Always included</td>
-                  <td><span>✗</span> Resume only</td>
+                  <td className="highlight-col"><Check className="text-primary mx-auto" /> Always included</td>
+                  <td><X className="text-destructive mx-auto" /> Resume only</td>
                 </tr>
                 <tr>
                   <td>Objective performance scoring</td>
-                  <td className="highlight-col"><span>✓</span> AI-powered</td>
-                  <td><span>✗</span> Gut-feel interviews</td>
+                  <td className="highlight-col"><Check className="text-primary mx-auto" /> AI-powered</td>
+                  <td><X className="text-destructive mx-auto" /> Gut-feel interviews</td>
                 </tr>
                 <tr>
                   <td>Verified skills & badges</td>
-                  <td className="highlight-col"><span>✓</span> Auto-verified</td>
-                  <td><span>✗</span> Self-reported only</td>
+                  <td className="highlight-col"><Check className="text-primary mx-auto" /> Auto-verified</td>
+                  <td><X className="text-destructive mx-auto" /> Self-reported only</td>
                 </tr>
                 <tr>
                   <td>Live competitive leaderboard</td>
-                  <td className="highlight-col"><span>✓</span> Real-time</td>
-                  <td><span>✗</span> Not available</td>
+                  <td className="highlight-col"><Check className="text-primary mx-auto" /> Real-time</td>
+                  <td><X className="text-destructive mx-auto" /> Not available</td>
                 </tr>
                 <tr>
                   <td>Average time to hire</td>
-                  <td className="highlight-col"><span>✓</span> 6 days</td>
+                  <td className="highlight-col"><strong>6 days</strong></td>
                   <td className="bad-metric">41 days</td>
                 </tr>
                 <tr>
                   <td>Average cost per hire</td>
-                  <td className="highlight-col"><span>✓</span> $2,900</td>
+                  <td className="highlight-col"><strong>$2,900</strong></td>
                   <td className="bad-metric">$11,000+</td>
                 </tr>
                 <tr>
                   <td>Bias-free candidate discovery</td>
-                  <td className="highlight-col"><span>✓</span> Data-driven</td>
-                  <td><span>✗</span> Name/school bias</td>
+                  <td className="highlight-col"><Check className="text-primary mx-auto" /> Data-driven</td>
+                  <td><X className="text-destructive mx-auto" /> Name/school bias</td>
                 </tr>
                 <tr>
                   <td>Analytics dashboard</td>
-                  <td className="highlight-col"><span>✓</span> Full insights</td>
-                  <td><span>✗</span> Spreadsheets only</td>
+                  <td className="highlight-col"><Check className="text-primary mx-auto" /> Full insights</td>
+                  <td><X className="text-destructive mx-auto" /> Spreadsheets only</td>
                 </tr>
               </tbody>
             </table>
           </div>
        </section>
 
-      {/* Counters Section */}
       <section className="bg-muted/50 py-12 md:py-20">
         <div className="container counter-section reveal grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="counter-item">
@@ -440,7 +431,6 @@ export default function PlatformLandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="container py-12 md:py-20">
         <div className="mx-auto max-w-3xl text-center reveal">
           <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
@@ -467,7 +457,6 @@ export default function PlatformLandingPage() {
         </div>
       </section>
       
-      {/* Testimonials Section */}
       <section className="bg-muted/50 py-12 md:py-20">
         <div className="container reveal">
             <div className="mx-auto max-w-3xl text-center">
@@ -482,7 +471,7 @@ export default function PlatformLandingPage() {
                         <CardContent className="pt-6">
                              <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
                              <div className="mt-4 flex items-center gap-3">
-                                <Avatar className="team-avatar">
+                                <Avatar className="h-10 w-10">
                                     <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
                                     <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
@@ -499,7 +488,6 @@ export default function PlatformLandingPage() {
         </div>
       </section>
 
-      {/* Final CTA Section */}
       <section className="container py-12 text-center md:py-20">
          <div className="mx-auto max-w-2xl reveal">
            <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
@@ -519,144 +507,6 @@ export default function PlatformLandingPage() {
          </div>
       </section>
     </div>
-    <style jsx global>{`
-        /* === SCROLL ANIMATIONS === */
-        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .reveal-scale { opacity: 0; transform: scale(0.94); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .reveal.in-view { opacity: 1; transform: none; }
-        .reveal.delay-1 { transition-delay: 0.1s; }
-        .reveal.delay-2 { transition-delay: 0.18s; }
-        .reveal.delay-3 { transition-delay: 0.26s; }
-        .reveal.delay-4 { transition-delay: 0.34s; }
-
-        /* === NAV SHADOW === */
-        header.scrolled {
-          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-          border-bottom-color: transparent;
-        }
-
-        /* === HEADLINE UNDERLINE === */
-        .hero-headline .highlight-word {
-            position: relative;
-            display: inline-block;
-        }
-        .hero-headline .highlight-word::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 0;
-            width: 0%;
-            height: 4px;
-            background-color: hsl(var(--primary));
-            border-radius: 4px;
-            animation: draw-underline 0.8s 0.4s ease-out forwards;
-        }
-        @keyframes draw-underline {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        /* === HERO FLOAT === */
-        @keyframes float-anim {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-        .hero-preview {
-            animation: float-anim 4s ease-in-out infinite;
-        }
-
-        /* === MARQUEE === */
-        .marquee-bar {
-            background-color: hsl(220,15%,20%);
-            padding: 18px 0;
-            overflow: hidden;
-            width: 100%;
-        }
-        .marquee-track {
-            display: flex;
-            flex-shrink: 0;
-            animation: marquee-scroll 28s linear infinite;
-        }
-        .marquee-item {
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-            padding: 0 2rem;
-            color: rgba(255,255,255,0.6);
-            font-size: 12px;
-        }
-        .marquee-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: hsl(142,76%,36%);
-            margin-right: 0.75rem;
-        }
-        .marquee-text strong {
-            color: rgba(255,255,255,0.9);
-            font-weight: 600;
-        }
-        @keyframes marquee-scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
-        }
-
-        /* === BAR CHARTS === */
-        .data-chart-wrap { max-width: 800px; margin: 0 auto; background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-        .chart-title { font-weight: 700; font-size: 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-        .chart-title span { font-size: 0.875rem; font-weight: 600; color: hsl(var(--primary)); background-color: hsla(var(--primary), 0.1); padding: 0.25rem 0.75rem; border-radius: 99px; }
-        .bar-chart { display: flex; flex-direction: column; gap: 1rem; }
-        .bar-item { display: grid; grid-template-columns: 90px 1fr 60px; align-items: center; gap: 1rem; }
-        .bar-label { font-size: 0.875rem; color: var(--muted-fg); text-align: right; }
-        .bar-track { background-color: var(--muted); border-radius: 4px; height: 1.75rem; overflow: hidden; }
-        .bar-fill { height: 100%; width: var(--target); transform: scaleX(0); transform-origin: left; transition: transform 1.2s cubic-bezier(0.34, 1.2, 0.64, 1); }
-        .bar-item.animated .bar-fill { transform: scaleX(1); }
-        .bar-item:nth-child(2) .bar-fill { transition-delay: 120ms; }
-        .bar-item:nth-child(3) .bar-fill { transition-delay: 240ms; }
-        .bar-value { font-size: 0.875rem; font-weight: 600; }
-        .metric-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
-        .metric-card { text-align: center; }
-        .metric-value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
-        .metric-label { font-size: 0.875rem; color: var(--muted-fg); }
-        .metric-trend { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; color: var(--muted-fg); margin-top: 0.25rem; }
-        @media (max-width: 600px) { .bar-item { grid-template-columns: 70px 1fr 50px; gap: 0.5rem; } }
-
-        /* === COMPARISON TABLE === */
-        .table-responsive-wrapper { overflow-x: auto; }
-        .comparison-table { width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid var(--border); }
-        .comparison-table th, .comparison-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
-        .comparison-table th { background-color: var(--muted); font-weight: 600; font-size: 0.875rem; }
-        .comparison-table tbody tr:nth-child(even) { background-color: var(--card); }
-        .comparison-table tbody tr:nth-child(odd) { background-color: var(--bg); }
-        .comparison-table tbody tr:hover { background-color: var(--muted); }
-        .comparison-table .highlight-col { background-color: hsla(var(--primary), 0.04); }
-        .comparison-table th.highlight-col { background-color: hsl(142,76%,94%); color: hsl(142,76%,28%); border-left: 2px solid hsl(var(--primary)); border-right: 2px solid hsl(var(--primary)); }
-        .comparison-table td.highlight-col { border-left: 2px solid hsl(var(--primary)); border-right: 2px solid hsl(var(--primary)); }
-        .comparison-table span { font-size: 15px; }
-        .comparison-table span:contains('✓') { color: hsl(var(--primary)); }
-        .comparison-table span:contains('✗') { color: hsl(0,60%,60%); }
-        .comparison-table .bad-metric { color: hsl(0,60%,60%); font-weight: 500; }
-
-        /* === COUNTERS === */
-        .counter-section { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 900px; margin: 0 auto; }
-        .counter-item { text-align: center; }
-        .counter-item .counter-num, .counter-item span { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 700; color: var(--primary); line-height: 1; }
-        .counter-item div { font-size: 0.875rem; color: var(--muted-fg); margin-top: 0.25rem; }
-        @media (min-width: 768px) { .counter-section { grid-template-columns: repeat(4, 1fr); } }
-
-        /* === CARD HOVER EFFECTS === */
-        .feature-card, .testimonial-card, .team-card { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
-        .feature-icon, .team-avatar { transition: transform 0.25s ease; }
-        .feature-card:hover { transform: translateY(-3px); border-color: hsl(var(--primary)); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-        .feature-card:hover .feature-icon { transform: scale(1.1); }
-        .testimonial-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-        .team-card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-        .team-card:hover .team-avatar { transform: scale(1.08); }
-        .pricing-card { transition: transform 0.25s ease; }
-        .pricing-card:hover { transform: translateY(-3px); }
-    `}</style>
     </>
   );
 }

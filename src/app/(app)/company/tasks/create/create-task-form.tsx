@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -65,10 +64,40 @@ const roleTaskTypesMap: Record<string, TaskType[]> = {
   Engineering: [
     'Coding', 'Backend Development', 'API Design', 'Database Management', 'Project', 'Documentation', 'UI', 'Component', 'Styling', 'Feature Implementation', 'DevOps', 'CI/CD', 'Security Analysis', 'Automated Testing', 'Bug Fix', 'Code Review', 'System Architecture', 'Mobile Development', 'Algorithm Design', 'Performance Optimization', 'MCQ'
   ],
+  Frontend: [
+    'Coding', 'UI', 'Component', 'Styling', 'Feature Implementation', 'Automated Testing', 'Bug Fix', 'Performance Optimization', 'MCQ'
+  ],
+  Backend: [
+    'Coding', 'Backend Development', 'API Design', 'Database Management', 'DevOps', 'CI/CD', 'Security Analysis', 'Automated Testing', 'Bug Fix', 'System Architecture', 'Performance Optimization', 'MCQ'
+  ],
+  'Full Stack': [
+    'Coding', 'Backend Development', 'API Design', 'Database Management', 'UI', 'Component', 'Styling', 'Feature Implementation', 'DevOps', 'System Architecture', 'MCQ'
+  ],
+  DevOps: [
+    'DevOps', 'CI/CD', 'Security Analysis', 'System Architecture', 'Performance Optimization'
+  ],
+  Mobile: [
+    'Coding', 'Mobile Development', 'UI', 'Component', 'API Design', 'Automated Testing', 'Bug Fix', 'MCQ'
+  ],
   Design: ['Design', 'Project', 'Documentation', 'UI', 'Styling', 'User Research', 'Wireframing', 'Prototyping', 'Visual Design', 'Branding', 'MCQ'],
+  'UI/UX Design': ['Design', 'UI', 'Styling', 'User Research', 'Wireframing', 'Prototyping', 'Visual Design'],
+  'Graphic Design': ['Design', 'Visual Design', 'Branding'],
+  'Product Design': ['Design', 'User Research', 'Wireframing', 'Prototyping', 'Strategy Planning'],
+  'Motion Design': ['Design', 'Visual Design'],
   Marketing: ['Documentation', 'Project', 'MCQ', 'Campaign Planning', 'Content Creation', 'Social Media', 'Email Marketing', 'Ads', 'Market Analysis', 'Copywriting', 'Growth Hacking'],
+  'Digital Marketing': ['Campaign Planning', 'Content Creation', 'Social Media', 'Email Marketing', 'Ads', 'SEO'],
+  SEO: ['Content Creation', 'Market Analysis', 'Copywriting'],
+  'Content Marketing': ['Content Creation', 'Copywriting', 'Documentation'],
+  'Performance Marketing': ['Ads', 'Market Analysis'],
   Business: ['Documentation', 'Project', 'MCQ', 'Market Analysis', 'Strategy Planning', 'Financial Modeling', 'Presentation', 'Business Case'],
+  Sales: ['Presentation', 'Business Case'],
+  Operations: ['Strategy Planning', 'Documentation'],
+  'Business Development': ['Market Analysis', 'Presentation', 'Strategy Planning'],
+  Strategy: ['Strategy Planning', 'Market Analysis', 'Presentation'],
   Data: ['Coding', 'Project', 'MCQ', 'Documentation', 'Data Cleaning', 'Visualization', 'Statistical Analysis', 'Reporting', 'SQL Querying', 'Machine Learning Model'],
+  'Data Analyst': ['Data Cleaning', 'Visualization', 'Reporting', 'SQL Querying', 'Statistical Analysis'],
+  'Data Scientist': ['Machine Learning Model', 'Statistical Analysis', 'Python', 'SQL Querying', 'Visualization'],
+  'Machine Learning Engineer': ['Machine Learning Model', 'Python', 'System Architecture', 'Performance Optimization'],
 };
 
 const groupedRoles: { label: RoleCategory; subRoles: RoleCategory[] }[] = [
@@ -81,7 +110,7 @@ const groupedRoles: { label: RoleCategory; subRoles: RoleCategory[] }[] = [
 
 const getParentRole = (role: RoleCategory): RoleCategory => {
     for (const group of groupedRoles) {
-        if (group.subRoles.includes(role)) {
+        if (group.subRoles.includes(role) || group.label === role) {
             return group.label;
         }
     }
@@ -89,7 +118,7 @@ const getParentRole = (role: RoleCategory): RoleCategory => {
 };
 
 const optionalPositiveNumber = z.preprocess(
-  (val) => (val === "" || val === null ? undefined : val),
+  (val) => (val === "" || val === null || val === undefined ? undefined : val),
   z.coerce.number().positive().int().optional()
 );
 
@@ -103,11 +132,9 @@ const formSchema = z.object({
   }),
   deadline: z.date({ required_error: 'A deadline is required.' }),
   multiRound: z.boolean().default(false),
-  // Fields for single-round tasks
   instructions: z.string(),
   expectedOutputs: z.string(),
   timeLimitMinutes: optionalPositiveNumber,
-  // Fields for multi-round tasks
   rounds: z.array(z.object({
     instructions: z.string().min(20, 'Instructions must be at least 20 characters.'),
     expectedOutputs: z.string().min(20, 'Expected Outputs must be at least 20 characters.'),
@@ -153,7 +180,7 @@ export function CreateTaskForm() {
       instructions: '',
       expectedOutputs: '',
       taskTypes: [],
-      timeLimitMinutes: '',
+      timeLimitMinutes: undefined,
       multiRound: false,
       rounds: [],
     },
@@ -169,8 +196,7 @@ export function CreateTaskForm() {
   
   const availableTaskTypes = useMemo(() => {
     if (!watchedRoleCategory) return [];
-    const parentRole = getParentRole(watchedRoleCategory);
-    return roleTaskTypesMap[parentRole] || [];
+    return roleTaskTypesMap[watchedRoleCategory] || roleTaskTypesMap[getParentRole(watchedRoleCategory)] || [];
   }, [watchedRoleCategory]);
 
   useEffect(() => {
@@ -195,11 +221,11 @@ export function CreateTaskForm() {
     form.setValue('multiRound', template.multiRound || false, { shouldValidate: true });
     
     if (template.multiRound && template.rounds) {
-      form.setValue('rounds', template.rounds.map(r => ({...r, timeLimitMinutes: r.timeLimitMinutes || '' })), { shouldValidate: true });
+      form.setValue('rounds', template.rounds.map(r => ({...r, timeLimitMinutes: r.timeLimitMinutes || undefined })), { shouldValidate: true });
     } else {
       form.setValue('instructions', template.instructions, { shouldValidate: true });
       form.setValue('expectedOutputs', template.expectedOutputs, { shouldValidate: true });
-      form.setValue('timeLimitMinutes', template.timeLimitMinutes || '', { shouldValidate: true });
+      form.setValue('timeLimitMinutes', template.timeLimitMinutes || undefined, { shouldValidate: true });
     }
     
     toast({
@@ -209,13 +235,11 @@ export function CreateTaskForm() {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, you would differentiate between "Save Draft" and "Publish"
     console.log(values);
     toast({
       title: 'Task Action!',
       description: `The task "${values.title}" has been processed.`,
     });
-    // form.reset(); // Commented out to inspect form state after submission
   }
   
   const handleDescriptionUpdate = (newDescription: string) => {
@@ -226,7 +250,6 @@ export function CreateTaskForm() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Task Information */}
           <div className="space-y-6 rounded-md border p-6">
             <h3 className="text-lg font-medium">Task Information</h3>
             <FormField
@@ -323,7 +346,6 @@ export function CreateTaskForm() {
             </div>
           </div>
           
-          {/* Instructions and Outputs */}
            <div className="space-y-6 rounded-md border p-6">
                 <FormField
                     control={form.control}
@@ -426,7 +448,7 @@ export function CreateTaskForm() {
                                 name={`rounds.${index}.timeLimitMinutes`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Time Limit (minutes)</FormLabel>
+                                    <FormLabel>Time Limit (minutes, optional)</FormLabel>
                                     <FormControl>
                                       <Input type="number" placeholder="e.g., 60" {...field} />
                                     </FormControl>
@@ -439,7 +461,7 @@ export function CreateTaskForm() {
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => append({ instructions: '', expectedOutputs: '', timeLimitMinutes: '' })}
+                        onClick={() => append({ instructions: '', expectedOutputs: '', timeLimitMinutes: undefined })}
                     >
                         Add Round
                     </Button>
@@ -448,7 +470,6 @@ export function CreateTaskForm() {
                )}
             </div>
 
-          {/* Task Type */}
           <div className="space-y-6 rounded-md border p-6">
              <h3 className="text-lg font-medium">Task Type</h3>
             <FormField
@@ -509,7 +530,6 @@ export function CreateTaskForm() {
             />
           </div>
 
-          {/* Timing */}
           <div className="space-y-6 rounded-md border p-6">
             <h3 className="text-lg font-medium">Timing</h3>
              <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -518,9 +538,9 @@ export function CreateTaskForm() {
                 name="timeLimitMinutes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Overall Time Limit (in minutes)</FormLabel>
+                    <FormLabel>Overall Time Limit (minutes, optional)</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="e.g., 120" {...field} disabled={watchedMultiRound} />
+                      <Input type="number" placeholder="e.g., 120" {...field} value={field.value ?? ''} disabled={watchedMultiRound} />
                     </FormControl>
                     <FormDescription>
                       For single-round tasks. Leave blank for no time limit.
@@ -574,7 +594,6 @@ export function CreateTaskForm() {
             </div>
           </div>
 
-          {/* Templates */}
           <div className="space-y-6 rounded-md border p-6">
             <h3 className="text-lg font-medium">Templates</h3>
             <div className="space-y-4">
@@ -603,7 +622,6 @@ export function CreateTaskForm() {
             </div>
           </div>
           
-          {/* Action Buttons */}
           <div className="flex justify-end gap-4 pt-4">
             <Button type="button" variant="ghost">Cancel</Button>
             <Button type="submit" variant="secondary" onClick={() => console.log('Saving as draft...')}>Save Draft</Button>
@@ -620,7 +638,3 @@ export function CreateTaskForm() {
     </>
   );
 }
-
-    
-
-    

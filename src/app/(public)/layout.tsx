@@ -59,8 +59,8 @@ export default function PublicLayout({
       <main className="flex-1">{children}</main>
       <footer className="border-t bg-muted/50">
         <div className="container py-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div className="col-span-1 md:col-span-2">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div className="col-span-2 md:col-span-1">
                     <Logo />
                     <p className="mt-4 text-sm text-muted-foreground max-w-xs">
                         The proof-of-skill hiring platform for the modern era.
@@ -72,15 +72,22 @@ export default function PublicLayout({
                         <li><Link href="/leaderboard" className="text-muted-foreground hover:text-primary">Leaderboard</Link></li>
                         <li><Link href="/companies" className="text-muted-foreground hover:text-primary">Companies</Link></li>
                         <li><Link href="/pricing" className="text-muted-foreground hover:text-primary">Pricing</Link></li>
+                        <li><Link href="/badges" className="text-muted-foreground hover:text-primary">Badges</Link></li>
                     </ul>
                 </div>
                  <div>
                     <h4 className="font-semibold">Company</h4>
                     <ul className="mt-4 space-y-2 text-sm">
-                        <li><Link href="#" className="text-muted-foreground hover:text-primary">About Us</Link></li>
-                        <li><Link href="#" className="text-muted-foreground hover:text-primary">Contact</Link></li>
-                        <li><Link href="#" className="text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
-                        <li><Link href="#" className="text-muted-foreground hover:text-primary">Terms of Service</Link></li>
+                        <li><Link href="/about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
+                        <li><Link href="/blog" className="text-muted-foreground hover:text-primary">Blog</Link></li>
+                        <li><Link href="/contact" className="text-muted-foreground hover:text-primary">Contact</Link></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 className="font-semibold">Legal</h4>
+                    <ul className="mt-4 space-y-2 text-sm">
+                        <li><Link href="/privacy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
+                        <li><Link href="/terms" className="text-muted-foreground hover:text-primary">Terms of Service</Link></li>
                     </ul>
                 </div>
             </div>

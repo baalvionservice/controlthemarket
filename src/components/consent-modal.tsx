@@ -51,7 +51,7 @@ export function ConsentModal() {
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight + 1) { // +1 for pixel-perfect browsers
+    if (scrollHeight - scrollTop <= clientHeight + 5) { // 5px buffer
       setIsScrolled(true);
     }
   };

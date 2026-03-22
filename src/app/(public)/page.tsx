@@ -1,4 +1,5 @@
 
+      
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -125,17 +126,17 @@ export default function PlatformLandingPage() {
       {/* Hero Section */}
       <section className="container flex flex-col items-center justify-center gap-6 pb-8 pt-12 text-center md:py-24">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tighter md:text-6xl lg:text-7xl">
+          <h1 className="font-headline text-4xl font-extrabold tracking-tighter animate-in fade-in slide-in-from-top-4 duration-1000 md:text-6xl lg:text-7xl">
             Hire by Skill, <br className="md:hidden" />
             <span className="text-primary">
               Not by Resume.
             </span>
           </h1>
-          <p className="max-w-[700px] text-lg text-muted-foreground md:text-xl">
+          <p className="max-w-[700px] text-lg text-muted-foreground animate-in fade-in slide-in-from-top-6 duration-1000 delay-200 md:text-xl">
             SkillMatch Pro is the proof-of-skill ecosystem where top companies discover and hire verified talent based on real-world performance.
           </p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 animate-in fade-in slide-in-from-top-8 duration-1000 delay-300">
           <Button asChild size="lg">
             <Link href="/signup/company">Start Hiring</Link>
           </Button>
@@ -146,7 +147,7 @@ export default function PlatformLandingPage() {
       </section>
 
       {/* "Trusted By" Section */}
-      <section className="container py-12">
+      <section className="container py-12 animate-in fade-in duration-1000 delay-500">
           <h2 className="text-center text-sm font-semibold text-muted-foreground tracking-wider uppercase">
               Trusted by the world's best companies
           </h2>
@@ -173,21 +174,21 @@ export default function PlatformLandingPage() {
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div className="text-center">
+            <div className="text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <FileText className="h-8 w-8 text-primary" />
               </div>
               <h3 className="mt-4 text-xl font-semibold">1. Take the Test</h3>
               <p className="mt-2 text-muted-foreground">Candidates choose from real-world tasks created by companies and submit their best work.</p>
             </div>
-             <div className="text-center">
+             <div className="text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <CheckCircle className="h-8 w-8 text-primary" />
               </div>
               <h3 className="mt-4 text-xl font-semibold">2. Get Evaluated</h3>
               <p className="mt-2 text-muted-foreground">Submissions are scored against objective criteria, providing clear, unbiased performance data.</p>
             </div>
-             <div className="text-center">
+             <div className="text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-600">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                 <Trophy className="h-8 w-8 text-primary" />
               </div>
@@ -209,16 +210,18 @@ export default function PlatformLandingPage() {
           </p>
         </div>
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <Card key={feature.title}>
-              <CardHeader>
-                {feature.icon}
-                <CardTitle className="mt-2">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
-              </CardContent>
-            </Card>
+          {features.map((feature, index) => (
+            <div key={feature.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: `${200 + index * 100}ms`}}>
+              <Card>
+                <CardHeader>
+                  {feature.icon}
+                  <CardTitle className="mt-2">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
       </section>
@@ -232,8 +235,9 @@ export default function PlatformLandingPage() {
                 </h2>
             </div>
             <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-                {testimonials.map((testimonial) => (
-                    <Card key={testimonial.name}>
+                {testimonials.map((testimonial, index) => (
+                  <div key={testimonial.name} className="animate-in fade-in slide-in-from-bottom-10 duration-1000" style={{ animationDelay: `${300 + index * 150}ms` }}>
+                    <Card>
                         <CardContent className="pt-6">
                              <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
                              <div className="mt-4 flex items-center gap-3">
@@ -248,6 +252,7 @@ export default function PlatformLandingPage() {
                              </div>
                         </CardContent>
                     </Card>
+                    </div>
                 ))}
             </div>
         </div>
@@ -255,7 +260,7 @@ export default function PlatformLandingPage() {
 
       {/* Final CTA Section */}
       <section className="container py-12 text-center md:py-20">
-         <div className="mx-auto max-w-2xl">
+         <div className="mx-auto max-w-2xl animate-in fade-in duration-1000 delay-500">
            <h2 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
                 Ready to Join the Future of Hiring?
             </h2>

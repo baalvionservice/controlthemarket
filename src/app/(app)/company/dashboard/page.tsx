@@ -1,7 +1,14 @@
 
 
-import { getTasksByCompany, getSubmissions, getEvaluations, getTask, getUser, getUsers } from '@/lib/api';
-import { mockUsers, mockCompanies } from '@/lib/mock-data';
+import {
+  getTasksByCompany,
+  getSubmissions,
+  getAllEvaluations,
+  getTask,
+  getUser,
+  getUsers,
+  getCompany
+} from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,16 +37,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 const CURRENT_USER_ID = 'user-2';
 
 export default async function CompanyDashboard() {
-  const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
+  const allUsers = await getUsers();
+  const user = allUsers.find((u) => u.id === CURRENT_USER_ID);
   if (!user || !user.companyId) return <div>Company not found</div>;
 
-  const company = mockCompanies.find(c => c.id === user.companyId);
+  const company = await getCompany(user.companyId);
 
-  const [tasks, allSubmissions, allEvaluations, allUsers] = await Promise.all([
+  const [tasks, allSubmissions, allEvaluations] = await Promise.all([
       getTasksByCompany(user.companyId),
       getSubmissions(),
-      getEvaluations(),
-      getUsers(),
+      getAllEvaluations(),
   ]);
   
   const companyTaskIds = new Set(tasks.map(task => task.id));

@@ -1,5 +1,5 @@
 
-import { getCompanies, getUsers, getTasks, getSubmissions, getSubscriptions, getAllPlans } from "@/lib/api";
+import { getCompanies, getUsers, getTasks, getSubmissions, getAllSubscriptions, getAllPlans } from "@/lib/api";
 import { AdminCompaniesList } from "./company-list";
 import type { Company, Subscription, Plan } from '@/lib/types';
 import {
@@ -27,7 +27,7 @@ export default async function ManageCompaniesPage() {
     getUsers(),
     getTasks(),
     getSubmissions(),
-    getSubscriptions(),
+    getAllSubscriptions(),
     getAllPlans(),
   ]);
 

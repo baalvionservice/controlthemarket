@@ -1,234 +1,174 @@
 'use client';
 
-import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, AlertTriangle, Info, Bell, Users, Briefcase } from "lucide-react";
+import { AlertTriangle, Bell, Users, Briefcase, Video, PlayCircle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
-// Data types based on page.tsx
-interface CorporateClient {
-    id: string;
-    name: string;
-    industry: string;
-    location: string;
-    open_positions: number;
-    pain_points: string[];
-}
-
-interface PipelineCandidate {
-    id: string;
-    name: string;
-    topSkill: string;
-    status: string;
-    assessmentScore: number;
-}
-
-interface ChartData {
-    assessmentResults: { name: string; value: number }[];
-    openPositions: { name: string; value: number }[];
-    candidatesProcessed: { name: string; value: number }[];
-}
-
-interface Alert {
-    id: string;
-    severity: 'low' | 'warning' | 'high';
-    message: string;
+interface ValuePropositionData {
+    live_assessments: { id: string; candidate: string; task: string; status: string; video_url: string; }[];
+    dashboard_stats: {
+        open_positions: number;
+        pending_assessments: number;
+        top_skills: { [key: string]: number };
+        candidate_rankings: { name: string; score: number }[];
+    };
+    alerts: string[];
+    chartData: {
+        assessmentResults: { name: string; value: number }[];
+        topSkills: { name: string; value: number }[];
+        candidateActivity: { name: string; value: number }[];
+    }
 }
 
 interface CorporateDashboardProps {
-    clients: CorporateClient[];
-    pipeline: PipelineCandidate[];
-    chartData: ChartData;
-    alerts: Alert[];
+    data: ValuePropositionData;
 }
 
-const industryFilters = ["All", "Tech", "Product", "Consulting", "BPO", "Startup", "FinTech"];
-
-export function CorporateDashboard({ clients, pipeline, chartData, alerts }: CorporateDashboardProps) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [industryFilter, setIndustryFilter] = useState('All');
-
-    const filteredClients = useMemo(() => {
-        return clients.filter(client => {
-            const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesIndustry = industryFilter === 'All' || client.industry === industryFilter;
-            return matchesSearch && matchesIndustry;
-        });
-    }, [clients, searchTerm, industryFilter]);
-    
-    const getAlertIcon = (severity: 'low' | 'warning' | 'high') => {
-        switch(severity) {
-            case 'high': return <AlertTriangle className="h-5 w-5 text-destructive" />;
-            case 'warning': return <Bell className="h-5 w-5 text-yellow-500" />;
-            default: return <Info className="h-5 w-5 text-blue-500" />;
-        }
+const getStatusVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'warning' => {
+    switch (status) {
+        case 'Verified': return 'default';
+        case 'Completed': return 'secondary';
+        case 'In Progress': return 'warning';
+        default: return 'destructive';
     }
+};
 
+export function CorporateDashboard({ data }: CorporateDashboardProps) {
     const COLORS: { [key: string]: string } = {
-        'Passed': '#00C49F',
-        'Failed': '#FF8042',
-        'Pending': '#FFBB28'
+        'Verified': '#00C49F',
+        'Completed': '#0088FE',
+        'In Progress': '#FFBB28',
+        'Pending': '#FF8042',
     };
 
     return (
         <div className="space-y-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Corporate Client Pain Points</CardTitle>
-                    <CardDescription>A list of example corporate clients and their primary challenges in hiring.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                     <div className="flex flex-col gap-4 md:flex-row mb-6">
-                        <div className="relative flex-1 md:grow-0">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search by company name..."
-                                className="pl-10 min-w-[200px] md:min-w-[300px]"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                        <Select value={industryFilter} onValueChange={setIndustryFilter}>
-                            <SelectTrigger className="w-full md:w-[180px]">
-                                <SelectValue placeholder="Filter by industry" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {industryFilters.map(ind => <SelectItem key={ind} value={ind}>{ind}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Company</TableHead>
-                                    <TableHead>Industry</TableHead>
-                                    <TableHead>Open Positions</TableHead>
-                                    <TableHead>Key Pain Points</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filteredClients.map(client => (
-                                <TableRow key={client.id}>
-                                    <TableCell>
-                                        <p className="font-medium">{client.name}</p>
-                                        <p className="text-sm text-muted-foreground">{client.location}</p>
-                                    </TableCell>
-                                    <TableCell><Badge variant="outline">{client.industry}</Badge></TableCell>
-                                    <TableCell className="font-medium text-center">{client.open_positions}</TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-wrap gap-1">
-                                            {client.pain_points.map(point => <Badge key={point} variant="secondary">{point}</Badge>)}
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>Mock Admin Dashboard</CardTitle>
-                        <CardDescription>A simulated view of a corporate HR dashboard, powered by SkillMatch Pro.</CardDescription>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Open Positions</CardTitle>
+                        <Briefcase className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                             <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2"><Briefcase className="h-4 w-4" /> Assessment Results</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ResponsiveContainer width="100%" height={200}>
-                                        <PieChart>
-                                            <Pie data={chartData.assessmentResults} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                                                {chartData.assessmentResults.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[entry.name] || '#8884d8'} />)}
-                                            </Pie>
-                                            <Tooltip />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2"><Users className="h-4 w-4" /> Candidate Pipeline</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Candidate</TableHead>
-                                                <TableHead>Status</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {pipeline.slice(0,4).map(p => (
-                                                <TableRow key={p.id}>
-                                                    <TableCell className="font-medium">{p.name}</TableCell>
-                                                    <TableCell><Badge variant="outline">{p.status}</Badge></TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </CardContent>
-                            </Card>
-                        </div>
-                         <div>
-                            <h3 className="font-semibold text-lg mb-4">Open Positions by Industry</h3>
-                             <ResponsiveContainer width="100%" height={250}>
-                                <BarChart data={chartData.openPositions}>
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
-                                    <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div>
-                           <h3 className="font-semibold text-lg mb-4">Candidates Processed per Week</h3>
-                            <ResponsiveContainer width="100%" height={250}>
-                                <LineChart data={chartData.candidatesProcessed}>
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{data.dashboard_stats.open_positions}</div>
                     </CardContent>
                 </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Pending Assessments</CardTitle>
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{data.dashboard_stats.pending_assessments}</div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Top Ranked Candidate</CardTitle>
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-xl font-bold">{data.dashboard_stats.candidate_rankings[1]?.name || 'N/A'}</div>
+                         <p className="text-xs text-muted-foreground">Score: {data.dashboard_stats.candidate_rankings[1]?.score || 'N/A'}</p>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-8">
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>Live Proof-of-Skill Assessments</CardTitle>
+                            <CardDescription>Monitor candidate assessments in real-time. Includes video recording for review.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Candidate</TableHead>
+                                        <TableHead>Task</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {data.live_assessments.map(assessment => (
+                                    <TableRow key={assessment.id}>
+                                        <TableCell className="font-medium">{assessment.candidate}</TableCell>
+                                        <TableCell>{assessment.task}</TableCell>
+                                        <TableCell><Badge variant={getStatusVariant(assessment.status)}>{assessment.status}</Badge></TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="sm" asChild>
+                                                <a href={assessment.video_url} target="_blank" rel="noopener noreferrer">
+                                                    <PlayCircle className="mr-2 h-4 w-4" /> Watch Recording
+                                                </a>
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-base">Assessment Results</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <PieChart>
+                                        <Pie data={data.chartData.assessmentResults} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                                            {data.chartData.assessmentResults.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[entry.name] || '#8884d8'} />)}
+                                        </Pie>
+                                        <Tooltip />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                         <Card>
+                            <CardHeader>
+                                <CardTitle className="text-base">Top Required Skills</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <BarChart data={data.chartData.topSkills} layout="vertical" margin={{ left: 20 }}>
+                                        <XAxis type="number" hide />
+                                        <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={80} />
+                                        <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
+                                        <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                </div>
                  <div className="space-y-6">
                     <Card>
                         <CardHeader>
                             <CardTitle>Alerts & Notifications</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {alerts.map(alert => (
-                                <div key={alert.id} className="flex items-start gap-3 rounded-md border p-3">
-                                    {getAlertIcon(alert.severity)}
-                                    <p className="text-sm text-muted-foreground">{alert.message}</p>
+                            {data.alerts.map((alertMsg, index) => (
+                                <div key={index} className="flex items-start gap-3 rounded-md border p-3">
+                                    <AlertTriangle className="h-5 w-5 text-destructive mt-1" />
+                                    <p className="text-sm text-muted-foreground">{alertMsg}</p>
                                 </div>
                             ))}
                         </CardContent>
                     </Card>
-                    <Card>
+                     <Card>
                         <CardHeader>
                             <CardTitle>Mock API Endpoints</CardTitle>
-                            <CardDescription>Example API endpoints that would power this dashboard.</CardDescription>
+                            <CardDescription>This dashboard is powered by the following API endpoint.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-2 text-xs font-mono bg-muted p-4 rounded-md">
-                            <p><span className="font-bold text-green-600">GET</span> /api/corporates</p>
-                            <p><span className="font-bold text-green-600">GET</span> /api/company/:id/candidates</p>
-                            <p><span className="font-bold text-green-600">GET</span> /api/company/:id/analytics</p>
-                            <p><span className="font-bold text-blue-600">POST</span> /api/company/:id/candidate-status</p>
+                            <p><span className="font-bold text-green-600">GET</span> /api/corporates/&#123;company_id&#125;/value_proposition</p>
                         </CardContent>
                     </Card>
                 </div>

@@ -28,7 +28,7 @@ import { SkillMatchResultPanel } from './skill-match-result-panel';
 import { RecordingPanel } from './recording-panel';
 
 
-type SubmissionWithRelations = Submission & {
+export type SubmissionWithRelations = Submission & {
   task?: Task;
   candidate?: Candidate;
   evaluation?: Evaluation;

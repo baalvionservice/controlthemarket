@@ -1,7 +1,8 @@
+
 'use client';
 
 import { getTask, getUsers } from '@/lib/api';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -15,33 +16,37 @@ import { useSubmissions } from '@/contexts/submissions-context';
 import { useEffect, useState, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 
-export default function AssignTaskPage({ params }: { params: { taskId: string } }) {
+export default function AssignTaskPage() {
+  const params = useParams();
+  const taskId = params.taskId as string;
   const [task, setTask] = useState<Task | null>(null);
   const [candidates, setCandidates] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const { submissions } = useSubmissions();
 
   useEffect(() => {
-    const fetchData = async () => {
-        const taskData = await getTask(params.taskId);
-        if (!taskData) {
-            notFound();
-        }
-        setTask(taskData);
+    if (taskId) {
+      const fetchData = async () => {
+          const taskData = await getTask(taskId);
+          if (!taskData) {
+              notFound();
+          }
+          setTask(taskData);
 
-        const allUsers = await getUsers();
-        const candidateUsers = allUsers.filter((user): user is User & { role: 'candidate' } => user.role === 'candidate');
-        setCandidates(candidateUsers);
-        setLoading(false);
-    };
-    fetchData();
-  }, [params.taskId]);
+          const allUsers = await getUsers();
+          const candidateUsers = allUsers.filter((user): user is User & { role: 'candidate' } => user.role === 'candidate');
+          setCandidates(candidateUsers);
+          setLoading(false);
+      };
+      fetchData();
+    }
+  }, [taskId]);
 
   const assignedCandidateIds = useMemo(() => {
     return submissions
-        .filter(s => s.taskId === params.taskId)
+        .filter(s => s.taskId === taskId)
         .map(s => s.userId);
-  }, [submissions, params.taskId]);
+  }, [submissions, taskId]);
   
   if (loading || !task) {
     return (

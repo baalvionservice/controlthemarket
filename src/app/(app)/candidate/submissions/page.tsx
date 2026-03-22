@@ -1,21 +1,39 @@
+
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { SubmissionList } from './submission-list';
-import { mockTasks, mockEvaluations } from '@/lib/mock-data';
-import type { Submission } from '@/lib/types';
-import type { getTask, getEvaluationBySubmission } from '@/lib/api';
+import * as api from '@/lib/api';
+import type { Submission, Task, Evaluation } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
 export type SubmissionWithDetails = Submission & {
-  task?: ReturnType<typeof mockTasks.find>;
-  evaluation?: ReturnType<typeof mockEvaluations.find>;
+  task?: Task;
+  evaluation?: Evaluation;
 };
 
 export default function SubmissionsPage() {
   const { user } = useAuth();
   const { submissions: allSubmissions } = useSubmissions();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+        setLoading(true);
+        const [tasksData, evalsData] = await Promise.all([
+            api.getTasks(),
+            api.getAllEvaluations(),
+        ]);
+        setTasks(tasksData);
+        setEvaluations(evalsData);
+        setLoading(false);
+    }
+    fetchData();
+  }, []);
   
   const submissionsForUser = useMemo(() => {
     if (!user) return [];
@@ -24,11 +42,11 @@ export default function SubmissionsPage() {
 
   const submissionsWithDetails: SubmissionWithDetails[] = useMemo(() => {
     return submissionsForUser.map((submission) => {
-      const task = mockTasks.find(t => t.id === submission.taskId);
-      const evaluation = submission.id ? mockEvaluations.find(e => e.submissionId === submission.id) : undefined;
+      const task = tasks.find(t => t.id === submission.taskId);
+      const evaluation = evaluations.find(e => e.submissionId === submission.id);
       return { ...submission, task, evaluation };
     });
-  }, [submissionsForUser]);
+  }, [submissionsForUser, tasks, evaluations]);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -37,7 +55,11 @@ export default function SubmissionsPage() {
           My Tasks
         </h2>
       </div>
-      <SubmissionList submissions={submissionsWithDetails} />
+      {loading ? (
+        <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>
+      ) : (
+        <SubmissionList submissions={submissionsWithDetails} />
+      )}
     </div>
   );
 }

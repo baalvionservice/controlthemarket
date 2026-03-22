@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -47,7 +47,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Users, PlusCircle, MoreHorizontal, UserPlus } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
-import { mockUsers } from '@/lib/mock-data';
+import * as api from '@/lib/api';
 import type { User, CompanyRole } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -57,35 +57,36 @@ export function TeamManagementCard() {
     const { user } = useAuth();
     const { toast } = useToast();
     
-    // In a real app, this state would be managed via API calls
-    const [teamMembers, setTeamMembers] = useState<User[]>(() => 
-        mockUsers.filter(u => u.companyId === user?.companyId)
-    );
+    const [teamMembers, setTeamMembers] = useState<User[]>([]);
     const [isInviteOpen, setIsInviteOpen] = useState(false);
     const [emailToInvite, setEmailToInvite] = useState('');
     const [roleToInvite, setRoleToInvite] = useState<CompanyRole>('member');
 
-    const handleInviteUser = () => {
+    useEffect(() => {
+        if (user?.companyId) {
+            api.getUsers().then(allUsers => {
+                setTeamMembers(allUsers.filter(u => u.companyId === user.companyId));
+            });
+        }
+    }, [user]);
+
+    const handleInviteUser = async () => {
         if (!emailToInvite) {
             toast({ title: 'Email is required', variant: 'destructive'});
             return;
         }
 
-        // Mock adding a user
-        const newUser: User = {
-            id: `user-${Date.now()}`,
+        const { data: newUser } = await api.createUser({
             name: 'New Member',
             email: emailToInvite,
             role: 'company',
             companyRole: roleToInvite,
             companyId: user?.companyId,
-            createdAt: new Date().toISOString(),
-            isActive: true,
             isVerified: false,
             profile: {
                 avatarUrl: `https://picsum.photos/seed/${Date.now()}/100/100`,
             }
-        };
+        });
 
         setTeamMembers(prev => [...prev, newUser]);
         toast({ title: 'Invitation Sent', description: `An invitation has been sent to ${emailToInvite}.`});
@@ -96,11 +97,13 @@ export function TeamManagementCard() {
 
     const handleRemoveUser = (userId: string) => {
         setTeamMembers(prev => prev.filter(u => u.id !== userId));
+        api.updateUser(userId, { isActive: false }); // "Remove" by deactivating
         toast({ title: 'User Removed', description: 'The user has been removed from your team.' });
     };
 
     const handleRoleChange = (userId: string, newRole: CompanyRole) => {
         setTeamMembers(prev => prev.map(u => u.id === userId ? { ...u, companyRole: newRole } : u));
+        api.updateUser(userId, { companyRole: newRole });
         toast({ title: 'Role Updated', description: `The user's role has been updated to ${newRole}.` });
     };
 

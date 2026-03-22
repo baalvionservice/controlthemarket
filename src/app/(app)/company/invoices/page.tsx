@@ -1,6 +1,6 @@
 
 'use client';
-import { getInvoicesByUserId } from "@/lib/api";
+import { getInvoicesByCompanyId } from "@/lib/api";
 import { InvoiceList } from "./invoice-list";
 import {
   Card,
@@ -21,8 +21,8 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      getInvoicesByUserId(user.id).then(res => {
+    if (user && user.companyId) {
+      getInvoicesByCompanyId(user.companyId).then(res => {
         setInvoices(res.data);
         setLoading(false);
       });

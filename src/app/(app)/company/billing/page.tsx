@@ -1,7 +1,6 @@
 
-
 'use client';
-import { getInvoicesByUserId } from "@/lib/api";
+import { getInvoicesByCompanyId } from "@/lib/api";
 import { BillingDashboard } from "./billing-dashboard";
 import { useAuth } from "@/contexts/auth-context";
 import { useEffect, useState } from "react";
@@ -16,8 +15,8 @@ export default function BillingPage() {
 
   useEffect(() => {
     if (user && user.companyId) {
-      getInvoicesByUserId(user.companyId).then(res => {
-        setInvoices(res);
+      getInvoicesByCompanyId(user.companyId).then(res => {
+        setInvoices(res.data);
         setLoading(false);
       });
     } else if (user) { // User exists but no companyId

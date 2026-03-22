@@ -3,8 +3,9 @@
 
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
-import { useMemo } from 'react';
-import { mockTasks, mockEvaluations } from '@/lib/mock-data';
+import { useMemo, useState, useEffect } from 'react';
+import * as api from '@/lib/api';
+import type { Task, Evaluation } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,13 +24,30 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, FileText, CheckCircle, Clock, ShieldCheck } from 'lucide-react';
+import { ArrowRight, FileText, CheckCircle, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
 export default function CandidateDashboard() {
   const { user } = useAuth();
   const { submissions: allSubmissions } = useSubmissions();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+        setLoading(true);
+        const [tasksData, evalsData] = await Promise.all([
+            api.getTasks(),
+            api.getAllEvaluations(),
+        ]);
+        setTasks(tasksData);
+        setEvaluations(evalsData);
+        setLoading(false);
+    }
+    fetchData();
+  }, []);
   
   const submissions = useMemo(() => {
     if (!user) return [];
@@ -50,14 +68,18 @@ export default function CandidateDashboard() {
 
   const submissionsWithDetails = useMemo(() => {
     return submissions.map((submission) => {
-      const task = mockTasks.find(t => t.id === submission.taskId);
-      const evaluation = mockEvaluations.find(e => e.submissionId === submission.id);
+      const task = tasks.find(t => t.id === submission.taskId);
+      const evaluation = evaluations.find(e => e.submissionId === submission.id);
       return { ...submission, task, evaluation };
     }).sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime());
-  },[submissions]);
+  },[submissions, tasks, evaluations]);
 
-  if (!user) {
-    return null; // Or a loading state
+  if (loading || !user) {
+    return (
+        <div className="flex h-full w-full items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+    );
   }
 
   return (

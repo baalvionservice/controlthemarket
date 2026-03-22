@@ -76,7 +76,6 @@ export const getTasksByCompany = async (companyId: string) => {
 };
 export const createTask = api.createTask;
 export const assignTask = api.assignTask;
-export const saveTemplate = api.saveTaskAsTemplate;
 
 
 // --- Submission API ---
@@ -103,7 +102,7 @@ export const createEvaluation = api.createEvaluation;
 
 // --- Payment APIs ---
 export const createPayment = api.createPayment;
-export const getInvoicesByUserId = async (userId: string) => (await api.getInvoicesByCompanyId(userId));
+export const getInvoicesByCompanyId = async (companyId: string) => (await api.getInvoicesByCompanyId(companyId));
 export const createSubscription = api.createSubscription;
 export const getAllPlans = async () => (await api.getAllPlans());
 export const getSubscriptionByCompany = async (companyId: string) => (await api.getSubscriptionByCompany(companyId));
@@ -122,7 +121,8 @@ export const getNotifications = dataLayer.getHybridNotifications;
 
 
 // --- Template API ---
-export const getTemplates = async (): Promise<TaskTemplate[]> => (await api.getTemplates()).data;
+export const getTemplates = api.getTemplates;
+export const saveTemplate = api.saveTaskAsTemplate;
 
 
 // --- Remaining data is still from mock-data.ts as API functions were not requested for them ---

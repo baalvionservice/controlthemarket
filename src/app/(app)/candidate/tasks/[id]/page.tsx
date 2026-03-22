@@ -42,6 +42,7 @@ import type { Task, Company, Submission, TaskPriority } from '@/lib/types';
 import { useAuth } from '@/contexts/auth-context';
 import { useSubmissions } from '@/contexts/submissions-context';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const [task, setTask] = useState<Task | null>(null);
@@ -124,11 +125,11 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                 </AccordionTrigger>
                 <AccordionContent className="border-l-2 border-primary/20 ml-6 pl-10 space-y-8 pt-6 pb-2">
                     <div className="space-y-4">
-                        <p className="text-muted-foreground whitespace-pre-wrap">{round.instructions}</p>
+                        <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: round.instructions }} />
                     </div>
                      <div className="space-y-4">
                         <h4 className="font-semibold flex items-center gap-2 text-primary"><Target className="h-5 w-5" /> Expected Outputs</h4>
-                        <p className="text-muted-foreground whitespace-pre-wrap">{round.expectedOutputs}</p>
+                        <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: round.expectedOutputs }} />
                     </div>
                     {round.timeLimitMinutes && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -206,32 +207,35 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
 
       <div className="container py-8 md:py-12">
         <div className="mx-auto max-w-4xl">
-            <div className="space-y-12">
-                <Card className="p-6 md:p-8">
-                    <h2 className="text-2xl font-bold font-headline mb-4">Task Overview</h2>
-                    <p className="text-muted-foreground max-w-prose">{task.description}</p>
-                </Card>
+            <div className="space-y-8">
+                <Card>
+                    <CardContent className="p-6 md:p-8 space-y-8">
+                        <div>
+                            <h2 className="text-2xl font-bold font-headline mb-4">Task Overview</h2>
+                            <p className="text-muted-foreground max-w-prose">{task.description}</p>
+                        </div>
+                        
+                        <Separator />
 
-                 <Card className="p-6 md:p-8">
-                     {renderTaskContent()}
+                        {renderTaskContent()}
+
+                        {task.projectFile && (
+                            <>
+                                <Separator />
+                                <div>
+                                    <h3 className="font-semibold flex items-center gap-2 text-xl mb-4"><Paperclip className="h-5 w-5 text-primary"/> Resources</h3>
+                                    <p className="text-muted-foreground mb-4">Download the necessary files for this task.</p>
+                                    <Button asChild variant="secondary" className="w-full justify-start text-left">
+                                        <Link href={task.projectFile.url} download>
+                                            <Download className="mr-2 h-4 w-4" />
+                                            <span>{task.projectFile.name}</span>
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+                    </CardContent>
                 </Card>
-                
-                {task.projectFile && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Paperclip className="h-5 w-5"/> Resources</CardTitle>
-                            <CardDescription>Download the necessary files for this task.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             <Button asChild variant="secondary" className="w-full justify-start text-left">
-                                <Link href={task.projectFile.url} download>
-                                    <Download className="mr-2 h-4 w-4" />
-                                    <span>{task.projectFile.name}</span>
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                )}
 
                 {isTaskStarted ? (
                     <SubmissionForm task={task} />
@@ -249,5 +253,3 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-    

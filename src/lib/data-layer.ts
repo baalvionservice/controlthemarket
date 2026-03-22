@@ -5,8 +5,10 @@ import {
   mockTasks,
   mockSubmissions,
   mockEvaluations,
+  mockActivityLogs,
+  mockNotifications,
 } from './mock-data';
-import type { User, Company, Task, Submission, Evaluation } from './types';
+import type { User, Company, Task, Submission, Evaluation, Activity, Notification } from './types';
 
 // This file acts as a hybrid data layer, fetching from the persistent
 // mock API first and falling back to the hardcoded mock data.
@@ -40,4 +42,14 @@ export const getHybridSubmissions = async (): Promise<Submission[]> => {
 export const getHybridEvaluations = async (): Promise<Evaluation[]> => {
     const { data: apiEvaluations } = await api.getAllEvaluations();
     return mergeData(apiEvaluations, mockEvaluations);
+};
+
+export const getHybridActivities = async (): Promise<Activity[]> => {
+    const { data: apiActivities } = await api.getAllActivities();
+    return mergeData(apiActivities, mockActivityLogs);
+};
+
+export const getHybridNotifications = async (): Promise<Notification[]> => {
+    const { data: apiNotifications } = await api.getAllNotifications();
+    return mergeData(apiNotifications, mockNotifications);
 };

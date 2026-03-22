@@ -4,7 +4,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { notFound, useRouter, useParams } from 'next/navigation';
-import { getSubmission, getTask, getUser, getEvaluationBySubmission } from '@/lib/api';
+import { getSubmission, getTask, getEvaluationBySubmission, getCompany, getUser } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import {
   Card,
@@ -20,7 +20,7 @@ import { ExternalLink, Github, FileText, User, Briefcase, MessageSquare, Star, S
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { EvaluationForm } from './evaluation-form';
-import type { Submission, Task, User as Candidate, Evaluation, SubmissionContentType } from '@/lib/types';
+import type { Submission, Task, User as Candidate, Evaluation, SubmissionContentType, Company } from '@/lib/types';
 import { ActivityLog } from '@/components/activity-log';
 import { Progress } from '@/components/ui/progress';
 import { AiEvaluationPanel } from './ai-evaluation-panel';
@@ -33,6 +33,7 @@ export type SubmissionWithRelations = Submission & {
   task?: Task;
   candidate?: Candidate;
   evaluation?: Evaluation;
+  company?: Company;
 };
 
 export default function SubmissionReviewPage() {
@@ -51,15 +52,20 @@ export default function SubmissionReviewPage() {
           notFound();
           return;
         }
-        const taskData = await getTask(subData.taskId);
-        const candidateData = await getUser(subData.userId);
-        const evalData = await getEvaluationBySubmission(subData.id);
+        const [taskData, candidateData, evalData] = await Promise.all([
+            getTask(subData.taskId),
+            getUser(subData.userId),
+            getEvaluationBySubmission(subData.id)
+        ]);
+
+        const companyData = taskData ? await getCompany(taskData.companyId) : undefined;
 
         setSubmission({
           ...subData,
           task: taskData,
           candidate: candidateData,
           evaluation: evalData,
+          company: companyData,
         });
         setLoading(false);
       }

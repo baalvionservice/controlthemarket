@@ -6,8 +6,6 @@ import * as api from './mock-api';
 import * as dataLayer from './data-layer';
 import {
   mockEvaluationSchemas,
-  mockActivityLogs,
-  mockNotifications,
   mockTestCases,
   mockGitHubRepositories,
   mockWebhooks,
@@ -115,10 +113,13 @@ export const getAllInvoices = api.getAllInvoices;
 export const getBadges = async () => mockBadges;
 
 
+// --- Activity & Notification APIs ---
+export const getActivityLogs = dataLayer.getHybridActivities;
+export const getNotifications = dataLayer.getHybridNotifications;
+
+
 // --- Remaining data is still from mock-data.ts as API functions were not requested for them ---
 export const getEvaluationSchemas = async () => mockEvaluationSchemas;
-export const getActivityLogs = async () => mockActivityLogs;
-export const getNotifications = async () => mockNotifications;
 export const getTestCasesBySubmission = async (submissionId: string) => mockTestCases.filter(tc => tc.submissionId === submissionId);
 export const getGitHubRepositories = async () => mockGitHubRepositories;
 export const getWebhooks = async () => mockWebhooks;

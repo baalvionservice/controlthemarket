@@ -1,7 +1,7 @@
 
 
 import { getDB, setDB } from './mock-db';
-import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge } from './types';
+import type { User, Company, Task, Submission, Evaluation, SubmissionStatus, Invoice, Plan, Subscription, BillingCycle, Badge, Activity, Notification } from './types';
 
 const ARTIFICIAL_DELAY = 300;
 
@@ -105,7 +105,33 @@ export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'upda
     isOpen: taskData.isOpen !== false, // default to true
     isPrivate: taskData.isPrivate || false, // default to false
   };
-  setDB({ ...db, tasks: [...db.tasks, newTask] });
+
+  const companyId = taskData.companyId;
+  const company = db.companies.find(c => c.id === companyId);
+  if (company) {
+      const subscription = db.subscriptions.find(s => s.companyId === companyId && s.status === 'ACTIVE');
+      if (subscription) {
+          subscription.usage.tasksCreated += 1;
+          setDB({...db, tasks: [...db.tasks, newTask], subscriptions: db.subscriptions.map(s => s.id === subscription.id ? subscription : s) });
+      } else {
+           setDB({ ...db, tasks: [...db.tasks, newTask] });
+      }
+  } else {
+    setDB({ ...db, tasks: [...db.tasks, newTask] });
+  }
+
+  // Create an activity log entry
+  const newActivity: Activity = {
+    id: generateId('act'),
+    performerId: taskData.createdBy,
+    actionType: 'task_update',
+    timestamp: now,
+    targetEntity: { type: 'Task', id: newTask.id, name: newTask.title },
+    status: 'Success',
+    description: `Task "${newTask.title}" was created.`,
+  };
+  setDB({ ...getDB(), activities: [...getDB().activities, newActivity] });
+
   return simulateApiCall(newTask);
 };
 
@@ -178,7 +204,33 @@ export const createSubmission = async (submissionData: Omit<Submission, 'id'|'co
     submittedAt: now,
     lastUpdated: now,
   };
-  setDB({ ...db, submissions: [...db.submissions, newSubmission] });
+
+  const company = db.companies.find(c => c.id === task.companyId);
+  if (company) {
+    const subscription = db.subscriptions.find(s => s.companyId === company.id && s.status === 'ACTIVE');
+    if (subscription) {
+        subscription.usage.submissionsReceived += 1;
+        setDB({...db, submissions: [...db.submissions, newSubmission], subscriptions: db.subscriptions.map(s => s.id === subscription.id ? subscription : s)});
+    } else {
+        setDB({ ...db, submissions: [...db.submissions, newSubmission] });
+    }
+  } else {
+    setDB({ ...db, submissions: [...db.submissions, newSubmission] });
+  }
+
+  // Create an activity log entry
+  const user = db.users.find(u => u.id === newSubmission.userId);
+  const newActivity: Activity = {
+    id: generateId('act'),
+    performerId: newSubmission.userId,
+    actionType: 'submission',
+    timestamp: now,
+    targetEntity: { type: 'Submission', id: newSubmission.id, name: task.title },
+    status: 'Success',
+    description: `${user?.name || 'A user'} submitted work for "${task.title}".`,
+  };
+  setDB({ ...getDB(), activities: [...getDB().activities, newActivity] });
+
   return simulateApiCall(newSubmission);
 };
 
@@ -231,6 +283,21 @@ export const createEvaluation = async (evaluationData: Omit<Evaluation, 'id' | '
   });
 
   setDB({ ...db, evaluations: [...db.evaluations, newEvaluation], submissions });
+
+  // Create an activity log entry
+  const submission = submissions.find(s => s.id === evaluationData.submissionId);
+  const user = db.users.find(u => u.id === evaluationData.evaluatedBy);
+  const newActivity: Activity = {
+    id: generateId('act'),
+    performerId: evaluationData.evaluatedBy,
+    actionType: 'status_change',
+    timestamp: now,
+    targetEntity: { type: 'Submission', id: evaluationData.submissionId },
+    status: 'Success',
+    description: `${user?.name || 'Evaluator'} completed the evaluation. Final score: ${newEvaluation.score}.`,
+  };
+  setDB({ ...getDB(), activities: [...getDB().activities, newActivity] });
+  
   return simulateApiCall(newEvaluation);
 };
 
@@ -340,4 +407,15 @@ export const getAllInvoices = async (): Promise<{ success: true; data: Invoice[]
 export const getAllBadges = async (): Promise<{ success: true; data: Badge[] }> => {
     const db = getDB();
     return simulateApiCall(db.badges);
+};
+
+// --- Activity & Notification APIs ---
+export const getAllActivities = async (): Promise<{ success: true; data: Activity[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.activities);
+};
+
+export const getAllNotifications = async (): Promise<{ success: true; data: Notification[] }> => {
+    const db = getDB();
+    return simulateApiCall(db.notifications);
 };

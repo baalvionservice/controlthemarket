@@ -1,5 +1,6 @@
 
-import type { User, Company, Task, Submission, Evaluation, Plan, Subscription, Invoice, Badge, Notification, SystemError, SystemLog, ApiIntegration, IntegrationLog, Webhook, GitHubRepository, Team, SystemMetric, ServiceStatus, ServiceLoad, ScalingEvent, SystemIncident, UsageMetric, PlanUsage, RevenueMetric, PlanDistribution, RevenueSource, EvaluationSchema, TestCase, WebhookTriggerLog } from './types';
+
+import type { User, Company, Task, Submission, Evaluation, Plan, Subscription, Invoice, Badge, Notification, SystemError, SystemLog, ApiIntegration, IntegrationLog, Webhook, GitHubRepository, Team, SystemMetric, ServiceStatus, ServiceLoad, ScalingEvent, SystemIncident, UsageMetric, PlanUsage, RevenueMetric, PlanDistribution, RevenueSource, EvaluationSchema, TestCase, WebhookTriggerLog, Activity } from './types';
 import {
   mockUsers,
   mockCompanies,
@@ -30,7 +31,8 @@ import {
   mockRevenueSources,
   mockEvaluationSchemas,
   mockTestCases,
-  mockWebhookTriggerLogs
+  mockWebhookTriggerLogs,
+  mockActivityLogs,
 } from './mock-data';
 
 // This is a mock database that uses localStorage for persistence.
@@ -47,6 +49,7 @@ export interface DB {
   invoices: Invoice[];
   badges: Badge[];
   notifications: Notification[];
+  activities: Activity[];
   systemErrors: SystemError[];
   systemLogs: SystemLog[];
   apiIntegrations: ApiIntegration[];
@@ -87,6 +90,7 @@ const initializeDB = () => {
       invoices: mockInvoices,
       badges: mockBadges,
       notifications: mockNotifications,
+      activities: mockActivityLogs,
       systemErrors: mockSystemErrors,
       systemLogs: mockSystemLogs,
       apiIntegrations: mockApiIntegrations,
@@ -132,6 +136,7 @@ const initializeDB = () => {
     invoices: mockInvoices,
     badges: mockBadges,
     notifications: mockNotifications,
+    activities: mockActivityLogs,
     systemErrors: mockSystemErrors,
     systemLogs: mockSystemLogs,
     apiIntegrations: mockApiIntegrations,

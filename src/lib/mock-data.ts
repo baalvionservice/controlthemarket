@@ -77,7 +77,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 60)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: true, // User has completed onboarding
+    onboardingCompleted: false, // User has completed onboarding
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar2/100/100',
       bio: 'Hiring manager at TechCorp.',
@@ -132,7 +132,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: true,
+    onboardingCompleted: false,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar5/100/100',
       bio: 'Lead Recruiter at Innovate Inc.',
@@ -558,48 +558,41 @@ export const mockTasks: Task[] = [
   {
     id: 'task-17',
     title: 'Build a Secure Backend Module for an Investor Platform (Baalvion)',
-    description: 'Your mission is to build Module 1 of a production-ready backend system for Baalvion, an institutional Investor Relations Platform. This involves creating a secure foundation for Authentication, Role-Based Access Control (RBAC), and Investor Onboarding.',
-    instructions: `
-### SYSTEM REQUIREMENTS
-- **Modular Architecture**: Structure your project logically (e.g., /controllers, /services, /routes, /middlewares, /models).
-- **Standard API Response**: All API responses must follow: \`{ success: boolean, data: any, error: string | null }\`.
-- **Mandatory API Features**: Every API endpoint must include: Authentication checks, Role-Based Access Control (RBAC), input validation, and robust error handling.
-- **Roles**: Implement three user roles: \`Public\`, \`Investor\`, and \`Admin\`.
-- **Security**: Hash passwords (e.g., using bcrypt), never store plaintext passwords, validate and sanitize all inputs, and use environment variables for secrets.
-- **Logging**: Implement logging for critical events: user login, KYC submission, and NDA acceptance.
+    description: "As a senior backend developer, you are tasked with building the core security and onboarding module for 'Baalvion', a next-generation institutional Investor Relations Platform. This is a critical first module that will handle all user authentication, role management, and the initial investor verification process. Your work will be the foundation for the entire platform's security and data integrity.",
+    instructions: `### Project Goal
+Your primary objective is to build a robust and secure backend module that handles user authentication, role-based access, and a mock investor onboarding workflow. This module will serve as the gateway to the Baalvion platform, making security and reliability paramount.
 
-### FEATURES TO BUILD
-1.  **User Registration**:
-    -   Allow signup via email and password.
-    -   Assign a default role (e.g., 'Investor').
-    -   Securely store user credentials.
-2.  **User Login**:
-    -   Authenticate credentials against stored data.
-    -   Generate and return a JWT or session token.
-    -   Include user role in the login response.
-3.  **Authentication Middleware**:
-    -   Create middleware to protect routes.
-    -   It should validate the token from the request headers.
-    -   On successful validation, attach user information to the request object.
-4.  **RBAC Middleware**:
-    -   Create middleware to restrict route access based on user roles.
-5.  **KYC System (Mock)**:
-    -   An endpoint for users to submit KYC details (simulate, no file upload needed).
-    -   Store and retrieve a KYC status: \`pending\`, \`approved\`, or \`rejected\`.
-6.  **AML Screening (Mock)**:
-    -   Simulate an Anti-Money Laundering (AML) check during KYC submission that can randomly or based on a rule set a risk flag.
-7.  **NDA Acceptance**:
-    -   An endpoint to record that a user has accepted the Non-Disclosure Agreement, including a timestamp.
+### Core Architectural & Security Requirements
+- **Project Structure**: Organize your code in a clean, modular fashion (e.g., controllers, services, routes, middleware, models).
+- **API Response**: All endpoints must return a standardized JSON object: \`{ success: boolean, data: any, error: string | null }\`.
+- **Authentication**: All protected routes must validate a JWT or session token. Create middleware for this.
+- **Role-Based Access Control (RBAC)**: Implement middleware to restrict access based on user roles. The three roles are \`Public\`, \`Investor\`, and \`Admin\`.
+- **Input Validation**: Sanitize and validate all incoming data from API requests.
+- **Security Best Practices**: Passwords must be hashed using a strong algorithm like bcrypt. Never store plaintext secrets; use environment variables.
+- **Error Handling**: Implement comprehensive error handling to prevent crashes and provide meaningful error messages.
+- **Logging**: Log critical events such as user logins, KYC submissions, and NDA acceptances.
 
-### APIs TO IMPLEMENT
-- \`POST   /api/auth/register\`
-- \`POST   /api/auth/login\`
-- \`GET    /api/auth/me\` (Protected)
-- \`POST   /api/kyc/upload\` (Protected, Investor/Admin)
-- \`GET    /api/kyc/status\` (Protected, Investor/Admin)
-- \`POST   /api/nda/accept\` (Protected, Investor/Admin)
-    `,
-    expectedOutputs: 'A fully functional Node.js application delivered as a link to a public GitHub repository. The repository must contain the complete source code, a README.md file with clear setup and run instructions, and be ready to run locally without errors.',
+### Features to Implement
+
+**1. Authentication Service:**
+-   **User Registration**: Allow new users to sign up with an email and password. New users should default to the 'Investor' role.
+-   **User Login**: Authenticate users and return a token and their role upon success.
+-   **User Profile**: Create a protected endpoint to fetch the currently authenticated user's profile.
+
+**2. Onboarding Workflow (Mock):**
+-   **KYC System**: An endpoint for an authenticated 'Investor' to submit their Know-Your-Customer (KYC) details. This can be a mock submission (no file upload needed). The system should track a status: \`pending\`, \`approved\`, or \`rejected\`.
+-   **AML Screening**: As part of the KYC submission, simulate an Anti-Money Laundering (AML) check. This can be a simple function that randomly flags a user for review.
+-   **NDA Acceptance**: An endpoint that allows an authenticated 'Investor' to record their acceptance of a Non-Disclosure Agreement, capturing the timestamp.
+
+### API Endpoints to Build
+
+- \`POST   /api/auth/register\` (Public)
+- \`POST   /api/auth/login\` (Public)
+- \`GET    /api/auth/me\` (Protected: Investor, Admin)
+- \`POST   /api/kyc/submit\` (Protected: Investor)
+- \`GET    /api/kyc/status\` (Protected: Investor, Admin)
+- \`POST   /api/nda/accept\` (Protected: Investor)`,
+    expectedOutputs: 'A public GitHub repository containing the complete, runnable Node.js application. The repository must include a `README.md` with clear, step-by-step instructions for local setup, environment configuration (`.env.example`), and how to run the server. The application should start without errors and all endpoints should be functional as per the requirements.',
     roleCategory: 'Backend',
     taskTypes: ['Backend Development', 'API Design', 'System Architecture', 'Security Analysis'],
     difficulty: 'Expert',

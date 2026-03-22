@@ -76,9 +76,6 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
     if (submission && submission.status === 'assigned') {
       updateSubmission(submission.id, { status: 'in-progress' });
     }
-    // In a real app this might start a timer, etc.
-    // For now, it just changes status.
-    // The button will be disabled if the task is already started.
   };
 
   const isTaskStarted = useMemo(() => {
@@ -98,12 +95,9 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
 
   const getPriorityVariant = (priority?: TaskPriority) => {
     switch (priority) {
-      case 'High':
-        return 'destructive';
-      case 'Medium':
-        return 'warning';
-      default:
-        return 'outline';
+      case 'High': return 'destructive';
+      case 'Medium': return 'warning';
+      default: return 'outline';
     }
   };
 
@@ -117,7 +111,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
 
             return (
                 <AccordionItem value={`item-${index}`} key={index}>
-                <AccordionTrigger className="text-lg" disabled={!isCurrentRound && !isCompletedRound}>
+                <AccordionTrigger className={cn("text-lg rounded-md px-4 hover:no-underline hover:bg-muted/50", isCurrentRound && "bg-muted/50")}>
                     <div className="flex items-center gap-4">
                     <span className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-full font-bold",
@@ -125,22 +119,21 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                         isCompletedRound && "bg-primary/50 text-primary-foreground",
                         !isCurrentRound && !isCompletedRound && "bg-muted text-muted-foreground",
                     )}>{round.roundNumber}</span>
-                    <span>Round {round.roundNumber}</span>
+                    <span>Round {round.roundNumber}: Instructions</span>
                     </div>
                 </AccordionTrigger>
-                <AccordionContent className="pl-12 space-y-8 pt-4">
+                <AccordionContent className="border-l-2 border-primary/20 ml-6 pl-10 space-y-8 pt-6 pb-2">
                     <div className="space-y-4">
-                        <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
                         <p className="text-muted-foreground whitespace-pre-wrap">{round.instructions}</p>
                     </div>
-                    <div className="space-y-4">
-                        <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
+                     <div className="space-y-4">
+                        <h4 className="font-semibold flex items-center gap-2 text-primary"><Target className="h-5 w-5" /> Expected Outputs</h4>
                         <p className="text-muted-foreground whitespace-pre-wrap">{round.expectedOutputs}</p>
                     </div>
                     {round.timeLimitMinutes && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock className="h-4 w-4" /> 
-                        <span>Time Limit: {round.timeLimitMinutes} minutes</span>
+                        <span>Time Limit for this round: {round.timeLimitMinutes} minutes</span>
                     </div>
                     )}
                 </AccordionContent>
@@ -154,25 +147,28 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
     return (
         <div className="space-y-8">
             <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
-                <p className="text-muted-foreground whitespace-pre-wrap">{task.instructions}</p>
+                <h3 className="font-semibold flex items-center gap-2 text-xl"><BookOpen className="h-5 w-5 text-primary" /> Instructions</h3>
+                <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: task.instructions.replace(/\n/g, '<br />') }} />
             </div>
             <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
-                <p className="text-muted-foreground whitespace-pre-wrap">{task.expectedOutputs}</p>
+                <h3 className="font-semibold flex items-center gap-2 text-xl"><Target className="h-5 w-5 text-primary" /> Expected Outputs</h3>
+                <div className="prose prose-lg max-w-none text-muted-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: task.expectedOutputs.replace(/\n/g, '<br />') }} />
             </div>
         </div>
     );
   }
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-1">
-          <h2 className="font-headline text-3xl font-bold tracking-tight">
+    <div className="flex-1 bg-muted/30">
+      {/* Hero Section */}
+      <section className="relative h-64 w-full bg-muted">
+        {task.imageUrl && <Image src={task.imageUrl} alt={task.title} layout="fill" objectFit="cover" className="opacity-20" data-ai-hint={task.imageHint}/>}
+        <div className="absolute inset-0 bg-gradient-to-t from-muted/30 to-transparent" />
+        <div className="container relative h-full flex flex-col justify-end pb-8">
+          <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
             {task.title}
-          </h2>
-          <div className="flex items-center gap-2">
+          </h1>
+           <div className="mt-2 flex items-center gap-2">
             {company && (
                  <Link href="#" className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
@@ -184,97 +180,72 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
             )}
           </div>
         </div>
-        <div className="flex gap-2">
-            {submission && (
-                <Button size="lg" onClick={handleStartTask} disabled={isTaskStarted}>
-                    {isTaskStarted ? (task.multiRound ? `Begin Round ${currentRoundNumber}` : `Task in Progress`) : 'Start Task'} 
-                    {!isTaskStarted && <ArrowRight className="ml-2 h-4 w-4" />}
-                </Button>
-            )}
-        </div>
-      </div>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle>Task Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                {task.imageUrl && (
-                    <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
-                        <Image src={task.imageUrl} alt={task.title} fill className="object-cover" data-ai-hint={task.imageHint}/>
-                    </div>
-                )}
-                {renderTaskContent()}
-            </CardContent>
-        </Card>
+      {/* Key Details Bar */}
+      <section className="sticky top-16 z-30 border-b border-t bg-background/80 backdrop-blur-lg">
+          <div className="container grid grid-cols-2 md:grid-cols-4 gap-4 py-4 text-center">
+              <div className="flex flex-col items-center justify-center gap-1">
+                  <span className="text-xs text-muted-foreground">Role</span>
+                  <Badge variant="secondary">{task.roleCategory}</Badge>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-1">
+                  <span className="text-xs text-muted-foreground">Difficulty</span>
+                  <Badge variant="outline">{task.difficulty}</Badge>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-1">
+                  <span className="text-xs text-muted-foreground">Time Limit</span>
+                  <span className="font-semibold text-sm flex items-center gap-1.5"><Clock className="h-4 w-4"/> {task.timeLimitMinutes ? `${task.timeLimitMinutes} min` : 'N/A'}</span>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-1">
+                  <span className="text-xs text-muted-foreground">Deadline</span>
+                  <span className="font-semibold text-sm flex items-center gap-1.5"><Calendar className="h-4 w-4"/> {format(new Date(task.deadline), 'PPP')}</span>
+              </div>
+          </div>
+      </section>
 
-        <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Overview</CardTitle>
-                </CardHeader>
-                 <CardContent className="space-y-4 text-sm">
-                    <div className="flex items-start justify-between">
-                        <span className="font-medium text-muted-foreground flex items-center gap-2"><Briefcase className="h-4 w-4" /> Role</span>
-                        <span className="font-semibold">{task.roleCategory}</span>
-                    </div>
-                     <div className="flex items-start justify-between">
-                        <span className="font-medium text-muted-foreground flex items-center gap-2"><Award className="h-4 w-4" /> Difficulty</span>
-                        <Badge variant="outline">{task.difficulty}</Badge>
-                    </div>
-                    {task.priority && (
-                         <div className="flex items-start justify-between">
-                            <span className="font-medium text-muted-foreground flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Priority</span>
-                            <Badge variant={getPriorityVariant(task.priority)}>{task.priority}</Badge>
-                        </div>
-                    )}
-                     <div className="flex items-start justify-between">
-                        <span className="font-medium text-muted-foreground flex items-center gap-2"><Calendar className="h-4 w-4" /> Deadline</span>
-                        <span className="font-semibold">{format(new Date(task.deadline), 'PPP')}</span>
-                    </div>
-                     {task.timeLimitMinutes && !task.multiRound && (
-                         <div className="flex items-start justify-between">
-                            <span className="font-medium text-muted-foreground flex items-center gap-2"><Clock className="h-4 w-4" /> Time Limit</span>
-                            <span className="font-semibold">{task.timeLimitMinutes} minutes</span>
-                        </div>
-                    )}
-                    {task.multiRound && (
-                         <div className="flex items-start justify-between">
-                            <span className="font-medium text-muted-foreground flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Task Type</span>
-                            <span className="font-semibold">Multi-Round ({task.rounds?.length || 0} rounds)</span>
-                        </div>
-                    )}
-                    {task.projectFile && (
-                        <div className="space-y-2 pt-2">
-                            <div className="font-medium text-muted-foreground flex items-center gap-2">
-                                <Paperclip className="h-4 w-4" /> Task Resources
-                            </div>
-                            <Button asChild variant="secondary" className="w-full justify-start text-left">
+      <div className="container py-8 md:py-12">
+        <div className="mx-auto max-w-4xl">
+            <div className="space-y-12">
+                <Card className="p-6 md:p-8">
+                    <h2 className="text-2xl font-bold font-headline mb-4">Task Overview</h2>
+                    <p className="text-muted-foreground max-w-prose">{task.description}</p>
+                </Card>
+
+                 <Card className="p-6 md:p-8">
+                     {renderTaskContent()}
+                </Card>
+                
+                {task.projectFile && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><Paperclip className="h-5 w-5"/> Resources</CardTitle>
+                            <CardDescription>Download the necessary files for this task.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                             <Button asChild variant="secondary" className="w-full justify-start text-left">
                                 <Link href={task.projectFile.url} download>
                                     <Download className="mr-2 h-4 w-4" />
                                     <span>{task.projectFile.name}</span>
                                 </Link>
                             </Button>
-                        </div>
-                    )}
-                 </CardContent>
-            </Card>
-             <Card>
-                <CardHeader>
-                    <CardTitle>Task Categories</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
-                    {task.taskTypes?.map(type => (
-                        <Badge key={type} variant="secondary">{type}</Badge>
-                    ))}
-                </CardContent>
-            </Card>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {isTaskStarted ? (
+                    <SubmissionForm task={task} />
+                ) : (
+                    <div className="text-center">
+                        <Button size="lg" onClick={handleStartTask}>
+                            Start Task
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
       </div>
-      
-       {isTaskStarted && <SubmissionForm task={task} />}
-
     </div>
   );
 }

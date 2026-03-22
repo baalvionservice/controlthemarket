@@ -39,15 +39,38 @@ import type { RoleCategory, TaskDifficulty, TaskType, TaskTemplate } from '@/lib
 import { mockTemplates } from '@/lib/mock-data';
 
 const roleCategories: RoleCategory[] = ["Engineering", "Design", "Marketing", "Business", "Data"];
-const allTaskTypes: TaskType[] = ["Coding", "MCQ", "Design", "Documentation", "Project", "UI", "Component", "Styling", "Feature Implementation", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation", "Data Cleaning", "Visualization", "Statistical Analysis", "Reporting"];
+const allTaskTypes: TaskType[] = [
+  // Engineering
+  "Coding", "Backend Development", "API Design", "Database Management", "Project", 
+  "Documentation", "UI", "Component", "Styling", "Feature Implementation", "DevOps", 
+  "CI/CD", "Security Analysis", "Automated Testing", "Bug Fix", "Code Review", 
+  "System Architecture", "Mobile Development",
+  // Design
+  "Design", 
+  // Marketing
+  "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", 
+  "Market Analysis", 
+  // Business
+  "Strategy Planning", "Financial Modeling", "Presentation",
+  // Data
+  "Data Cleaning", "Visualization", "Statistical Analysis", "Reporting",
+  // General
+  "MCQ"
+];
 
 const roleTaskTypesMap: Record<RoleCategory, TaskType[]> = {
-  Engineering: ["Coding", "Project", "Documentation", "UI", "Component", "Styling", "Feature Implementation"],
+  Engineering: [
+    "Coding", "Backend Development", "API Design", "Database Management", "Project", 
+    "Documentation", "UI", "Component", "Styling", "Feature Implementation", "DevOps", 
+    "CI/CD", "Security Analysis", "Automated Testing", "Bug Fix", "Code Review", 
+    "System Architecture", "Mobile Development"
+  ],
   Design: ["Design", "Project", "Documentation", "UI", "Styling"],
-  Marketing: ["Documentation", "Project", "MCQ", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads"],
+  Marketing: ["Documentation", "Project", "MCQ", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", "Market Analysis"],
   Business: ["Documentation", "Project", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation"],
   Data: ["Coding", "Project", "MCQ", "Documentation", "Data Cleaning", "Visualization", "Statistical Analysis", "Reporting"],
 };
+
 
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
@@ -414,15 +437,13 @@ export function CreateTaskForm() {
                     </FormDescription>
                   </div>
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                  {allTaskTypes.map((item) => {
-                    const isEnabled = availableTaskTypes.includes(item);
-                    return (
-                      <FormField
-                        key={item}
-                        control={form.control}
-                        name="taskTypes"
-                        render={({ field }) => {
-                          return (
+                    {availableTaskTypes.length > 0 ? (
+                      availableTaskTypes.map((item) => (
+                        <FormField
+                          key={item}
+                          control={form.control}
+                          name="taskTypes"
+                          render={({ field }) => (
                             <FormItem
                               key={item}
                               className="flex flex-row items-start space-x-3 space-y-0"
@@ -430,7 +451,6 @@ export function CreateTaskForm() {
                               <FormControl>
                                 <Checkbox
                                   checked={field.value?.includes(item)}
-                                  disabled={!isEnabled}
                                   onCheckedChange={(checked) => {
                                     return checked
                                       ? field.onChange([...(field.value || []), item])
@@ -438,19 +458,22 @@ export function CreateTaskForm() {
                                           field.value?.filter(
                                             (value) => value !== item
                                           )
-                                        )
+                                        );
                                   }}
                                 />
                               </FormControl>
-                              <FormLabel className={cn("font-normal", !isEnabled && "text-muted-foreground/50")}>
-                                {item}
-                              </FormLabel>
+                              <FormLabel className="font-normal">{item}</FormLabel>
                             </FormItem>
-                          )
-                        }}
-                      />
-                    );
-                  })}
+                          )}
+                        />
+                      ))
+                    ) : (
+                      <div className="col-span-full">
+                        <p className="text-sm text-muted-foreground">
+                          Please select a role category to see available task types.
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <FormMessage />
                 </FormItem>

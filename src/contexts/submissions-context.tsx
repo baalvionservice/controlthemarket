@@ -42,10 +42,7 @@ export function SubmissionsProvider({ children }: { children: ReactNode }) {
     setSubmissions(prev => prev.map(s => s.id === submissionId ? updatedSubmission : s));
 
     // Persist changes via mock API
-    if (updates.status) {
-        await api.updateSubmissionStatus(submissionId, updates.status);
-    }
-    // In a real app, other fields would be updatable too, e.g., api.updateSubmission(submissionId, updates)
+    await api.updateSubmission(submissionId, updates);
   }, [submissions]);
   
   const findSubmissionByTask = useCallback((taskId: string, userId: string): Submission | undefined => {

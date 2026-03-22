@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { X, UserPlus } from 'lucide-react';
+import { assignTask } from '@/lib/api';
 
 const formSchema = z.object({
   candidateIds: z.array(z.string()).optional(),
@@ -67,7 +68,7 @@ export function AssignTaskForm({ candidates, task, assignedCandidateIds }: Assig
     setManualEmails(prev => prev.filter(email => email !== emailToRemove));
   };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const selectedCandidateIds = values.candidateIds || [];
     
     if (selectedCandidateIds.length === 0 && manualEmails.length === 0) {
@@ -83,12 +84,12 @@ export function AssignTaskForm({ candidates, task, assignedCandidateIds }: Assig
         id => !findSubmissionByTask(task.id, id)
     );
 
-    newAssignments.forEach(candidateId => {
-        assignTaskToUser({
+    for (const candidateId of newAssignments) {
+        await assignTaskToUser({
             taskId: task.id,
             userId: candidateId,
         });
-    });
+    }
     
     let message = '';
     if (newAssignments.length > 0) {

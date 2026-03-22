@@ -31,6 +31,28 @@ export const createUser = async (userData: Omit<User, 'id' | 'createdAt'>): Prom
   return simulateApiCall(newUser);
 };
 
+export const updateUser = async (userId: string, updates: Partial<User>): Promise<{ success: true; data: User | undefined }> => {
+    const db = getDB();
+    let updatedUser: User | undefined;
+    const newUsers = db.users.map(u => {
+        if (u.id === userId) {
+            updatedUser = {
+                ...u,
+                ...updates,
+                profile: {
+                    ...u.profile,
+                    ...updates.profile
+                }
+            };
+            return updatedUser;
+        }
+        return u;
+    });
+    setDB({ ...db, users: newUsers });
+    return simulateApiCall(updatedUser);
+};
+
+
 export const getUserById = async (id: string): Promise<{ success: true; data: User | undefined }> => {
   const db = getDB();
   const user = db.users.find(u => u.id === id);
@@ -168,18 +190,23 @@ export const getSubmissionsByTask = async (taskId: string): Promise<{ success: t
   return simulateApiCall(taskSubmissions);
 };
 
-export const updateSubmissionStatus = async (submissionId: string, status: SubmissionStatus): Promise<{ success: true; data: Submission | undefined }> => {
+export const updateSubmission = async (submissionId: string, updates: Partial<Submission>): Promise<{ success: true; data: Submission | undefined }> => {
     const db = getDB();
     let updatedSubmission: Submission | undefined;
-    const updatedSubmissions = db.submissions.map(s => {
+    const newSubmissions = db.submissions.map(s => {
         if (s.id === submissionId) {
-            updatedSubmission = { ...s, status, lastUpdated: new Date().toISOString() };
+            updatedSubmission = { ...s, ...updates, lastUpdated: new Date().toISOString() };
             return updatedSubmission;
         }
         return s;
     });
-    setDB({ ...db, submissions: updatedSubmissions });
+    setDB({ ...db, submissions: newSubmissions });
     return simulateApiCall(updatedSubmission);
+};
+
+
+export const updateSubmissionStatus = async (submissionId: string, status: SubmissionStatus): Promise<{ success: true; data: Submission | undefined }> => {
+    return updateSubmission(submissionId, { status });
 };
 
 // --- EVALUATION APIs ---

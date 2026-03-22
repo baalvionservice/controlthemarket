@@ -2,6 +2,7 @@
 'use server';
 
 import * as api from './mock-api';
+import * as dataLayer from './data-layer';
 import {
   mockEvaluationSchemas,
   mockActivityLogs,
@@ -26,37 +27,53 @@ import {
   mockRevenueSources,
 } from './mock-data';
 
-// This file now acts as a pass-through to the mock API,
-// but could be swapped out for a real API implementation later.
+// This file now acts as the single source of truth for all data operations.
+// It uses the hybrid data layer for fetching, ensuring a mix of
+// persistent mock data and fallback hardcoded data.
+// All create/update/delete operations go directly to the persistent mock API.
+
 
 // --- User API ---
-export const getUsers = async () => (await api.getAllUsers()).data;
+export const getUsers = dataLayer.getHybridUsers;
 export const getUser = async (id: string) => (await api.getUserById(id)).data;
 export const createUser = api.createUser;
+export const updateUser = api.updateUser;
+
 
 // --- Company API ---
-export const getCompanies = async () => (await api.getAllCompanies()).data;
+export const getCompanies = dataLayer.getHybridCompanies;
 export const getCompany = async (id: string) => (await api.getCompanyById(id)).data;
 export const createCompany = api.createCompany;
 
 // --- Task API ---
-export const getTasks = async () => (await api.getAllTasks()).data;
+export const getTasks = dataLayer.getHybridTasks;
 export const getTask = async (id: string) => (await api.getTaskById(id)).data;
-export const getTasksByCompany = async (companyId: string) => (await api.getTasksByCompanyId(companyId)).data;
+export const getTasksByCompany = async (companyId: string) => {
+    const allTasks = await dataLayer.getHybridTasks();
+    return allTasks.filter(t => t.companyId === companyId);
+};
 export const createTask = api.createTask;
 export const assignTask = api.assignTask;
 
 // --- Submission API ---
-export const getSubmissions = async () => (await api.getAllSubmissions()).data;
+export const getSubmissions = dataLayer.getHybridSubmissions;
 export const getSubmission = async (id: string) => (await api.getSubmissionById(id)).data;
-export const getSubmissionsByUser = async (userId: string) => (await api.getSubmissionsByUser(userId)).data;
-export const getSubmissionsByTask = async (taskId: string) => (await api.getSubmissionsByTask(taskId)).data;
+export const getSubmissionsByUser = async (userId: string) => {
+    const allSubmissions = await dataLayer.getHybridSubmissions();
+    return allSubmissions.filter(s => s.userId === userId);
+};
+export const getSubmissionsByTask = async (taskId: string) => {
+    const allSubmissions = await dataLayer.getHybridSubmissions();
+    return allSubmissions.filter(s => s.taskId === taskId);
+}
 export const createSubmission = api.createSubmission;
+export const updateSubmission = api.updateSubmission;
 export const updateSubmissionStatus = api.updateSubmissionStatus;
+
 
 // --- Evaluation API ---
 export const getEvaluationBySubmission = async (submissionId: string) => (await api.getEvaluationBySubmissionId(submissionId)).data;
-export const getAllEvaluations = async () => (await api.getAllEvaluations()).data;
+export const getAllEvaluations = dataLayer.getHybridEvaluations;
 export const createEvaluation = api.createEvaluation;
 
 
@@ -75,8 +92,8 @@ export const getSystemMetrics = async () => mockSystemMetrics;
 export const getServiceStatus = async () => mockServiceStatus;
 export const getServiceLoad = async () => mockServiceLoad;
 export const getScalingEvents = async () => mockScalingEvents;
-export const getSystemLogs = async () => mockSystemLogs;
-export const getSystemErrors = async () => mockSystemErrors;
+export const getSystemLogs = async () => (await import('./mock-data')).mockSystemLogs;
+export const getSystemErrors = async () => (await import('./mock-data')).mockSystemErrors;
 export const getSystemIncidents = async () => mockSystemIncidents;
 export const getInvoices = async () => (await api.getAllInvoices()).data;
 export const getPlanUsage = async () => mockPlanUsage;

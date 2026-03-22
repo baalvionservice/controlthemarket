@@ -63,12 +63,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateUser = (updates: Partial<User>) => {
     setUser(prevUser => {
         if (!prevUser) return null;
-        const updatedUser = { ...prevUser, ...updates };
+        const updatedUser = {
+            ...prevUser,
+            ...updates,
+            profile: {
+                ...(prevUser.profile || {}),
+                ...updates.profile
+            }
+        };
         localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
-        // Also update in the mock DB
-        api.getUsers().then(users => {
-          // This is a mock update, in a real app this would be a PATCH request
-        });
+        api.updateUser(prevUser.id, updates);
         return updatedUser;
     });
   };

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -9,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, AlertTriangle, Info, Bell, Users, Briefcase } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 // Data types based on page.tsx
 interface CorporateClient {
@@ -30,8 +29,9 @@ interface PipelineCandidate {
 }
 
 interface ChartData {
+    assessmentResults: { name: string; value: number }[];
     openPositions: { name: string; value: number }[];
-    topSkills: { name: string; value: number }[];
+    candidatesProcessed: { name: string; value: number }[];
 }
 
 interface Alert {
@@ -69,7 +69,11 @@ export function CorporateDashboard({ clients, pipeline, chartData, alerts }: Cor
         }
     }
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const COLORS: { [key: string]: string } = {
+        'Passed': '#00C49F',
+        'Failed': '#FF8042',
+        'Pending': '#FFBB28'
+    };
 
     return (
         <div className="space-y-8">
@@ -140,13 +144,13 @@ export function CorporateDashboard({ clients, pipeline, chartData, alerts }: Cor
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2"><Briefcase className="h-4 w-4" /> Open Positions</CardTitle>
+                                    <CardTitle className="text-base flex items-center gap-2"><Briefcase className="h-4 w-4" /> Assessment Results</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <ResponsiveContainer width="100%" height={200}>
                                         <PieChart>
-                                            <Pie data={chartData.openPositions} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                                                {chartData.openPositions.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                                            <Pie data={chartData.assessmentResults} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                                                {chartData.assessmentResults.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[entry.name] || '#8884d8'} />)}
                                             </Pie>
                                             <Tooltip />
                                         </PieChart>
@@ -166,7 +170,7 @@ export function CorporateDashboard({ clients, pipeline, chartData, alerts }: Cor
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {pipeline.map(p => (
+                                            {pipeline.slice(0,4).map(p => (
                                                 <TableRow key={p.id}>
                                                     <TableCell className="font-medium">{p.name}</TableCell>
                                                     <TableCell><Badge variant="outline">{p.status}</Badge></TableCell>
@@ -178,14 +182,25 @@ export function CorporateDashboard({ clients, pipeline, chartData, alerts }: Cor
                             </Card>
                         </div>
                          <div>
-                            <h3 className="font-semibold text-lg mb-4">Top Required Skills</h3>
+                            <h3 className="font-semibold text-lg mb-4">Open Positions by Industry</h3>
                              <ResponsiveContainer width="100%" height={250}>
-                                <BarChart data={chartData.topSkills} layout="vertical">
-                                    <XAxis type="number" hide />
-                                    <YAxis type="category" dataKey="name" width={120} tickLine={false} axisLine={false} />
+                                <BarChart data={chartData.openPositions}>
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
                                     <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
-                                    <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                                    <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                                 </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div>
+                           <h3 className="font-semibold text-lg mb-4">Candidates Processed per Week</h3>
+                            <ResponsiveContainer width="100%" height={250}>
+                                <LineChart data={chartData.candidatesProcessed}>
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} />
+                                </LineChart>
                             </ResponsiveContainer>
                         </div>
                     </CardContent>

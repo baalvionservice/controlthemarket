@@ -8,51 +8,52 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// Mock data as requested
+// Mock data as per the new prompt
 const mockCorporateClients = [
   { id: 'corp-1', name: "TechNova Solutions", industry: "Tech", location: "Bangalore, India", open_positions: 12, pain_points: ["Unverified skills", "Long interview process"] },
   { id: 'corp-2', name: "GlobalConsult Ltd.", industry: "Consulting", location: "New York, USA", open_positions: 8, pain_points: ["Multiple teams involved", "Resume unreliability"] },
-  { id: 'corp-3', name: "Innovate Fintech", industry: "FinTech", location: "London, UK", open_positions: 25, pain_points: ["High competition for talent", "Slow screening process"] },
-  { id: 'corp-4', name: "Synergy BPO", industry: "BPO", location: "Manila, Philippines", open_positions: 50, pain_points: ["High volume, low quality", "High attrition rate"] },
-  { id: 'corp-5', name: "NextGen Startups", industry: "Startup", location: "Berlin, Germany", open_positions: 5, pain_points: ["Lack of brand recognition", "Niche skill requirements"] },
-  { id: 'corp-6', name: "Digital Momentum", industry: "Product", location: "San Francisco, USA", open_positions: 18, pain_points: ["Long interview process", "Unverified skills"] },
-  { id: 'corp-7', name: "Quantum Leap AI", industry: "Tech", location: "Toronto, Canada", open_positions: 30, pain_points: ["Niche skill requirements", "High competition for talent"] },
-  { id: 'corp-8', name: "Apex Advisory", industry: "Consulting", location: "Singapore", open_positions: 15, pain_points: ["Resume unreliability", "Multiple teams involved"] },
-  { id: 'corp-9', name: "HealthForward", industry: "Product", location: "Boston, USA", open_positions: 9, pain_points: ["Slow screening process", "Unverified skills"] },
-  { id: 'corp-10', name: "Streamline Ops", industry: "BPO", location: "Krakow, Poland", open_positions: 40, pain_points: ["High volume, low quality", "Inconsistent evaluation"] },
+  { id: 'corp-3', name: "Innovatech Labs", industry: "Product", location: "Berlin, Germany", open_positions: 5, pain_points: ["Slow screening", "Limited analytics"] },
+  { id: 'corp-4', name: "NextGen BPO", industry: "BPO", location: "Manila, Philippines", open_positions: 20, pain_points: ["High volume candidates", "Unverified skills"] },
+  { id: 'corp-5', name: "AlphaStartups Inc.", industry: "Startup", location: "San Francisco, USA", open_positions: 7, pain_points: ["Time-consuming interviews", "Lack of dashboards"] },
+  { id: 'corp-6', name: "CloudCore Solutions", industry: "Tech", location: "London, UK", open_positions: 15, pain_points: ["Resume misalignment", "Multiple approvals"] },
+  { id: 'corp-7', name: "StratEdge Advisors", industry: "Consulting", location: "Toronto, Canada", open_positions: 4, pain_points: ["Limited insight on candidates", "Delayed feedback"] },
+  { id: 'corp-8', name: "ByteWave Technologies", industry: "Tech", location: "Tokyo, Japan", open_positions: 9, pain_points: ["Manual assessments", "Unstandardized scoring"] },
+  { id: 'corp-9', name: "GreenLogic Products", industry: "Product", location: "Sydney, Australia", open_positions: 6, pain_points: ["Lack of skill validation", "Long process"] },
+  { id: 'corp-10', name: "Horizon Global Corp.", industry: "BPO", location: "Mumbai, India", open_positions: 11, pain_points: ["High attrition", "Multiple teams involvement"] },
 ];
 
 const mockCandidatePipeline = [
-    { id: 'cand-1', name: 'Anika Sharma', topSkill: 'React.js', status: 'Pending Review', assessmentScore: 88 },
-    { id: 'cand-2', name: 'Ben Carter', topSkill: 'Python', status: 'Interview Scheduled', assessmentScore: 92 },
-    { id: 'cand-3', name: 'Chloe Davis', topSkill: 'Figma', status: 'Approved', assessmentScore: 95 },
-    { id: 'cand-4', name: 'David Rodriguez', topSkill: 'Node.js', status: 'Rejected', assessmentScore: 65 },
-    { id: 'cand-5', name: 'Eva Wilson', topSkill: 'Data Analysis', status: 'Pending Review', assessmentScore: 89 },
+    { id: 'cand-1', name: 'Riya Sharma', topSkill: 'Java Developer', status: 'Assessment Pending', assessmentScore: 0 },
+    { id: 'cand-2', name: 'John Doe', topSkill: 'Data Analyst', status: 'Passed Skill Test', assessmentScore: 92 },
+    { id: 'cand-3', name: 'Akira Tanaka', topSkill: 'Product Manager', status: 'Failed Skill Test', assessmentScore: 45 },
+    { id: 'cand-4', name: 'Maria Lopez', topSkill: 'UX Designer', status: 'Assessment Pending', assessmentScore: 0 },
+    { id: 'cand-5', name: 'Liam Smith', topSkill: 'Cloud Engineer', status: 'Passed Skill Test', assessmentScore: 88 },
+    { id: 'cand-6', name: 'Priya Mehta', topSkill: 'QA Engineer', status: 'Assessment In Progress', assessmentScore: 50 },
+    { id: 'cand-7', name: 'Ethan Brown', topSkill: 'Fullstack Dev', status: 'Passed Skill Test', assessmentScore: 95 },
+    { id: 'cand-8', name: 'Sofia Garcia', topSkill: 'Data Scientist', status: 'Assessment Pending', assessmentScore: 0 },
+    { id: 'cand-9', name: 'Hiroshi Yamamoto', topSkill: 'DevOps Engineer', status: 'Failed Skill Test', assessmentScore: 40 },
+    { id: 'cand-10', name: 'Isabella Rossi', topSkill: 'Business Analyst', status: 'Assessment In Progress', assessmentScore: 60 },
 ];
 
-const mockChartData = {
-    openPositions: [
-        { name: 'Engineering', value: 45 },
-        { name: 'Product', value: 20 },
-        { name: 'Sales', value: 30 },
-        { name: 'Marketing', value: 15 },
-    ],
-    topSkills: [
-        { name: 'JavaScript', value: 80 },
-        { name: 'Python', value: 75 },
-        { name: 'Cloud (AWS/GCP)', value: 60 },
-        { name: 'AI/ML', value: 45 },
-        { name: 'UI/UX Design', value: 30 },
-    ]
+const mockApiChartData = {
+    assessment_results: { "Passed": 3, "Failed": 2, "Pending": 5 },
+    open_positions_by_industry: { "Tech": 36, "Consulting": 12, "BPO": 31, "Product": 11 },
+    candidates_processed_weekly: [5, 8, 7, 10, 6, 12, 9]
 };
 
 const mockAlerts = [
-    { id: 'alert-1', severity: 'warning', message: 'Interview for Ben Carter is delayed by 3 days.' },
-    { id: 'alert-2', severity: 'high', message: 'Candidate Anika Sharma has unverified skill documents.' },
-    { id: 'alert-3', severity: 'low', message: '15 new candidates in the pipeline for Engineering roles.' },
+    { id: 'alert-1', severity: 'high', message: '3 companies have unverified skills pending review' },
+    { id: 'alert-2', severity: 'warning', message: '5 interviews delayed this week' },
+    { id: 'alert-3', severity: 'low', message: '2 candidates failed assessment twice' },
 ];
 
 export default function CorporatesDemoPage() {
+    const chartData = {
+        assessmentResults: Object.entries(mockApiChartData.assessment_results).map(([name, value]) => ({ name, value })),
+        openPositions: Object.entries(mockApiChartData.open_positions_by_industry).map(([name, value]) => ({ name, value })),
+        candidatesProcessed: mockApiChartData.candidates_processed_weekly.map((value, index) => ({ name: `Week ${index + 1}`, value }))
+    };
+
   return (
     <div className="flex-1 space-y-6 bg-muted/20 p-8 pt-6">
       <div className="mx-auto max-w-5xl text-center">
@@ -67,7 +68,7 @@ export default function CorporatesDemoPage() {
        <CorporateDashboard 
             clients={mockCorporateClients}
             pipeline={mockCandidatePipeline}
-            chartData={mockChartData}
+            chartData={chartData}
             alerts={mockAlerts}
         />
     </div>

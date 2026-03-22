@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -24,9 +25,9 @@ const formSchema = z
   .object({
     fullName: z.string().min(2, 'Full name must be at least 2 characters.'),
     email: z.string().email('Please enter a valid email address.'),
-    password: z.string().min(6, 'Password must be at least 6 characters.'),
+    phone: z.string().min(10, 'Please enter a valid phone number.'),
+    password: z.string().min(8, 'Password must be at least 8 characters.'),
     confirmPassword: z.string(),
-    skills: z.string().optional(),
     terms: z.boolean().refine((val) => val === true, {
       message: 'You must accept the terms and conditions.',
     }),
@@ -47,25 +48,22 @@ export function CandidateSignupForm() {
     defaultValues: {
       fullName: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
-      skills: '',
       terms: false,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    const skillsArray = values.skills
-      ? values.skills.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
-
+    
     const result = await signup({
       name: values.fullName,
       email: values.email,
       password: values.password,
       role: 'candidate',
-      skills: skillsArray,
+      phone: values.phone,
     });
     
     if (!result.success) {
@@ -74,9 +72,9 @@ export function CandidateSignupForm() {
         description: result.message,
         variant: 'destructive',
       });
+       setIsSubmitting(false);
     }
     // On success, the auth context handles redirection.
-    setIsSubmitting(false);
   }
 
   return (
@@ -103,6 +101,19 @@ export function CandidateSignupForm() {
               <FormLabel>Email address</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="john.doe@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number</FormLabel>
+              <FormControl>
+                <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,22 +150,6 @@ export function CandidateSignupForm() {
               <FormControl>
                 <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" {...field} />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="skills"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Skills (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="React, Node.js, Figma" {...field} />
-              </FormControl>
-               <FormDescription>
-                Enter your top skills, separated by commas.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

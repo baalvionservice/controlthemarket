@@ -16,6 +16,7 @@ interface SignupDetails {
   email: string;
   password: string;
   role: UserRole;
+  phone?: string;
   skills?: string[];
   companyName?: string;
   companyDescription?: string;
@@ -35,6 +36,7 @@ interface AuthContextType {
   loading: boolean;
   updateUser: (updates: Partial<User>) => void;
   acceptConsent: () => void;
+  completeCandidateOnboarding: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -84,6 +86,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return updatedUser;
     });
   };
+  
+  const completeCandidateOnboarding = () => {
+    setUser(prevUser => {
+        if (!prevUser || prevUser.role !== 'candidate') return prevUser;
+        const updatedUser = { 
+            ...prevUser, 
+            candidateOnboardingCompleted: true,
+        };
+        localStorage.setItem('skillmatch-user', JSON.stringify(updatedUser));
+        return updatedUser;
+    });
+  }
 
   const login = async (credentials: LoginCredentials): Promise<AuthResult> => {
     const foundUser = sessionUsers.find(
@@ -126,6 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (details.role === 'candidate') {
       newUser.profile!.skills = details.skills || [];
+      newUser.candidateOnboardingCompleted = false;
     }
 
     if (details.role === 'company' && details.companyName) {
@@ -171,6 +186,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else if (user && isPublicPath) {
       if (user.role === 'company' && !user.onboardingCompleted) {
         router.push('/company/onboarding');
+      } else if (user.role === 'candidate' && !user.candidateOnboardingCompleted) {
+        router.push('/signup/candidate/onboarding');
       } else {
         router.push(`/${user.role}/dashboard`);
       }
@@ -178,7 +195,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, loading, pathname, router]);
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateUser, acceptConsent }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading, updateUser, acceptConsent, completeCandidateOnboarding }}>
       {children}
     </AuthContext.Provider>
   );

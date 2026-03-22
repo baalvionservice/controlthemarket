@@ -26,6 +26,7 @@ export interface User {
   companyId?: string; // For users with the 'company' role
   companyName?: string; // For users with the 'company' role
   onboardingCompleted?: boolean;
+  candidateOnboardingCompleted?: boolean;
   consentAccepted?: boolean;
   consentAcceptedAt?: string;
   profile?: {

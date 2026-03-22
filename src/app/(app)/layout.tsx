@@ -27,6 +27,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       return; // Redirect and stop further checks
     }
 
+    // Onboarding check for candidate users
+    if (user.role === 'candidate' && !user.candidateOnboardingCompleted && !pathname.startsWith('/signup/candidate')) {
+      router.replace('/signup/candidate/onboarding');
+      return;
+    }
+
     // If the user is on the base '/dashboard' path, redirect them to their specific role's dashboard.
     if (pathname === '/dashboard') {
       router.replace(`/${user.role}/dashboard`);
@@ -34,7 +40,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
     
     // If the user is on a path that does not belong to their role (and not in onboarding), redirect them.
-    if (!pathname.startsWith(`/${user.role}`) && !pathname.startsWith('/company/onboarding')) {
+    if (!pathname.startsWith(`/${user.role}`) && !pathname.startsWith('/company/onboarding') && !pathname.startsWith('/signup/candidate')) {
       // Special case: if candidate has not consented, don't redirect them away from the page that triggers the modal
       if (user.role === 'candidate' && !user.consentAccepted) {
         return;
@@ -57,7 +63,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   
   // To prevent content flashing while redirecting, we can show a loading state
   // if the current path is not yet the correct one for the user's role.
-  const isCorrectPath = pathname.startsWith(`/${user.role}`) || pathname === '/dashboard' || pathname.startsWith('/company/onboarding');
+  const isCorrectPath = pathname.startsWith(`/${user.role}`) || pathname === '/dashboard' || pathname.startsWith('/company/onboarding') || pathname.startsWith('/signup/candidate');
   if (!isCorrectPath) {
      return (
       <div className="flex h-screen items-center justify-center">
@@ -67,7 +73,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
   
   // Don't show sidebar during onboarding
-  if (pathname.startsWith('/company/onboarding')) {
+  if (pathname.startsWith('/company/onboarding') || pathname.startsWith('/signup/candidate/onboarding')) {
     return <main>{children}</main>;
   }
 

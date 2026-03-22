@@ -1,15 +1,14 @@
 
 
-import { getSubmissions, getUsers, getTasksByCompany, getEvaluations } from "@/lib/api";
-import { mockUsers } from "@/lib/mock-data";
+import { getSubmissions, getUsers, getTasksByCompany, getAllEvaluations } from "@/lib/api";
 import { CompanySubmissionsList } from "./submission-list";
 import type { Submission, Task, User, Evaluation, RoleCategory, LiveSessionStatus } from '@/lib/types';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Users, Clock, CheckCircle, Star, XCircle } from "lucide-react";
 
@@ -35,13 +34,13 @@ export type EvaluationData = {
 };
 
 export default async function CompanySubmissionsPage() {
-  const user = await mockUsers.find((u) => u.id === CURRENT_USER_ID);
+  const allUsers = await getUsers();
+  const user = allUsers.find((u) => u.id === CURRENT_USER_ID);
   if (!user || !user.companyId) return <div>Company not found</div>;
   
   const tasks = await getTasksByCompany(user.companyId);
   const allSubmissions = await getSubmissions();
-  const allUsers = await getUsers();
-  const allEvaluations = await getEvaluations();
+  const allEvaluations = await getAllEvaluations();
 
   const companyTaskIds = new Set(tasks.map(task => task.id));
   const companySubmissions = allSubmissions.filter(sub => 

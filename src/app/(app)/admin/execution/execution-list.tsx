@@ -27,6 +27,7 @@ import { Search, Play, Square, XCircle } from 'lucide-react';
 import type { SandboxStatus } from '@/lib/types';
 import type { SandboxSessionData } from './page';
 import { useToast } from '@/hooks/use-toast';
+import { useSubmissions } from '@/contexts/submissions-context';
 
 const sessionStatuses: (SandboxStatus | 'All')[] = ["All", "Active", "Idle", "Completed", "Error", "Not Started"];
 
@@ -46,6 +47,7 @@ export function ExecutionList({ initialData }: { initialData: SandboxSessionData
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<SandboxStatus | 'All'>('All');
   const { toast } = useToast();
+  const { updateSubmission } = useSubmissions();
 
   const filteredData = useMemo(() => {
     return data.filter(item => {
@@ -74,6 +76,7 @@ export function ExecutionList({ initialData }: { initialData: SandboxSessionData
     setData(prev => prev.map(item => 
         item.submissionId === submissionId ? { ...item, status: newStatus, lastActivity: new Date().toISOString() } : item
     ));
+    updateSubmission(submissionId, { sandboxStatus: newStatus });
     toast({
         title: 'Action Successful',
         description: toastDescription

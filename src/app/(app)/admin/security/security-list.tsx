@@ -28,6 +28,7 @@ import type { PlagiarismRisk } from '@/lib/types';
 import type { SecurityDashboardData } from './page';
 import { useToast } from '@/hooks/use-toast';
 import { getStatusVariant } from '../submissions/submission-list';
+import { useSubmissions } from '@/contexts/submissions-context';
 
 const riskLevels: (PlagiarismRisk | 'All')[] = ["All", "High", "Medium", "Low", "None"];
 
@@ -53,6 +54,7 @@ export function AdminSecurityList({ data }: { data: SecurityDashboardData[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState<PlagiarismRisk | 'All'>('All');
   const { toast } = useToast();
+  const { updateSubmission } = useSubmissions();
 
   const filteredData = useMemo(() => {
     return tableData.filter(item => {
@@ -79,6 +81,7 @@ export function AdminSecurityList({ data }: { data: SecurityDashboardData[] }) {
     setTableData(prev => prev.map(item =>
         item.id === submissionId ? { ...item, plagiarismRisk: 'None' } : item
     ));
+    updateSubmission(submissionId, { plagiarismRisk: 'None' });
   };
 
   return (

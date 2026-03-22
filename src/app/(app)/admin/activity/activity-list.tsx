@@ -62,9 +62,10 @@ export function ActivityList({ data }: { data: ActivityWithDetails[] }) {
   const [statusFilter, setStatusFilter] = useState<ActivityStatus | 'All'>('All');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'All'>('All');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    setCurrentTime(new Date());
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000); // update every minute
@@ -72,6 +73,7 @@ export function ActivityList({ data }: { data: ActivityWithDetails[] }) {
   }, []);
 
   const isRecent = (timestamp: string) => {
+    if (!currentTime) return false;
     const fiveMinutes = 5 * 60 * 1000;
     return currentTime.getTime() - new Date(timestamp).getTime() < fiveMinutes;
   }

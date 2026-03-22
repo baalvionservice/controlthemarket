@@ -26,6 +26,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Play, Pause, Download, Video } from 'lucide-react';
 import type { RecordingDashboardData } from './page';
 import { useToast } from '@/hooks/use-toast';
+import { useSubmissions } from '@/contexts/submissions-context';
 
 type RecordingStatus = 'Recording' | 'Paused' | 'Completed' | 'Not Started';
 const statuses: (RecordingStatus | 'All')[] = ["All", "Recording", "Paused", "Completed", "Not Started"];
@@ -45,6 +46,7 @@ export function RecordingList({ data }: { data: RecordingDashboardData[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<RecordingStatus | 'All'>('All');
   const { toast } = useToast();
+  const { updateSubmission } = useSubmissions();
 
   const filteredData = useMemo(() => {
     return tableData.filter(item => {
@@ -73,6 +75,7 @@ export function RecordingList({ data }: { data: RecordingDashboardData[] }) {
     setTableData(prev => prev.map(item => 
         item.id === submissionId ? { ...item, recordingStatus: newStatus } : item
     ));
+    updateSubmission(submissionId, { recordingStatus: newStatus });
     toast({
         title: 'Action Successful',
         description: toastDescription

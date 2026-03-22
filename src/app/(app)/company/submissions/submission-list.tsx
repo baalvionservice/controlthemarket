@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -42,6 +41,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { EvaluationData } from './page';
 import { cn } from '@/lib/utils';
 import { CandidateHistoryDialog } from '@/components/shared/candidate-history-dialog';
+import { useSubmissions } from '@/contexts/submissions-context';
 
 
 type SortKey = 'candidate.name' | 'score' | 'applicationDate';
@@ -95,6 +95,7 @@ const getLiveSessionStatusVariant = (status?: LiveSessionStatus): 'default' | 'd
 
 export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
   const { toast } = useToast();
+  const { updateSubmission } = useSubmissions();
   const [tableData, setTableData] = useState<EvaluationData[]>(data);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<SubmissionStatus | 'All'>('All');
@@ -156,6 +157,9 @@ export function CompanySubmissionsList({ data }: { data: EvaluationData[] }) {
 
   const handleStatusChange = (ids: string[], status: SubmissionStatus) => {
     setTableData(prev => prev.map(item => ids.includes(item.id) ? {...item, status} : item));
+    ids.forEach(id => {
+        updateSubmission(id, { status });
+    });
   };
   
   const handleBulkAction = (action: 'shortlist' | 'reject' | 'move-to-next-round') => {

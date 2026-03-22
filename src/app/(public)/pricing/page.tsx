@@ -115,7 +115,7 @@ export default function PricingPage() {
                 ) : (
                   <>
                     <p className="text-4xl font-bold">
-                      ${isYearly ? plan.price.yearly / 12 : plan.price.monthly}
+                      ${isYearly ? (plan.price.yearly / 12).toFixed(2) : plan.price.monthly}
                       <span className="text-xl font-normal text-muted-foreground">/mo</span>
                     </p>
                      <p className="text-xs text-muted-foreground">

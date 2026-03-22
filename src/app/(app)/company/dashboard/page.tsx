@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRight, Briefcase, PlusCircle, Clock, Star, Monitor } from 'lucide-react';
+import { ArrowRight, Briefcase, PlusCircle, Clock, Star, Monitor, Users, XCircle, FileCheck } from 'lucide-react';
 import Link from 'next/link';
 import { LivestreamPanel } from './livestream-panel';
 
@@ -40,17 +40,12 @@ export default async function CompanyDashboard() {
   
   const companyTaskIds = new Set(tasks.map(task => task.id));
   const companySubmissions = allSubmissions.filter(sub => companyTaskIds.has(sub.taskId));
-  const companySubmissionIds = new Set(companySubmissions.map(sub => sub.id));
-  const companyEvaluations = allEvaluations.filter(evals => companySubmissionIds.has(evals.submissionId));
-
+  
   // Metrics calculation
-  const activeTasksCount = tasks.filter(t => t.status === 'published').length;
+  const totalAssignedCandidates = new Set(companySubmissions.map(s => s.userId)).size;
   const pendingReviewCount = companySubmissions.filter(s => ['pending', 'in-review', 'resubmitted'].includes(s.status)).length;
   const shortlistedCount = companySubmissions.filter(s => s.status === 'shortlisted').length;
-  const activeLiveSessionsCount = companySubmissions.filter(s => s.liveSessionStatus === 'Active').length;
-  const averageScore = companyEvaluations.length > 0
-    ? Math.round(companyEvaluations.reduce((acc, curr) => acc + curr.score, 0) / companyEvaluations.length)
-    : 0;
+  const rejectedCount = companySubmissions.filter(s => s.status === 'rejected').length;
 
 
   const submissionsWithDetails = await Promise.all(
@@ -83,14 +78,11 @@ export default async function CompanyDashboard() {
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Assigned Candidates</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-bold">{activeTasksCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Tasks open for submissions
-            </p>
+            <div className="text-2xl font-bold">{totalAssignedCandidates}</div>
           </CardContent>
         </Card>
         <Card>
@@ -100,33 +92,24 @@ export default async function CompanyDashboard() {
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-2xl font-bold">{pendingReviewCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Submissions awaiting evaluation
-            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Live Sessions</CardTitle>
-            <Monitor className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="text-2xl font-bold">{activeLiveSessionsCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Candidates currently in a session
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Shortlisted Candidates</CardTitle>
+            <CardTitle className="text-sm font-medium">Approved Candidates</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-2xl font-bold">{shortlistedCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Top performers from your tasks
-            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Rejected Candidates</CardTitle>
+            <XCircle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold">{rejectedCount}</div>
           </CardContent>
         </Card>
       </div>

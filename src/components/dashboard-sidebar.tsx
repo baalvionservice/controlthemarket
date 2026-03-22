@@ -82,10 +82,7 @@ const companyNav = [
   { name: 'Analytics', href: '/company/analytics', icon: AreaChart },
   { name: 'Compare', href: '/company/compare', icon: GitCompare },
   { name: 'Feedback', href: '/company/feedback', icon: MessageSquare },
-  { name: 'Subscription', href: '/company/subscription', icon: CreditCard },
-  { name: 'Usage Metrics', href: '/company/usage', icon: PieChart },
-  { name: 'Invoices', href: '/company/invoices', icon: Receipt },
-  { name: 'Billing', href: '/company/billing', icon: Banknote },
+  { name: 'Billing', href: '/company/billing', icon: CreditCard },
   { name: 'Settings', href: '/company/settings', icon: Settings },
 ];
 

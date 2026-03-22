@@ -76,7 +76,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 60)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: true,
+    onboardingCompleted: false,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar2/100/100',
       bio: 'Hiring manager at TechCorp.',
@@ -129,7 +129,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: true,
+    onboardingCompleted: false,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar5/100/100',
       bio: 'Lead Recruiter at Innovate Inc.',
@@ -145,7 +145,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: true,
+    onboardingCompleted: false,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar6/100/100',
     },
@@ -160,7 +160,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 12)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: true,
+    onboardingCompleted: false,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar7/100/100',
     },
@@ -175,7 +175,7 @@ export const mockUsers: User[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 18)).toISOString(),
     isActive: true,
     isVerified: true,
-    onboardingCompleted: true,
+    onboardingCompleted: false,
     profile: {
       avatarUrl: 'https://picsum.photos/seed/avatar8/100/100',
     },

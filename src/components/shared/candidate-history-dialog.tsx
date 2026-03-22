@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -12,7 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getSubmissionsByUser, getEvaluations, getTask, getUsers } from '@/lib/api';
+import { getSubmissionsByUser, getAllEvaluations, getTask, getUsers } from '@/lib/api';
 import type { User, Submission, Evaluation, Task } from '@/lib/types';
 import { format } from 'date-fns';
 import { FileText, Star, Briefcase, Loader2, User as UserIcon } from 'lucide-react';
@@ -40,7 +39,7 @@ export function CandidateHistoryDialog({ isOpen, onOpenChange, candidate }: Hist
         setLoading(true);
         const [submissions, allEvaluations, allUsers] = await Promise.all([
             getSubmissionsByUser(candidate.id),
-            getEvaluations(),
+            getAllEvaluations(),
             getUsers()
         ]);
         

@@ -245,6 +245,11 @@ export const mockTasks: Task[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 10)).toISOString(),
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 9)).toISOString(),
     multiRound: false,
+    projectFile: {
+        url: '/mock-downloads/project-brief-navbar.pdf',
+        name: 'Project Brief - Navbar.pdf',
+        size: 1572864, // 1.5MB
+    },
   },
   {
     id: 'task-2',
@@ -493,7 +498,12 @@ export const mockTasks: Task[] = [
     updatedAt: new Date(new Date().setDate(new Date().getDate() - 1)).toISOString(),
     multiRound: false,
     imageUrl: 'https://picsum.photos/seed/business/600/400',
-    imageHint: 'business strategy'
+    imageHint: 'business strategy',
+    projectFile: {
+        url: '/mock-downloads/gtm-strategy-template.pdf',
+        name: 'GTM Strategy Template.pdf',
+        size: 839201,
+    }
   },
   {
     id: 'task-15',

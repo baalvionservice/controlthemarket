@@ -31,7 +31,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
-import { CalendarIcon, Sparkles, Trash2 } from 'lucide-react';
+import { CalendarIcon, Sparkles, Trash2, Paperclip } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -58,6 +58,7 @@ const formSchema = z.object({
   instructions: z.string(),
   expectedOutputs: z.string(),
   timeLimitMinutes: optionalPositiveNumber,
+  projectFile: z.any().optional(),
   rounds: z.array(z.object({
     instructions: z.string().min(20, 'Instructions must be at least 20 characters.'),
     expectedOutputs: z.string().min(20, 'Expected Outputs must be at least 20 characters.'),
@@ -269,6 +270,31 @@ export function CreateTaskForm() {
             </div>
           </div>
           
+           <div className="space-y-6 rounded-md border p-6">
+                <h3 className="text-lg font-medium">Task Resources</h3>
+                 <FormField
+                    control={form.control}
+                    name="projectFile"
+                    render={({ field: { onChange, value, ...rest } }) => (
+                        <FormItem>
+                            <FormLabel className="flex items-center gap-2"><Paperclip className="h-4 w-4"/> Project Brief / Attachment</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="file"
+                                    accept=".pdf,.zip,.doc,.docx"
+                                    onChange={(e) => onChange(e.target.files ? e.target.files[0] : null)}
+                                    {...rest}
+                                />
+                            </FormControl>
+                            <FormDescription>
+                                Optionally attach a supporting document for candidates (e.g., project brief, design specs).
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+           </div>
+
            <div className="space-y-6 rounded-md border p-6">
                 <FormField
                     control={form.control}

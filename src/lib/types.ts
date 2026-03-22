@@ -138,6 +138,11 @@ export interface Task {
   rounds?: TaskRound[];
   imageUrl?: string;
   imageHint?: string;
+  projectFile?: {
+    url: string;
+    name: string;
+    size?: number;
+  };
 }
 
 export interface TaskTemplate {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -31,7 +32,9 @@ import {
   ArrowRight,
   Sparkles,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Paperclip,
+  Download,
 } from 'lucide-react';
 import Link from 'next/link';
 import { SubmissionForm } from './submission-form';
@@ -240,6 +243,19 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                          <div className="flex items-start justify-between">
                             <span className="font-medium text-muted-foreground flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Task Type</span>
                             <span className="font-semibold">Multi-Round ({task.rounds?.length || 0} rounds)</span>
+                        </div>
+                    )}
+                    {task.projectFile && (
+                        <div className="space-y-2 pt-2">
+                            <div className="font-medium text-muted-foreground flex items-center gap-2">
+                                <Paperclip className="h-4 w-4" /> Task Resources
+                            </div>
+                            <Button asChild variant="secondary" className="w-full justify-start text-left">
+                                <Link href={task.projectFile.url} download>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    <span>{task.projectFile.name}</span>
+                                </Link>
+                            </Button>
                         </div>
                     )}
                  </CardContent>

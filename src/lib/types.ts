@@ -63,8 +63,51 @@ export interface Company {
 
 export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 export type TaskStatus = 'draft' | 'published' | 'closed' | 'archived';
-export type RoleCategory = 'Engineering' | 'Design' | 'Marketing' | 'Business' | 'Data';
-export type TaskType = 'Coding' | 'MCQ' | 'Design' | 'Documentation' | 'Project' | 'UI' | 'Component' | 'Styling' | 'Feature Implementation' | 'Campaign Planning' | 'Content Creation' | 'Social Media' | 'Email Marketing' | 'Ads' | 'Market Analysis' | 'Strategy Planning' | 'Financial Modeling' | 'Presentation' | 'Data Cleaning' | 'Visualization' | 'Statistical Analysis' | 'Reporting';
+export type RoleCategory = 
+  | 'Engineering' 
+  | 'Frontend'
+  | 'Backend'
+  | 'Full Stack'
+  | 'DevOps'
+  | 'Mobile'
+  | 'Design' 
+  | 'UI/UX Design'
+  | 'Graphic Design'
+  | 'Product Design'
+  | 'Motion Design'
+  | 'Marketing' 
+  | 'Digital Marketing'
+  | 'SEO'
+  | 'Content Marketing'
+  | 'Performance Marketing'
+  | 'Business' 
+  | 'Sales'
+  | 'Operations'
+  | 'Business Development'
+  | 'Strategy'
+  | 'Data'
+  | 'Data Analyst'
+  | 'Data Scientist'
+  | 'Machine Learning Engineer';
+
+export type TaskType = 
+  // Engineering
+  | 'Coding' | 'Backend Development' | 'API Design' | 'Database Management' | 'Project'
+  | 'Documentation' | 'UI' | 'Component' | 'Styling' | 'Feature Implementation' | 'DevOps' 
+  | 'CI/CD' | 'Security Analysis' | 'Automated Testing' | 'Bug Fix' | 'Code Review' 
+  | 'System Architecture' | 'Mobile Development' | 'Algorithm Design' | 'Performance Optimization'
+  // Design
+  | 'Design' | 'User Research' | 'Wireframing' | 'Prototyping' | 'Visual Design' | 'Branding'
+  // Marketing
+  | 'Campaign Planning' | 'Content Creation' | 'Social Media' | 'Email Marketing' | 'Ads' 
+  | 'Market Analysis' | 'Copywriting' | 'Growth Hacking'
+  // Business
+  | 'Strategy Planning' | 'Financial Modeling' | 'Presentation' | 'Business Case'
+  // Data
+  | 'Data Cleaning' | 'Visualization' | 'Statistical Analysis' | 'Reporting' | 'SQL Querying' | 'Machine Learning Model'
+  // General
+  | 'MCQ';
+  
 export type TaskPriority = 'High' | 'Medium' | 'Low';
 
 export interface TaskRound {

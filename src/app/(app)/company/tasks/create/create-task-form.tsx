@@ -24,6 +24,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel as SelectGroupLabel
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -38,44 +40,59 @@ import { AiAssistantDialog } from './ai-assistant-dialog';
 import type { RoleCategory, TaskDifficulty, TaskType, TaskTemplate } from '@/lib/types';
 import { mockTemplates } from '@/lib/mock-data';
 
-const roleCategories: RoleCategory[] = ["Engineering", "Design", "Marketing", "Business", "Data"];
-const allTaskTypes: TaskType[] = [
-  // Engineering
-  "Coding", "Backend Development", "API Design", "Database Management", "Project", 
-  "Documentation", "UI", "Component", "Styling", "Feature Implementation", "DevOps", 
-  "CI/CD", "Security Analysis", "Automated Testing", "Bug Fix", "Code Review", 
-  "System Architecture", "Mobile Development",
-  // Design
-  "Design", 
-  // Marketing
-  "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", 
-  "Market Analysis", 
-  // Business
-  "Strategy Planning", "Financial Modeling", "Presentation",
-  // Data
-  "Data Cleaning", "Visualization", "Statistical Analysis", "Reporting",
-  // General
-  "MCQ"
+const allRoleCategories: RoleCategory[] = [
+  'Engineering', 'Frontend', 'Backend', 'Full Stack', 'DevOps', 'Mobile',
+  'Design', 'UI/UX Design', 'Graphic Design', 'Product Design', 'Motion Design',
+  'Marketing', 'Digital Marketing', 'SEO', 'Content Marketing', 'Performance Marketing',
+  'Business', 'Sales', 'Operations', 'Business Development', 'Strategy',
+  'Data', 'Data Analyst', 'Data Scientist', 'Machine Learning Engineer'
 ];
 
-const roleTaskTypesMap: Record<RoleCategory, TaskType[]> = {
+const allTaskTypes: TaskType[] = [
+  'Coding', 'Backend Development', 'API Design', 'Database Management', 'Project', 
+  'Documentation', 'UI', 'Component', 'Styling', 'Feature Implementation', 'DevOps', 
+  'CI/CD', 'Security Analysis', 'Automated Testing', 'Bug Fix', 'Code Review', 
+  'System Architecture', 'Mobile Development', 'Algorithm Design', 'Performance Optimization',
+  'Design', 'User Research', 'Wireframing', 'Prototyping', 'Visual Design', 'Branding',
+  'Campaign Planning', 'Content Creation', 'Social Media', 'Email Marketing', 'Ads', 
+  'Market Analysis', 'Copywriting', 'Growth Hacking',
+  'Strategy Planning', 'Financial Modeling', 'Presentation', 'Business Case',
+  'Data Cleaning', 'Visualization', 'Statistical Analysis', 'Reporting', 'SQL Querying', 'Machine Learning Model',
+  'MCQ'
+];
+
+const roleTaskTypesMap: Record<string, TaskType[]> = {
   Engineering: [
-    "Coding", "Backend Development", "API Design", "Database Management", "Project", 
-    "Documentation", "UI", "Component", "Styling", "Feature Implementation", "DevOps", 
-    "CI/CD", "Security Analysis", "Automated Testing", "Bug Fix", "Code Review", 
-    "System Architecture", "Mobile Development"
+    'Coding', 'Backend Development', 'API Design', 'Database Management', 'Project', 'Documentation', 'UI', 'Component', 'Styling', 'Feature Implementation', 'DevOps', 'CI/CD', 'Security Analysis', 'Automated Testing', 'Bug Fix', 'Code Review', 'System Architecture', 'Mobile Development', 'Algorithm Design', 'Performance Optimization', 'MCQ'
   ],
-  Design: ["Design", "Project", "Documentation", "UI", "Styling"],
-  Marketing: ["Documentation", "Project", "MCQ", "Campaign Planning", "Content Creation", "Social Media", "Email Marketing", "Ads", "Market Analysis"],
-  Business: ["Documentation", "Project", "Market Analysis", "Strategy Planning", "Financial Modeling", "Presentation"],
-  Data: ["Coding", "Project", "MCQ", "Documentation", "Data Cleaning", "Visualization", "Statistical Analysis", "Reporting"],
+  Design: ['Design', 'Project', 'Documentation', 'UI', 'Styling', 'User Research', 'Wireframing', 'Prototyping', 'Visual Design', 'Branding', 'MCQ'],
+  Marketing: ['Documentation', 'Project', 'MCQ', 'Campaign Planning', 'Content Creation', 'Social Media', 'Email Marketing', 'Ads', 'Market Analysis', 'Copywriting', 'Growth Hacking'],
+  Business: ['Documentation', 'Project', 'MCQ', 'Market Analysis', 'Strategy Planning', 'Financial Modeling', 'Presentation', 'Business Case'],
+  Data: ['Coding', 'Project', 'MCQ', 'Documentation', 'Data Cleaning', 'Visualization', 'Statistical Analysis', 'Reporting', 'SQL Querying', 'Machine Learning Model'],
+};
+
+const groupedRoles: { label: RoleCategory; subRoles: RoleCategory[] }[] = [
+  { label: 'Engineering', subRoles: ['Frontend', 'Backend', 'Full Stack', 'DevOps', 'Mobile'] },
+  { label: 'Design', subRoles: ['UI/UX Design', 'Graphic Design', 'Product Design', 'Motion Design'] },
+  { label: 'Marketing', subRoles: ['Digital Marketing', 'SEO', 'Content Marketing', 'Performance Marketing'] },
+  { label: 'Business', subRoles: ['Sales', 'Operations', 'Business Development', 'Strategy'] },
+  { label: 'Data', subRoles: ['Data Analyst', 'Data Scientist', 'Machine Learning Engineer'] }
+];
+
+const getParentRole = (role: RoleCategory): RoleCategory => {
+    for (const group of groupedRoles) {
+        if (group.subRoles.includes(role)) {
+            return group.label;
+        }
+    }
+    return role;
 };
 
 
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
   description: z.string().min(20, 'Description must be at least 20 characters.'),
-  roleCategory: z.enum(roleCategories, {required_error: "Please select a role category."}),
+  roleCategory: z.enum(allRoleCategories, {required_error: "Please select a role category."}),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced', 'Expert'], {required_error: "Please select a difficulty."}),
   taskTypes: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: 'You have to select at least one task type.',
@@ -148,7 +165,8 @@ export function CreateTaskForm() {
   
   const availableTaskTypes = useMemo(() => {
     if (!watchedRoleCategory) return [];
-    return roleTaskTypesMap[watchedRoleCategory] || [];
+    const parentRole = getParentRole(watchedRoleCategory);
+    return roleTaskTypesMap[parentRole] || [];
   }, [watchedRoleCategory]);
 
   useEffect(() => {
@@ -259,8 +277,14 @@ export function CreateTaskForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {roleCategories.map(role => (
-                          <SelectItem key={role} value={role}>{role}</SelectItem>
+                        {groupedRoles.map(group => (
+                            <SelectGroup key={group.label}>
+                                <SelectGroupLabel>{group.label}</SelectGroupLabel>
+                                <SelectItem value={group.label}>{group.label} (General)</SelectItem>
+                                {group.subRoles.map(role => (
+                                <SelectItem key={role} value={role}>{role}</SelectItem>
+                                ))}
+                            </SelectGroup>
                         ))}
                       </SelectContent>
                     </Select>

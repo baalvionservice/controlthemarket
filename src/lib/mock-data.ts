@@ -198,7 +198,22 @@ export const mockUsers: User[] = [
         bio: 'Creative designer focused on user experience.',
         experienceLevel: 'Intermediate',
     }
-  }
+  },
+  {
+    id: 'user-10',
+    name: 'Baalvion Admin',
+    email: 'admin@baalvion.inc',
+    role: 'company',
+    companyRole: 'owner',
+    companyId: 'company-3',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
+    isActive: true,
+    isVerified: true,
+    onboardingCompleted: true,
+    profile: {
+      avatarUrl: 'https://picsum.photos/seed/avatar10/100/100',
+    },
+  },
 ];
 
 export const mockCompanies: Company[] = [
@@ -236,6 +251,20 @@ export const mockCompanies: Company[] = [
     createdAt: new Date(new Date().setDate(new Date().getDate() - 20)).toISOString(),
     isActive: true,
     isVerified: false,
+  },
+  {
+    id: 'company-3',
+    name: 'Baalvion Inc.',
+    description: 'A next-generation institutional Investor Relations Platform.',
+    ownerId: 'user-10',
+    website: 'https://baalvion.inc',
+    logoUrl: 'https://picsum.photos/seed/company3/100/100',
+    industry: 'Financial Services',
+    location: 'New York, NY',
+    country: 'United States',
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 5)).toISOString(),
+    isActive: true,
+    isVerified: true,
   },
 ];
 
@@ -390,7 +419,7 @@ export const mockTasks: Task[] = [
   {
     id: 'task-8',
     title: 'Implement Dark Mode Toggle Feature',
-    description: 'Add a dark mode toggle to a simple application. The user\'s preference should be saved in localStorage.',
+    description: 'Add a dark mode toggle to a simple application. The user\\\'s preference should be saved in localStorage.',
     instructions: '<ol><li>Add a button to toggle between light and dark themes.</li><li>Use CSS variables to manage colors for both themes.</li><li>When the theme changes, add a <code>.dark</code> class to the <code>&lt;html&gt;</code> element.</li><li>Persist the selected theme in <code>localStorage</code>.</li></ol>',
     expectedOutputs: '<p>A link to a GitHub repository with the complete project.</p>',
     roleCategory: 'Engineering',
@@ -604,8 +633,8 @@ POST   /api/nda/accept         (Protected: Investor)</code></pre>`,
     difficulty: 'Expert',
     priority: 'High',
     deadline: new Date(new Date().setDate(new Date().getDate() + 21)).toISOString(),
-    companyId: 'company-1',
-    createdBy: 'user-2',
+    companyId: 'company-3',
+    createdBy: 'user-10',
     status: 'published',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -643,7 +672,7 @@ POST   /api/nda/accept         (Protected: Investor)</code></pre>`,
 <pre><code>POST   /api/tasks/create              (Company)
 POST   /api/tasks/assign              (Company)
 GET    /api/tasks                     (Role-based filtered list)
-GET    /api/tasks/:id                 (Assigned Developers, Company, Admin)
+GET    /api/tasks/:id                 (Only assigned users)
 POST   /api/tasks/:id/submit          (Assigned Developer)
 POST   /api/tasks/:id/status/update   (Company, Admin)
 GET    /api/tasks/logs                (Admin, Company)</code></pre>
@@ -679,7 +708,7 @@ export const mockTemplates: TaskTemplate[] = [
     templateId: 'TPL-ENG-001',
     title: 'Frontend Responsive Component',
     description: 'A standard task to create a reusable and responsive component for a modern web application.',
-    instructions: '1. Use React and Tailwind CSS.\n2. Component should have standard elements like a header, content, and footer.\n3. It must be responsive across mobile, tablet, and desktop breakpoints.\n4. Manage state internally without external libraries.',
+    instructions: '1. Use React and Tailwind CSS.\\n2. Component should have standard elements like a header, content, and footer.\\n3. It must be responsive across mobile, tablet, and desktop breakpoints.\\n4. Manage state internally without external libraries.',
     expectedOutputs: 'A single React component file (.tsx) that is self-contained and ready for use.',
     roleCategory: 'Engineering',
     taskTypes: ['Coding', 'Design'],
@@ -694,7 +723,7 @@ export const mockTemplates: TaskTemplate[] = [
     templateId: 'TPL-DATA-001',
     title: 'Blog Database Schema Design',
     description: 'This task requires designing a normalized database schema for a typical blogging platform.',
-    instructions: '1. Identify the core entities: Users, Posts, Comments, and Tags.\n2. Define attributes for each entity.\n3. Establish relationships (one-to-many, many-to-many).\n4. Provide the schema as a SQL CREATE TABLE script.',
+    instructions: '1. Identify the core entities: Users, Posts, Comments, and Tags.\\n2. Define attributes for each entity.\\n3. Establish relationships (one-to-many, many-to-many).\\n4. Provide the schema as a SQL CREATE TABLE script.',
     expectedOutputs: 'A single .sql file with SQL statements for tables, columns, PKs, and FKs.',
     roleCategory: 'Data',
     taskTypes: ['Documentation'],
@@ -1656,7 +1685,8 @@ export const mockSystemErrors: SystemError[] = [
     type: 'Unhandled Exception',
     severity: 'Critical',
     message: 'TypeError: Cannot read properties of undefined (reading \'id\')',
-    stackTrace: 'at /app/src/services/userService.ts:42:15\nat processTicksAndRejections (node:internal/process/task_queues:95:5)',
+    stackTrace: `at /app/src/services/userService.ts:42:15
+at processTicksAndRejections (node:internal/process/task_queues:95:5)`,
     frequency: 125,
     lastOccurred: new Date(new Date().setHours(new Date().getHours() - 1)).toISOString(),
     status: 'Open',

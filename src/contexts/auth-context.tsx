@@ -236,7 +236,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       pathname.startsWith("/login") ||
       pathname.startsWith("/signup") ||
       pathname === "/" ||
-      pathname.startsWith("/demos");
+      pathname.startsWith("/demos")||
+      pathname.startsWith("/blog");
 
     if (!user && !isPublicPath) {
       router.push("/login");

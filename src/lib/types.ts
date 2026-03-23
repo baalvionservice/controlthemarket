@@ -1,10 +1,12 @@
+export type UserRole = "candidate" | "company" | "admin";
+export type CompanyRole = "owner" | "admin" | "member";
+export type ExperienceLevel =
+  | "Beginner"
+  | "Intermediate"
+  | "Advanced"
+  | "Expert";
 
-
-export type UserRole = 'candidate' | 'company' | 'admin';
-export type CompanyRole = 'owner' | 'admin' | 'member';
-export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
-
-export type BadgeRarity = 'Common' | 'Rare' | 'Elite';
+export type BadgeRarity = "Common" | "Rare" | "Elite";
 
 export interface Badge {
   id: string;
@@ -15,9 +17,9 @@ export interface Badge {
 }
 
 export interface Domain {
-    name: string;
-    verified: boolean;
-    purpose: string;
+  name: string;
+  verified: boolean;
+  purpose: string;
 }
 
 export interface User {
@@ -36,7 +38,7 @@ export interface User {
   consentAccepted?: boolean;
   consentAcceptedAt?: string;
   profile?: {
-    avatarUrl: string;
+    avatarUrl?: string;
     bio?: string;
     location?: string;
     experienceLevel?: ExperienceLevel;
@@ -75,54 +77,95 @@ export interface Company {
   };
 }
 
-export type TaskDifficulty = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
-export type TaskStatus = 'draft' | 'published' | 'closed' | 'archived';
-export type RoleCategory = 
-  | 'Engineering' 
-  | 'Frontend'
-  | 'Backend'
-  | 'Full Stack'
-  | 'DevOps'
-  | 'Mobile'
-  | 'Design' 
-  | 'UI/UX Design'
-  | 'Graphic Design'
-  | 'Product Design'
-  | 'Motion Design'
-  | 'Marketing' 
-  | 'Digital Marketing'
-  | 'SEO'
-  | 'Content Marketing'
-  | 'Performance Marketing'
-  | 'Business' 
-  | 'Sales'
-  | 'Operations'
-  | 'Business Development'
-  | 'Strategy'
-  | 'Data'
-  | 'Data Analyst'
-  | 'Data Scientist'
-  | 'Machine Learning Engineer';
+export type TaskDifficulty =
+  | "Beginner"
+  | "Intermediate"
+  | "Advanced"
+  | "Expert";
+export type TaskStatus = "draft" | "published" | "closed" | "archived";
+export type RoleCategory =
+  | "Engineering"
+  | "Frontend"
+  | "Backend"
+  | "Full Stack"
+  | "DevOps"
+  | "Mobile"
+  | "Design"
+  | "UI/UX Design"
+  | "Graphic Design"
+  | "Product Design"
+  | "Motion Design"
+  | "Marketing"
+  | "Digital Marketing"
+  | "SEO"
+  | "Content Marketing"
+  | "Performance Marketing"
+  | "Business"
+  | "Sales"
+  | "Operations"
+  | "Business Development"
+  | "Strategy"
+  | "Data"
+  | "Data Analyst"
+  | "Data Scientist"
+  | "Machine Learning Engineer";
 
-export type TaskType = 
+export type TaskType =
   // Engineering
-  | 'Coding' | 'Backend Development' | 'API Design' | 'Database Management' | 'Project'
-  | 'Documentation' | 'UI' | 'Component' | 'Styling' | 'Feature Implementation' | 'DevOps' 
-  | 'CI/CD' | 'Security Analysis' | 'Automated Testing' | 'Bug Fix' | 'Code Review' 
-  | 'System Architecture' | 'Mobile Development' | 'Algorithm Design' | 'Performance Optimization'
+  | "Coding"
+  | "Backend Development"
+  | "API Design"
+  | "Database Management"
+  | "Project"
+  | "Documentation"
+  | "UI"
+  | "Component"
+  | "Styling"
+  | "Feature Implementation"
+  | "DevOps"
+  | "CI/CD"
+  | "Security Analysis"
+  | "Automated Testing"
+  | "Bug Fix"
+  | "Code Review"
+  | "System Architecture"
+  | "Mobile Development"
+  | "Algorithm Design"
+  | "Performance Optimization"
   // Design
-  | 'Design' | 'User Research' | 'Wireframing' | 'Prototyping' | 'Visual Design' | 'Branding'
+  | "Design"
+  | "User Research"
+  | "Wireframing"
+  | "Prototyping"
+  | "Visual Design"
+  | "Branding"
   // Marketing
-  | 'Campaign Planning' | 'Content Creation' | 'Social Media' | 'Email Marketing' | 'Ads' 
-  | 'Market Analysis' | 'Copywriting' | 'Growth Hacking'
+  | "Campaign Planning"
+  | "Content Creation"
+  | "Social Media"
+  | "Email Marketing"
+  | "Ads"
+  | "Market Analysis"
+  | "Copywriting"
+  | "Growth Hacking"
+  | "SEO"
   // Business
-  | 'Strategy Planning' | 'Financial Modeling' | 'Presentation' | 'Business Case'
+  | "Strategy Planning"
+  | "Financial Modeling"
+  | "Presentation"
+  | "Business Case"
   // Data
-  | 'Data Cleaning' | 'Visualization' | 'Statistical Analysis' | 'Reporting' | 'SQL Querying' | 'Machine Learning Model'
+  | "Data Cleaning"
+  | "Visualization"
+  | "Statistical Analysis"
+  | "Reporting"
+  | "SQL Querying"
+  | "Machine Learning Model"
+  | "Python"
   // General
-  | 'MCQ';
-  
-export type TaskPriority = 'High' | 'Medium' | 'Low';
+  | "MCQ";
+
+export type TaskPriority = "High" | "Medium" | "Low";
 
 export interface TaskRound {
   roundNumber: number;
@@ -134,6 +177,7 @@ export interface TaskRound {
 export interface Task {
   id: string;
   title: string;
+  name?: string; // Adding name property for compatibility
   description: string;
   instructions: string;
   expectedOutputs: string;
@@ -180,28 +224,42 @@ export interface TaskTemplate {
   isPrivate?: boolean;
 }
 
-export type SubmissionContentType = 'link' | 'file' | 'externalLink';
+export type SubmissionContentType = "link" | "file" | "externalLink";
 
 export type SubmissionStatus =
-  | 'assigned'
-  | 'in-progress'
-  | 'pending'
-  | 'in-review'
-  | 'evaluated'
-  | 'shortlisted'
-  | 'rejected'
-  | 'resubmitted'
-  | 'moved-to-next-round'
-  | 'flagged';
+  | "assigned"
+  | "in-progress"
+  | "pending"
+  | "in-review"
+  | "evaluated"
+  | "shortlisted"
+  | "rejected"
+  | "resubmitted"
+  | "moved-to-next-round"
+  | "flagged";
 
-export type ValidationStatus = 'Valid' | 'Invalid' | 'Warning' | 'Pending';
-export type TestCaseStatus = 'Passed' | 'Failed' | 'Warning' | 'Pending';
-export type SandboxStatus = 'Active' | 'Idle' | 'Completed' | 'Error' | 'Not Started';
-export type LiveSessionStatus = 'Not Started' | 'Scheduled' | 'Active' | 'Paused' | 'Completed' | 'Cancelled' | 'Requested' | 'Denied';
-export type PlagiarismRisk = 'High' | 'Medium' | 'Low' | 'None';
+export type ValidationStatus = "Valid" | "Invalid" | "Warning" | "Pending";
+export type TestCaseStatus = "Passed" | "Failed" | "Warning" | "Pending";
+export type SandboxStatus =
+  | "Active"
+  | "Idle"
+  | "Completed"
+  | "Error"
+  | "Not Started";
+export type LiveSessionStatus =
+  | "Not Started"
+  | "Scheduled"
+  | "Active"
+  | "Paused"
+  | "Completed"
+  | "Cancelled"
+  | "Requested"
+  | "Denied";
+export type PlagiarismRisk = "High" | "Medium" | "Low" | "None";
 
 export interface TestCase {
   id: string;
+  submissionId?: string;
   name: string;
   description: string;
   expectedOutcome: string;
@@ -211,7 +269,7 @@ export interface TestCase {
 
 export type DomainAccessRequest = {
   domainName: string;
-  status: 'pending' | 'approved' | 'revoked';
+  status: "pending" | "approved" | "revoked";
   reason: string;
 };
 
@@ -230,11 +288,11 @@ export interface Submission {
   validationStatus?: ValidationStatus;
   testCaseStatus?: TestCaseStatus;
   autoScore?: number;
-  autoScoringStatus?: 'Pending' | 'Completed' | 'Failed';
+  autoScoringStatus?: "Pending" | "Completed" | "Failed";
   sandboxStatus?: SandboxStatus;
   liveSessionStatus?: LiveSessionStatus;
   plagiarismRisk?: PlagiarismRisk;
-  recordingStatus?: 'Recording' | 'Paused' | 'Completed' | 'Not Started';
+  recordingStatus?: "Recording" | "Paused" | "Completed" | "Not Started";
   assignedAt: string; // ISO 8601 date string
   submittedAt?: string; // ISO 8601 date string
   resubmittedAt?: string; // ISO 8601 date string
@@ -243,7 +301,7 @@ export interface Submission {
   attemptsCount?: number;
   currentRound?: number;
   skillMatchResult?: {
-    result: 'pass' | 'fail';
+    result: "pass" | "fail";
     skillBadge: string;
   };
   requestedDomains?: DomainAccessRequest[];
@@ -281,8 +339,15 @@ export interface EvaluationSchema {
   isActive: boolean;
 }
 
-export type ActivityActionType = 'submission' | 'task_update' | 'status_change' | 'login' | 'override' | 'user_created' | 'company_created';
-export type ActivityStatus = 'Success' | 'Failed' | 'Pending';
+export type ActivityActionType =
+  | "submission"
+  | "task_update"
+  | "status_change"
+  | "login"
+  | "override"
+  | "user_created"
+  | "company_created";
+export type ActivityStatus = "Success" | "Failed" | "Pending";
 
 export interface Activity {
   id: string;
@@ -290,7 +355,7 @@ export interface Activity {
   actionType: ActivityActionType;
   timestamp: string; // ISO 8601
   targetEntity: {
-    type: 'Task' | 'User' | 'Company' | 'Submission';
+    type: "Task" | "User" | "Company" | "Submission";
     id: string;
     name?: string;
   };
@@ -298,9 +363,14 @@ export interface Activity {
   description: string;
 }
 
-export type NotificationType = 'task_deadline' | 'new_submission' | 'user_signup' | 'system_warning' | 'flagged_submission';
-export type NotificationPriority = 'High' | 'Medium' | 'Low';
-export type NotificationStatus = 'Unread' | 'Read' | 'Resolved';
+export type NotificationType =
+  | "task_deadline"
+  | "new_submission"
+  | "user_signup"
+  | "system_warning"
+  | "flagged_submission";
+export type NotificationPriority = "High" | "Medium" | "Low";
+export type NotificationStatus = "Unread" | "Read" | "Resolved";
 
 export interface Notification {
   id: string;
@@ -311,13 +381,13 @@ export interface Notification {
   title: string;
   description: string;
   relatedEntity: {
-    type: 'Task' | 'User' | 'Company' | 'Submission' | 'System';
+    type: "Task" | "User" | "Company" | "Submission" | "System";
     id: string;
     name?: string;
   };
 }
 
-export type PerformanceTrend = 'improving' | 'declining' | 'stable' | 'new';
+export type PerformanceTrend = "improving" | "declining" | "stable" | "new";
 
 export interface CandidateInsight {
   candidate: User;
@@ -337,7 +407,7 @@ export interface CompanyInsight {
   skillGaps: string[];
 }
 
-export type IntegrationStatus = 'Connected' | 'Pending' | 'Error';
+export type IntegrationStatus = "Connected" | "Pending" | "Error";
 
 export interface GitHubRepository {
   id: string;
@@ -352,8 +422,12 @@ export interface GitHubRepository {
   lastCommitMessage: string;
 }
 
-export type WebhookEvent = 'submission.created' | 'submission.evaluated' | 'task.published' | 'user.created';
-export type WebhookStatus = 'Active' | 'Inactive' | 'Error';
+export type WebhookEvent =
+  | "submission.created"
+  | "submission.evaluated"
+  | "task.published"
+  | "user.created";
+export type WebhookStatus = "Active" | "Inactive" | "Error";
 
 export interface Webhook {
   id: string;
@@ -365,11 +439,11 @@ export interface Webhook {
 }
 
 export interface WebhookTriggerLog {
-    id: string;
-    webhookId: string;
-    timestamp: string;
-    status: 'Success' | 'Failed';
-    payload: string;
+  id: string;
+  webhookId: string;
+  timestamp: string;
+  status: "Success" | "Failed";
+  payload: string;
 }
 
 export interface Team {
@@ -380,8 +454,15 @@ export interface Team {
   leadId: string; // The user ID of the team lead
 }
 
-export type ApiIntegrationStatus = 'Active' | 'Inactive' | 'Error';
-export type ApiIntegrationCategory = 'Analytics' | 'Chat' | 'Cloud Storage' | 'DevOps' | 'Monitoring' | 'Payments' | 'Other';
+export type ApiIntegrationStatus = "Active" | "Inactive" | "Error";
+export type ApiIntegrationCategory =
+  | "Analytics"
+  | "Chat"
+  | "Cloud Storage"
+  | "DevOps"
+  | "Monitoring"
+  | "Payments"
+  | "Other";
 
 export interface ApiIntegration {
   id: string;
@@ -395,65 +476,78 @@ export interface ApiIntegration {
   subscribedEvents: WebhookEvent[];
 }
 
-export type IntegrationLogSource = 'GitHub' | 'Webhook' | 'Jira' | 'Slack' | 'Sentry' | 'Vercel';
+export type IntegrationLogSource =
+  | "GitHub"
+  | "Webhook"
+  | "Jira"
+  | "Slack"
+  | "Sentry"
+  | "Vercel";
 
 export interface IntegrationLog {
   id: string;
   source: IntegrationLogSource;
   eventType: string; // e.g., 'push', 'submission.evaluated'
-  status: 'Success' | 'Warning' | 'Error';
+  status: "Success" | "Warning" | "Error";
   timestamp: string;
+  description?: string;
   relatedEntity: {
-    type: 'Task' | 'Submission' | 'User' | 'Company' | 'System';
+    type: "Task" | "Submission" | "User" | "Company" | "System";
     id: string;
     name?: string;
   };
 }
 
-export type ServiceStatusName = 'Authentication' | 'Database' | 'API Gateway' | 'Task Queue' | 'AI Assistant' | 'Notifications';
-export type ServiceStatusState = 'Running' | 'Degraded' | 'Down';
+export type ServiceStatusName =
+  | "Authentication"
+  | "Database"
+  | "API Gateway"
+  | "Task Queue"
+  | "AI Assistant"
+  | "Notifications";
+export type ServiceStatusState = "Running" | "Degraded" | "Down";
 
 export interface ServiceStatus {
-    id: string;
-    name: ServiceStatusName;
-    status: ServiceStatusState;
-    lastChecked: string;
-    uptimePercentage?: number;
-    lastDowntime?: string;
+  id: string;
+  name: ServiceStatusName;
+  status: ServiceStatusState;
+  lastChecked: string;
+  uptimePercentage?: number;
+  lastDowntime?: string;
 }
 
-export type AutoScalingStatus = 'Stable' | 'Scaling Up' | 'Scaling Down';
+export type AutoScalingStatus = "Stable" | "Scaling Up" | "Scaling Down";
 
 export interface SystemMetric {
-    id: string;
-    activeUsers: number;
-    activeSessions: number;
-    systemLoad: number; // percentage
-    apiRequestsPerMinute: number;
-    requestsPerSecond: number;
-    autoScalingStatus: AutoScalingStatus;
-    errorRate: number; // percentage
-    timestamp: string;
-    avgApiResponseTime: number;
-    dbQueryTime: number;
+  id: string;
+  activeUsers: number;
+  activeSessions: number;
+  systemLoad: number; // percentage
+  apiRequestsPerMinute: number;
+  requestsPerSecond: number;
+  autoScalingStatus: AutoScalingStatus;
+  errorRate: number; // percentage
+  timestamp: string;
+  avgApiResponseTime: number;
+  dbQueryTime: number;
 }
 
 export interface ServiceLoad {
-    id: string;
-    name: ServiceStatusName;
-    loadPercentage: number;
-    requestsHandled: number;
+  id: string;
+  name: ServiceStatusName;
+  loadPercentage: number;
+  requestsHandled: number;
 }
 
 export interface ScalingEvent {
-    id: string;
-    timestamp: string;
-    change: 'up' | 'down';
-    instanceCount: number;
-    reason: string;
+  id: string;
+  timestamp: string;
+  change: "up" | "down";
+  instanceCount: number;
+  reason: string;
 }
 
-export type LogSeverity = 'Info' | 'Warning' | 'Error';
+export type LogSeverity = "Info" | "Warning" | "Error";
 
 export interface SystemLog {
   id: string;
@@ -463,7 +557,7 @@ export interface SystemLog {
   message: string;
 }
 
-export type ErrorSeverity = 'Critical' | 'Warning' | 'Minor';
+export type ErrorSeverity = "Critical" | "Warning" | "Minor";
 
 export interface SystemError {
   id: string;
@@ -474,23 +568,23 @@ export interface SystemError {
   stackTrace: string;
   frequency: number;
   lastOccurred: string; // ISO 8601
-  status: 'Open' | 'Resolved' | 'Ignored';
+  status: "Open" | "Resolved" | "Ignored";
   affectedUsers: number;
 }
 
-export type IncidentStatus = 'Resolved' | 'Ongoing' | 'Investigating';
+export type IncidentStatus = "Resolved" | "Ongoing" | "Investigating";
 
 export interface SystemIncident {
-    id: string;
-    serviceName: ServiceStatusName;
-    status: IncidentStatus;
-    startTime: string; // ISO
-    endTime?: string; // ISO
-    durationMinutes?: number;
-    description: string;
+  id: string;
+  serviceName: ServiceStatusName;
+  status: IncidentStatus;
+  startTime: string; // ISO
+  endTime?: string; // ISO
+  durationMinutes?: number;
+  description: string;
 }
 
-export type InvoiceStatus = 'Paid' | 'Failed' | 'Pending' | 'Due' | 'Overdue';
+export type InvoiceStatus = "Paid" | "Failed" | "Pending" | "Due" | "Overdue";
 
 export interface InvoiceLineItem {
   id: string;
@@ -518,7 +612,6 @@ export interface Invoice {
   tax: number;
 }
 
-
 export interface UsageMetric {
   date: string;
   apiCalls: number;
@@ -527,10 +620,10 @@ export interface UsageMetric {
 }
 
 export interface PlanUsage {
-    feature: 'API Calls' | 'Tasks' | 'Storage' | 'Submissions';
-    usage: number;
-    limit: number;
-    unit: string;
+  feature: "API Calls" | "Tasks" | "Storage" | "Submissions";
+  usage: number;
+  limit: number;
+  unit: string;
 }
 
 export interface RevenueMetric {
@@ -541,13 +634,13 @@ export interface RevenueMetric {
 }
 
 export interface PlanDistribution {
-    plan: 'Basic' | 'Pro' | 'Enterprise';
-    count: number;
+  plan: "Basic" | "Pro" | "Enterprise";
+  count: number;
 }
 
 export interface RevenueSource {
-    source: 'Subscriptions' | 'Usage-based' | 'Add-ons';
-    amount: number;
+  source: "Subscriptions" | "Usage-based" | "Add-ons";
+  amount: number;
 }
 
 export interface Plan {
@@ -563,9 +656,16 @@ export interface Plan {
   features: string[];
 }
 
-export type SubscriptionStatus = 'ACTIVE' | 'CANCELED' | 'EXPIRED' | 'TRIAL';
-export type BillingCycle = 'MONTHLY' | 'YEARLY';
-export type PaymentProvider = 'STRIPE' | 'RAZORPAY' | 'PAYPAL' | 'GOOGLE_PAY' | 'APPLE_PAY' | 'PAYU' | 'ACH';
+export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "EXPIRED" | "TRIAL";
+export type BillingCycle = "MONTHLY" | "YEARLY";
+export type PaymentProvider =
+  | "STRIPE"
+  | "RAZORPAY"
+  | "PAYPAL"
+  | "GOOGLE_PAY"
+  | "APPLE_PAY"
+  | "PAYU"
+  | "ACH";
 
 export interface Subscription {
   id: string;
@@ -581,4 +681,95 @@ export interface Subscription {
     tasksCreated: number;
     submissionsReceived: number;
   };
+}
+
+// Dashboard data interfaces
+export interface RecordingDashboardData {
+  id: string;
+  candidate: User;
+  task: Task;
+  company?: Company;
+  recordingStatus?: "Recording" | "Paused" | "Completed" | "Not Started";
+  submittedAt: string;
+}
+
+export interface SecurityDashboardData {
+  id: string;
+  candidate: User;
+  task: Task;
+  company: Company;
+  status: SubmissionStatus;
+  plagiarismRisk?: PlagiarismRisk;
+  applicationDate: string;
+}
+
+export interface AdminSubmissionData {
+  id: string;
+  candidate: User;
+  task: Task;
+  company: Company;
+  status: SubmissionStatus;
+  validationStatus?: ValidationStatus;
+  score?: number;
+  autoScore?: number;
+  autoScoringStatus?: "Pending" | "Completed" | "Failed";
+  applicationDate: string;
+}
+
+export interface SubmissionWithTestData {
+  id: string;
+  candidate: User;
+  task: Task;
+  company: Company;
+  status: SubmissionStatus;
+  testCaseStatus?: TestCaseStatus;
+  submittedAt: string;
+}
+
+export interface FeedbackData {
+  submissionId: string;
+  candidate: User;
+  task: {
+    id: string;
+    title: string;
+    roleCategory: RoleCategory;
+  };
+  score?: number;
+  feedbackStatus: "Pending" | "Completed";
+  evaluationDate: string;
+}
+
+export interface EvaluationData {
+  id: string;
+  candidate: User;
+  task: {
+    id: string;
+    title: string;
+    roleCategory: RoleCategory;
+    multiRound?: boolean;
+    timeLimitMinutes?: number;
+  };
+  status: SubmissionStatus;
+  score?: number;
+  submittedAt: string;
+  timeSpentMinutes?: number;
+}
+
+export interface ComparisonData {
+  submission: Submission;
+  task: Task;
+  candidate: User;
+  evaluation?: Evaluation;
+}
+
+export interface AutomatedSubmission {
+  id: string;
+  candidateName: string;
+  candidateAvatar?: string;
+  taskTitle: string;
+  companyName: string;
+  autoScore?: number;
+  validationStatus?: ValidationStatus;
+  testCaseStatus?: TestCaseStatus;
+  processedAt: string;
 }

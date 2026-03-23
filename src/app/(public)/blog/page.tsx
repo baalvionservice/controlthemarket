@@ -1,7 +1,6 @@
+"use client";
 
-'use client';
-
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 // This is a single-file component for demo purposes.
 // In a real app, you would fetch posts from a CMS.
@@ -9,7 +8,7 @@ import { useEffect } from 'react';
 export default function BlogPage() {
   useEffect(() => {
     // This is a client component, so we can use browser APIs.
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.innerHTML = `
       const POSTS = [
         {id:'why-verified-skills',cat:'why',title:'Why Verified Skills Matter in Hiring — And Why Resumes Aren\\'t Enough',excerpt:'Hiring decisions based on resumes alone cost companies billions every year.',tags:['Hiring Strategy','ROI','Skill Verification'],read:'8 min',icon:'🎯',color:'hsl(142,76%,28%)',featured:true},
@@ -672,21 +671,29 @@ export default function BlogPage() {
     document.body.appendChild(script);
 
     // Make functions available globally for onclick handlers
-    window.setFilter = script.innerHTML.includes('setFilter') ? new Function('cat', 'btn', `
+    (window as any).setFilter = script.innerHTML.includes("setFilter")
+      ? (new Function(
+          "cat",
+          "btn",
+          `
       activeFilter = cat;
       document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
       btn.classList.add('on');
       filterPosts();
-    `) : () => {};
+    `
+        ) as (cat: string, btn: HTMLElement) => void)
+      : () => {};
 
-    window.filterPosts = script.innerHTML.includes('filterPosts') ? new Function(`
+    (window as any).filterPosts = script.innerHTML.includes("filterPosts")
+      ? (new Function(`
         const q = (document.getElementById('search-input').value||'').toLowerCase();
         let posts = POSTS;
         if (activeFilter !== 'all') posts = posts.filter(p=>p.cat===activeFilter);
         if (q) posts = posts.filter(p=>p.title.toLowerCase().includes(q)||p.excerpt.toLowerCase().includes(q)||p.tags.some(t=>t.toLowerCase().includes(q)));
         renderPosts(posts);
-    `) : () => {};
-    
+    `) as () => void)
+      : () => {};
+
     return () => {
       document.body.removeChild(script);
     };
@@ -696,13 +703,45 @@ export default function BlogPage() {
     <>
       <div id="blog-listing">
         <div className="blog-hero">
-          <div className="blog-hero" style={{padding:0,background:'none',border:'none'}}>
-            <div style={{maxWidth:'600px',margin:'0 auto',position:'relative',zIndex:1}}>
-              <div style={{fontSize:'10px',fontWeight:800,textTransform:'uppercase',letterSpacing:'2px',color:'var(--primary)',marginBottom:'10px'}}>SkillMatch Pro Blog</div>
-              <h1>Insights on <span>Skill-Based</span> Hiring</h1>
-              <p>Expert guides, data-backed research, and thought leadership on the future of talent verification and recruitment.</p>
+          <div
+            className="blog-hero"
+            style={{ padding: 0, background: "none", border: "none" }}
+          >
+            <div
+              style={{
+                maxWidth: "600px",
+                margin: "0 auto",
+                position: "relative",
+                zIndex: 1,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "10px",
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: "2px",
+                  color: "var(--primary)",
+                  marginBottom: "10px",
+                }}
+              >
+                SkillMatch Pro Blog
+              </div>
+              <h1>
+                Insights on <span>Skill-Based</span> Hiring
+              </h1>
+              <p>
+                Expert guides, data-backed research, and thought leadership on
+                the future of talent verification and recruitment.
+              </p>
               <div className="search-wrap">
-                <input className="search-input" id="search-input" type="text" placeholder="Search articles..." onInput={() => window.filterPosts()} />
+                <input
+                  className="search-input"
+                  id="search-input"
+                  type="text"
+                  placeholder="Search articles..."
+                  onInput={() => window.filterPosts()}
+                />
                 <span className="search-icon">🔍</span>
               </div>
             </div>
@@ -710,35 +749,80 @@ export default function BlogPage() {
         </div>
 
         <div className="filters-wrap" id="filter-bar">
-          <button className="filter-btn on" onClick={(e) => window.setFilter('all', e.currentTarget)}>All articles <span className="filter-count">22</span></button>
-          <button className="filter-btn" onClick={(e) => window.setFilter('why', e.currentTarget)}>Why Skill Match <span className="filter-count">3</span></button>
-          <button className="filter-btn" onClick={(e) => window.setFilter('audience', e.currentTarget)}>Audience Guides <span className="filter-count">9</span></button>
-          <button className="filter-btn" onClick={(e) => window.setFilter('feature', e.currentTarget)}>Features <span className="filter-count">4</span></button>
-          <button className="filter-btn" onClick={(e) => window.setFilter('thought', e.currentTarget)}>Thought Leadership <span className="filter-count">3</span></button>
-          <button className="filter-btn" onClick={(e) => window.setFilter('case', e.currentTarget)}>Case Studies <span className="filter-count">3</span></button>
+          <button
+            className="filter-btn on"
+            onClick={(e) => window.setFilter("all", e.currentTarget)}
+          >
+            All articles <span className="filter-count">22</span>
+          </button>
+          <button
+            className="filter-btn"
+            onClick={(e) => window.setFilter("why", e.currentTarget)}
+          >
+            Why Skill Match <span className="filter-count">3</span>
+          </button>
+          <button
+            className="filter-btn"
+            onClick={(e) => window.setFilter("audience", e.currentTarget)}
+          >
+            Audience Guides <span className="filter-count">9</span>
+          </button>
+          <button
+            className="filter-btn"
+            onClick={(e) => window.setFilter("feature", e.currentTarget)}
+          >
+            Features <span className="filter-count">4</span>
+          </button>
+          <button
+            className="filter-btn"
+            onClick={(e) => window.setFilter("thought", e.currentTarget)}
+          >
+            Thought Leadership <span className="filter-count">3</span>
+          </button>
+          <button
+            className="filter-btn"
+            onClick={(e) => window.setFilter("case", e.currentTarget)}
+          >
+            Case Studies <span className="filter-count">3</span>
+          </button>
         </div>
 
         <div className="main">
           <div>
             <div className="featured-label">Featured article</div>
-            <div className="feat-card" onClick={() => window.openArticle('why-verified-skills')}>
+            <div
+              className="feat-card"
+              onClick={() => window.openArticle("why-verified-skills")}
+            >
               <div className="feat-img">
                 <div className="feat-img-icon">🎯</div>
                 <div className="feat-img-stat">
                   <div className="sn">$11,000</div>
-                  <div className="sl">Average cost of a bad hire — discover how to avoid it</div>
+                  <div className="sl">
+                    Average cost of a bad hire — discover how to avoid it
+                  </div>
                 </div>
               </div>
               <div className="feat-body">
                 <span className="post-cat cat-why">Why SkillMatch Pro</span>
-                <h2>Why Verified Skills Matter in Hiring — And Why Resumes Aren&apos;t Enough</h2>
-                <p className="excerpt">Hiring decisions based on resumes alone cost companies billions every year. Discover the science behind skill verification and how objective performance data transforms your hiring pipeline.</p>
+                <h2>
+                  Why Verified Skills Matter in Hiring — And Why Resumes
+                  Aren&apos;t Enough
+                </h2>
+                <p className="excerpt">
+                  Hiring decisions based on resumes alone cost companies
+                  billions every year. Discover the science behind skill
+                  verification and how objective performance data transforms
+                  your hiring pipeline.
+                </p>
                 <div className="post-meta">
-                  <span>8 min read</span><span className="meta-sep"></span>
-                  <span>Hiring Strategy</span><span className="meta-sep"></span>
+                  <span>8 min read</span>
+                  <span className="meta-sep"></span>
+                  <span>Hiring Strategy</span>
+                  <span className="meta-sep"></span>
                   <span>March 2026</span>
                 </div>
-                <br/>
+                <br />
                 <button className="read-btn">Read article →</button>
               </div>
             </div>
@@ -749,25 +833,65 @@ export default function BlogPage() {
           <aside className="sidebar">
             <div className="sw">
               <h4>Most read</h4>
-              <div className="sw-item" onClick={() => window.openArticle('vs-job-boards')}>
+              <div
+                className="sw-item"
+                onClick={() => window.openArticle("vs-job-boards")}
+              >
                 <div className="sw-num">01</div>
-                <div><div className="sw-title">SkillMatch Pro vs. Traditional Job Boards</div><div className="sw-meta">Thought Leadership · 7 min</div></div>
+                <div>
+                  <div className="sw-title">
+                    SkillMatch Pro vs. Traditional Job Boards
+                  </div>
+                  <div className="sw-meta">Thought Leadership · 7 min</div>
+                </div>
               </div>
-              <div className="sw-item" onClick={() => window.openArticle('reduce-bad-hires')}>
+              <div
+                className="sw-item"
+                onClick={() => window.openArticle("reduce-bad-hires")}
+              >
                 <div className="sw-num">02</div>
-                <div><div className="sw-title">How SkillMatch Pro Reduces Bad Hires</div><div className="sw-meta">Why SMP · 6 min</div></div>
+                <div>
+                  <div className="sw-title">
+                    How SkillMatch Pro Reduces Bad Hires
+                  </div>
+                  <div className="sw-meta">Why SMP · 6 min</div>
+                </div>
               </div>
-              <div className="sw-item" onClick={() => window.openArticle('ai-skill-matching')}>
+              <div
+                className="sw-item"
+                onClick={() => window.openArticle("ai-skill-matching")}
+              >
                 <div className="sw-num">03</div>
-                <div><div className="sw-title">AI-Powered Skill Matching: How It Works</div><div className="sw-meta">Features · 5 min</div></div>
+                <div>
+                  <div className="sw-title">
+                    AI-Powered Skill Matching: How It Works
+                  </div>
+                  <div className="sw-meta">Features · 5 min</div>
+                </div>
               </div>
-              <div className="sw-item" onClick={() => window.openArticle('hire-developers')}>
+              <div
+                className="sw-item"
+                onClick={() => window.openArticle("hire-developers")}
+              >
                 <div className="sw-num">04</div>
-                <div><div className="sw-title">Hire Top Developers Faster with SkillMatch Pro</div><div className="sw-meta">Audience · 5 min</div></div>
+                <div>
+                  <div className="sw-title">
+                    Hire Top Developers Faster with SkillMatch Pro
+                  </div>
+                  <div className="sw-meta">Audience · 5 min</div>
+                </div>
               </div>
-              <div className="sw-item" onClick={() => window.openArticle('future-talent')}>
+              <div
+                className="sw-item"
+                onClick={() => window.openArticle("future-talent")}
+              >
                 <div className="sw-num">05</div>
-                <div><div className="sw-title">The Future of Talent Verification</div><div className="sw-meta">Thought Leadership · 8 min</div></div>
+                <div>
+                  <div className="sw-title">
+                    The Future of Talent Verification
+                  </div>
+                  <div className="sw-meta">Thought Leadership · 8 min</div>
+                </div>
               </div>
             </div>
             <div className="sw">
@@ -789,9 +913,23 @@ export default function BlogPage() {
             </div>
             <div className="sw">
               <h4>Newsletter</h4>
-              <p style={{fontSize:'12px',color:'var(--muted-fg)',marginBottom:'12px',lineHeight:1.6}}>Get weekly hiring insights delivered to your inbox. Join 4,200+ HR leaders.</p>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "var(--muted-fg)",
+                  marginBottom: "12px",
+                  lineHeight: 1.6,
+                }}
+              >
+                Get weekly hiring insights delivered to your inbox. Join 4,200+
+                HR leaders.
+              </p>
               <div className="nl-form">
-                <input className="nl-input" type="email" placeholder="Enter your email" />
+                <input
+                  className="nl-input"
+                  type="email"
+                  placeholder="Enter your email"
+                />
                 <button className="nl-btn">Subscribe free →</button>
               </div>
             </div>
@@ -799,7 +937,9 @@ export default function BlogPage() {
         </div>
       </div>
       <div id="article-view" className="article-view">
-        <button className="art-back" onClick={() => window.closeArticle()}>← Back to blog</button>
+        <button className="art-back" onClick={() => window.closeArticle()}>
+          ← Back to blog
+        </button>
         <div id="article-content"></div>
       </div>
     </>

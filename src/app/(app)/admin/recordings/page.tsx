@@ -1,7 +1,6 @@
-
 import { getSubmissions, getUsers, getTasks, getCompanies } from "@/lib/api";
 import { RecordingList } from "./recording-list";
-import type { Submission, Task, User, Company } from '@/lib/types';
+import type { Submission, Task, User, Company } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -15,17 +14,12 @@ export type RecordingDashboardData = {
   candidate: User;
   task: Task;
   company: Company;
-  recordingStatus?: Submission['recordingStatus'];
+  recordingStatus?: Submission["recordingStatus"];
   submittedAt: string;
 };
 
 export default async function SessionRecordingsPage() {
-  const [
-    allSubmissions,
-    allUsers,
-    allTasks,
-    allCompanies,
-  ] = await Promise.all([
+  const [allSubmissions, allUsers, allTasks, allCompanies] = await Promise.all([
     getSubmissions(),
     getUsers(),
     getTasks(),
@@ -33,45 +27,47 @@ export default async function SessionRecordingsPage() {
   ]);
 
   const recordingData: RecordingDashboardData[] = allSubmissions
-    .map(submission => {
-        const candidate = allUsers.find(u => u.id === submission.userId);
-        const task = allTasks.find(t => t.id === submission.taskId);
-        const company = allCompanies.find(c => c.id === submission.companyId);
+    .map((submission) => {
+      const candidate = allUsers.find((u) => u.id === submission.userId);
+      const task = allTasks.find((t) => t.id === submission.taskId);
+      const company = allCompanies.find((c) => c.id === submission.companyId);
 
-        if (!candidate || !task || !company || !submission.submittedAt) return null;
+      if (!candidate || !task || !company || !submission.submittedAt)
+        return null;
 
-        return {
-            id: submission.id,
-            candidate: candidate,
-            task: task,
-            company: company,
-            recordingStatus: submission.recordingStatus,
-            submittedAt: submission.submittedAt,
-        };
+      return {
+        id: submission.id,
+        candidate: candidate,
+        task: task,
+        company: company,
+        recordingStatus: submission.recordingStatus,
+        submittedAt: submission.submittedAt,
+      };
     })
-    .filter((item): item is RecordingDashboardData => item !== null);
+    .filter((item): item is NonNullable<typeof item> => item !== null);
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-         <div>
-            <h2 className="font-headline text-3xl font-bold tracking-tight">
-                Session Recordings
-            </h2>
-            <p className="text-muted-foreground">
-                Review recorded candidate sessions for evaluation and anti-cheating purposes.
-            </p>
+        <div>
+          <h2 className="font-headline text-3xl font-bold tracking-tight">
+            Session Recordings
+          </h2>
+          <p className="text-muted-foreground">
+            Review recorded candidate sessions for evaluation and anti-cheating
+            purposes.
+          </p>
         </div>
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>All Recorded Sessions</CardTitle>
-            <CardDescription>
-                Filter submissions to find specific session recordings.
-            </CardDescription>
+          <CardTitle>All Recorded Sessions</CardTitle>
+          <CardDescription>
+            Filter submissions to find specific session recordings.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-            <RecordingList data={recordingData} />
+          <RecordingList data={recordingData} />
         </CardContent>
       </Card>
     </div>

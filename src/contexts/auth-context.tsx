@@ -237,7 +237,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       pathname.startsWith("/signup") ||
       pathname === "/" ||
       pathname.startsWith("/demos")||
-      pathname.startsWith("/blog");
+      pathname.startsWith("/blog") ||
+      pathname.startsWith("/badges") ||
+      pathname.startsWith("/candidate") ||
+      pathname.startsWith("/companies") ||
+      pathname.startsWith("/contact") ||
+      pathname.startsWith("/demos") ||
+      pathname.startsWith("/leaderboard") ||
+      pathname.startsWith("/pricing") ||
+      pathname.startsWith("/privacy") ||
+      pathname.startsWith("/terms") ||
+      pathname.startsWith("/about");
 
     if (!user && !isPublicPath) {
       router.push("/login");

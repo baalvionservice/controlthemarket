@@ -84,7 +84,7 @@ export default function Hero() {
           className="flex gap-3 justify-center flex-wrap mb-11"
         >
           <Link
-            href="#"
+            href="/login"
             className="inline-flex items-center justify-center px-[34px] py-[14px] text-[17px] font-semibold bg-green-600 text-white rounded-[14px] hover:bg-green-700 hover:-translate-y-px transition-all shadow-[0_4px_12px_rgba(34,197,94,0.3)] no-underline"
           >
             Start hiring now →

@@ -31,12 +31,11 @@ export default function Navbar() {
         {/* Nav Links */}
         <ul className="hidden md:flex gap-7 list-none">
           {[
-            { label: "How it works", href: "#" },
-            { label: "Why it works", href: "#" },
+            { label: "How it works", href: "/#hiw" },
             { label: "Blogs", href: "/blog" },
-            { label: "Features", href: "#feats" },
-            { label: "Pricing", href: "#pricing" },
-            { label: "Team", href: "#team" },
+            { label: "Companies", href: "/companies" },
+            { label: "Pricing", href: "/pricing" },
+            { label: "About", href: "/about" },
           ].map((item) => (
             <li key={item.href}>
               <Link

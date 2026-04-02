@@ -236,10 +236,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       pathname.startsWith("/login") ||
       pathname.startsWith("/signup") ||
       pathname === "/" ||
-      pathname.startsWith("/demos")||
+      pathname.startsWith("/demos") ||
       pathname.startsWith("/blog") ||
       pathname.startsWith("/badges") ||
-      pathname.startsWith("/candidate") ||
       pathname.startsWith("/companies") ||
       pathname.startsWith("/contact") ||
       pathname.startsWith("/demos") ||

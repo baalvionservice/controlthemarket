@@ -1,4 +1,8 @@
 <div align="center">
+  <img src=".github/preview.png" alt="ControlTheMarket - SkillMatch Pro" width="100%" />
+</div>
+
+<div align="center">
 
 # ControlTheMarket
 

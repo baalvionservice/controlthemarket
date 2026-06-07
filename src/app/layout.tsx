@@ -29,14 +29,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body>
-        <AuthProvider>
-          <SubmissionsProvider>
-              {children}
-              <Toaster />
-          </SubmissionsProvider>
-        </AuthProvider>
-      </body>
+     <body
+  className="font-body antialiased bg-background text-foreground overflow-x-hidden selection:bg-gold selection:text-white"
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+  }}
+>
+  <p>Pay to your Employee</p>
+</body>
     </html>
   );
 }
